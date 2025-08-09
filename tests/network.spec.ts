@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-import { test, expect } from './fixtures.js';
+import { expect, test } from './fixtures.js';
 
 test('browser_network_requests', async ({ client, server }) => {
-  server.setContent('/', `
+  server.setContent(
+    '/',
+    `
     <button onclick="fetch('/json')">Click me</button>
-  `, 'text/html');
+  `,
+    'text/html'
+  );
 
-  server.setContent('/json', JSON.stringify({ name: 'John Doe' }), 'application/json');
+  server.setContent(
+    '/json',
+    JSON.stringify({ name: 'John Doe' }),
+    'application/json'
+  );
 
   await client.callTool({
     name: 'browser_navigate',
@@ -38,10 +46,17 @@ test('browser_network_requests', async ({ client, server }) => {
     },
   });
 
-  await expect.poll(() => client.callTool({
-    name: 'browser_network_requests',
-  })).toHaveResponse({
-    result: expect.stringContaining(`[GET] ${`${server.PREFIX}`} => [200] OK
-[GET] ${`${server.PREFIX}json`} => [200] OK`),
-  });
+  const expectedNavigationRequest = `[GET] ${server.PREFIX} => [200] OK`;
+  const expectedJsonRequest = `[GET] ${server.PREFIX}json => [200] OK`;
+  const expectedNetworkRequests = `${expectedNavigationRequest}\n${expectedJsonRequest}`;
+
+  await expect
+    .poll(() =>
+      client.callTool({
+        name: 'browser_network_requests',
+      })
+    )
+    .toHaveResponse({
+      result: expect.stringContaining(expectedNetworkRequests),
+    });
 });

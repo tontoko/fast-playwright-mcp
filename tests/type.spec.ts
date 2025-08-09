@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { test, expect } from './fixtures.js';
+import { expect, test } from './fixtures.js';
+import { HTML_TEMPLATES, setServerContent } from './test-helpers.js';
 
 test('browser_type', async ({ client, server }) => {
-  server.setContent('/', `
-    <!DOCTYPE html>
-    <html>
-      <input type='keypress' onkeypress="console.log('Key pressed:', event.key, ', Text:', event.target.value)"></input>
-    </html>
-  `, 'text/html');
+  setServerContent(server, '/', HTML_TEMPLATES.KEYPRESS_INPUT);
 
   await client.callTool({
     name: 'browser_navigate',
@@ -44,21 +40,21 @@ test('browser_type', async ({ client, server }) => {
     expect(response).toHaveResponse({
       code: `await page.getByRole('textbox').fill('Hi!');
 await page.getByRole('textbox').press('Enter');`,
-      pageState: expect.stringContaining(`- textbox`),
+      pageState: expect.stringContaining('- textbox'),
     });
   }
 
-  expect(await client.callTool({
-    name: 'browser_console_messages',
-  })).toHaveResponse({
-    result: expect.stringContaining(`[LOG] Key pressed: Enter , Text: Hi!`),
+  expect(
+    await client.callTool({
+      name: 'browser_console_messages',
+    })
+  ).toHaveResponse({
+    result: expect.stringContaining('[LOG] Key pressed: Enter , Text: Hi!'),
   });
 });
 
 test('browser_type (slowly)', async ({ client, server }) => {
-  server.setContent('/', `
-    <input type='text' onkeydown="console.log('Key pressed:', event.key, 'Text:', event.target.value)"></input>
-  `, 'text/html');
+  setServerContent(server, '/', HTML_TEMPLATES.KEYDOWN_INPUT);
 
   await client.callTool({
     name: 'browser_navigate',
@@ -79,27 +75,25 @@ test('browser_type (slowly)', async ({ client, server }) => {
 
     expect(response).toHaveResponse({
       code: `await page.getByRole('textbox').pressSequentially('Hi!');`,
-      pageState: expect.stringContaining(`- textbox`),
+      pageState: expect.stringContaining('- textbox'),
     });
   }
   const response = await client.callTool({
     name: 'browser_console_messages',
   });
   expect(response).toHaveResponse({
-    result: expect.stringContaining(`[LOG] Key pressed: H Text: `),
+    result: expect.stringContaining('[LOG] Key pressed: H Text: '),
   });
   expect(response).toHaveResponse({
-    result: expect.stringContaining(`[LOG] Key pressed: i Text: H`),
+    result: expect.stringContaining('[LOG] Key pressed: i Text: H'),
   });
   expect(response).toHaveResponse({
-    result: expect.stringContaining(`[LOG] Key pressed: ! Text: Hi`),
+    result: expect.stringContaining('[LOG] Key pressed: ! Text: Hi'),
   });
 });
 
 test('browser_type (no submit)', async ({ client, server }) => {
-  server.setContent('/', `
-    <input type='text' oninput="console.log('New value: ' + event.target.value)"></input>
-  `, 'text/html');
+  setServerContent(server, '/', HTML_TEMPLATES.INPUT_WITH_CONSOLE);
 
   {
     const response = await client.callTool({
@@ -109,7 +103,7 @@ test('browser_type (no submit)', async ({ client, server }) => {
       },
     });
     expect(response).toHaveResponse({
-      pageState: expect.stringContaining(`- textbox`),
+      pageState: expect.stringContaining('- textbox'),
     });
   }
   {
@@ -124,7 +118,7 @@ test('browser_type (no submit)', async ({ client, server }) => {
     expect(response).toHaveResponse({
       code: expect.stringContaining(`fill('Hi!')`),
       // Should yield no snapshot.
-      pageState: expect.not.stringContaining(`- textbox`),
+      pageState: expect.not.stringContaining('- textbox'),
     });
   }
   {
@@ -132,7 +126,7 @@ test('browser_type (no submit)', async ({ client, server }) => {
       name: 'browser_console_messages',
     });
     expect(response).toHaveResponse({
-      result: expect.stringContaining(`[LOG] New value: Hi!`),
+      result: expect.stringContaining('[LOG] New value: Hi!'),
     });
   }
 });
