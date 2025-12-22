@@ -55,10 +55,10 @@ export async function handleSnapshotExpectation(
   response: Response
 ): Promise<void> {
   if (expectation?.includeSnapshot) {
-    const options = expectation.snapshotOptions;
+    const { selector, maxLength } = expectation.snapshotOptions ?? {};
     const newSnapshot =
-      options?.selector || options?.maxLength
-        ? await tab.capturePartialSnapshot(options.selector, options.maxLength)
+      selector || maxLength
+        ? await tab.capturePartialSnapshot(selector, maxLength)
         : await tab.captureSnapshot();
     response.setTabSnapshot(newSnapshot);
   }

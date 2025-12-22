@@ -315,15 +315,13 @@ export class Tab extends EventEmitter<TabEventsInterface> {
   ): Promise<TabSnapshot> {
     let tabSnapshot: TabSnapshot | undefined;
     const modalStates = await this._raceAgainstModalStates(async () => {
+      const result = await (this.page as PageEx)._snapshotForAI();
       let snapshot: string;
       if (selector) {
-        // Use the full snapshot but filter it to the selector
-        const result = await (this.page as PageEx)._snapshotForAI();
         // Extract the part of the snapshot that matches the selector
         snapshot = this._extractPartialSnapshot(result.full, selector);
       } else {
         // Full snapshot if no selector specified
-        const result = await (this.page as PageEx)._snapshotForAI();
         snapshot = result.full;
       }
       // Apply maxLength truncation with word boundary consideration
