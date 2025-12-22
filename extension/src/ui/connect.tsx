@@ -71,6 +71,25 @@ const ConnectApp: React.FC = () => {
       return;
     }
 
+    try {
+      const host = new URL(relayUrl).hostname;
+      if (host !== '127.0.0.1' && host !== '[::1]') {
+        setStatus({
+          type: 'error',
+          message: `MCP extension only allows loopback connections (127.0.0.1 or [::1]). Received host: ${host}`,
+        });
+        setShowButtons(false);
+        return;
+      }
+    } catch (e) {
+      setStatus({
+        type: 'error',
+        message: `Invalid mcpRelayUrl parameter in URL: ${relayUrl}. ${e}`,
+      });
+      setShowButtons(false);
+      return;
+    }
+
     setMcpRelayUrl(relayUrl);
 
     try {
