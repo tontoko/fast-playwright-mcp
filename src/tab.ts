@@ -18,7 +18,7 @@ import { logUnhandledError } from './utils/log.js';
 // Regex constants
 
 type PageEx = playwright.Page & {
-  _snapshotForAI: () => Promise<string>;
+  _snapshotForAI: () => Promise<{ full: string }>;
 };
 export const TabEvents = {
   modalState: 'modalState',
@@ -323,7 +323,8 @@ export class Tab extends EventEmitter<TabEventsInterface> {
         snapshot = this._extractPartialSnapshot(fullSnapshot, selector);
       } else {
         // Full snapshot if no selector specified
-        snapshot = await (this.page as PageEx)._snapshotForAI();
+        const result = await (this.page as PageEx)._snapshotForAI();
+        snapshot = result.full;
       }
       // Apply maxLength truncation with word boundary consideration
       if (maxLength && snapshot.length > maxLength) {
