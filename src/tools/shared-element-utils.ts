@@ -46,11 +46,20 @@ export async function resolveFirstElement(
  */
 export async function handleSnapshotExpectation(
   tab: Tab,
-  expectation: { includeSnapshot?: boolean } | undefined,
+  expectation:
+    | {
+        includeSnapshot?: boolean;
+        snapshotOptions?: { selector?: string; maxLength?: number };
+      }
+    | undefined,
   response: Response
 ): Promise<void> {
   if (expectation?.includeSnapshot) {
-    const newSnapshot = await tab.captureSnapshot();
+    const { selector, maxLength } = expectation.snapshotOptions ?? {};
+    const newSnapshot =
+      selector || maxLength
+        ? await tab.capturePartialSnapshot(selector, maxLength)
+        : await tab.captureSnapshot();
     response.setTabSnapshot(newSnapshot);
   }
 }

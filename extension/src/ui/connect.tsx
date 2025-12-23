@@ -22,6 +22,27 @@ import { Button, TabItem } from './tab-item.js';
 
 type StatusType = 'connected' | 'error' | 'connecting';
 
+function validateRelayUrl(
+  relayUrl: string
+): { valid: true } | { valid: false; error: string } {
+  try {
+    const host = new URL(relayUrl).hostname;
+    if (host !== '127.0.0.1' && host !== '::1') {
+      return {
+        valid: false,
+        error: `MCP extension only allows loopback connections (127.0.0.1 or ::1). Received host: ${host}`,
+      };
+    }
+    return { valid: true };
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return {
+      valid: false,
+      error: `Invalid mcpRelayUrl parameter in URL: ${relayUrl}. ${errorMessage}`,
+    };
+  }
+}
+
 const ConnectApp: React.FC = () => {
   const [tabs, setTabs] = useState<TabInfo[]>([]);
   const [status, setStatus] = useState<{
@@ -68,6 +89,13 @@ const ConnectApp: React.FC = () => {
         type: 'error',
         message: 'Missing mcpRelayUrl parameter in URL.',
       });
+      return;
+    }
+
+    const validation = validateRelayUrl(relayUrl);
+    if (!validation.valid) {
+      setStatus({ type: 'error', message: validation.error });
+      setShowButtons(false);
       return;
     }
 
