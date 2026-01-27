@@ -11,6 +11,8 @@ import { defineTool } from './tools/tool.js';
 import { filteredTools } from './tools.js';
 import { browserServerBackendDebug, logUnhandledError } from './utils/log.js';
 import { packageJSON } from './utils/package.js';
+import { getDashboardHtml } from './tools/dashboard.html.js';
+import type { Resource, ResourceContents } from '@modelcontextprotocol/sdk/types.js';
 
 type NonEmptyArray<T> = [T, ...T[]];
 export type FactoryList = NonEmptyArray<BrowserContextFactory>;
@@ -94,6 +96,28 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
       context.setRunningTool(false);
     }
     return response.serialize();
+  }
+  resources(): Resource[] {
+    return [
+      {
+        uri: 'ui://dashboard',
+        name: 'Playwright Dashboard',
+        description: 'Interactive dashboard for Playwright browser control and preview',
+        mimeType: 'text/html',
+      },
+    ];
+  }
+  async readResource(uri: string): Promise<ResourceContents[]> {
+    if (uri === 'ui://dashboard') {
+      return [
+        {
+          uri,
+          mimeType: 'text/html',
+          text: getDashboardHtml(),
+        },
+      ];
+    }
+    throw new Error(`Resource not found: ${uri}`);
   }
   serverClosed() {
     this._context?.dispose().catch(logUnhandledError);

@@ -3,10 +3,14 @@ import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import type {
   ImageContent,
   TextContent,
+  Resource,
+  ResourceContents,
 } from '@modelcontextprotocol/sdk/types.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
@@ -45,6 +49,8 @@ export interface ServerBackend {
     schema: ToolSchema<z.ZodTypeAny>,
     rawArguments: Record<string, unknown> | undefined
   ): Promise<ToolResponse>;
+  resources?(): Resource[];
+  readResource?(uri: string): Promise<ResourceContents[]>;
   serverClosed?(): void;
 }
 export type ServerBackendFactory = () => ServerBackend;
@@ -62,12 +68,16 @@ export function createServer(
   runHeartbeat: boolean
 ): Server {
   const initializedPromise = new ManualPromise<void>();
+  const capabilities: any = {
+    tools: {},
+  };
+  if (backend.resources) {
+    capabilities.resources = {};
+  }
   const server = new Server(
     { name: backend.name, version: backend.version },
     {
-      capabilities: {
-        tools: {},
-      },
+      capabilities,
     }
   );
 
@@ -90,6 +100,23 @@ export function createServer(
       })),
     };
   });
+
+  if (backend.resources) {
+    server.setRequestHandler(ListResourcesRequestSchema, async () => {
+      return {
+        resources: backend.resources!(),
+      };
+    });
+    server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      if (!backend.readResource) {
+        throw new Error('Resources supported but readResource not implemented');
+      }
+      return {
+        contents: await backend.readResource(request.params.uri),
+      };
+    });
+  }
+
   let heartbeatRunning = false;
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     await initializedPromise;
