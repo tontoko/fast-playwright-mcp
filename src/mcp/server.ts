@@ -2,15 +2,15 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import type {
   ImageContent,
-  TextContent,
   Resource,
   ResourceContents,
   ServerCapabilities,
+  TextContent,
 } from '@modelcontextprotocol/sdk/types.js';
 import {
   CallToolRequestSchema,
-  ListToolsRequestSchema,
   ListResourcesRequestSchema,
+  ListToolsRequestSchema,
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
@@ -103,9 +103,10 @@ export function createServer(
   });
 
   if (backend.resources && backend.readResource) {
+    // biome-ignore lint/suspicious/useAwait: Request handler is simpler as async
     server.setRequestHandler(ListResourcesRequestSchema, async () => {
       return {
-        resources: backend.resources!(),
+        resources: backend.resources?.() ?? [],
       };
     });
     server.setRequestHandler(ReadResourceRequestSchema, async (request) => {

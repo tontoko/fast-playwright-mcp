@@ -1,4 +1,8 @@
 import { fileURLToPath } from 'node:url';
+import type {
+  Resource,
+  ResourceContents,
+} from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import type { BrowserContextFactory } from './browser-context-factory.js';
 import type { FullConfig } from './config.js';
@@ -6,13 +10,12 @@ import { Context } from './context.js';
 import type * as mcpServer from './mcp/server.js';
 import { Response } from './response.js';
 import { SessionLog } from './session-log.js';
+import { getDashboardHtml } from './tools/dashboard.html.js';
 import type { AnyTool } from './tools/tool.js';
 import { defineTool } from './tools/tool.js';
 import { filteredTools } from './tools.js';
 import { browserServerBackendDebug, logUnhandledError } from './utils/log.js';
 import { packageJSON } from './utils/package.js';
-import { getDashboardHtml } from './tools/dashboard.html.js';
-import type { Resource, ResourceContents } from '@modelcontextprotocol/sdk/types.js';
 
 type NonEmptyArray<T> = [T, ...T[]];
 export type FactoryList = NonEmptyArray<BrowserContextFactory>;
@@ -102,20 +105,22 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
       {
         uri: 'ui://dashboard',
         name: 'Playwright Dashboard',
-        description: 'Interactive dashboard for Playwright browser control and preview',
+        description:
+          'Interactive dashboard for Playwright browser control and preview',
         mimeType: 'text/html',
       },
     ];
   }
+  // biome-ignore lint/suspicious/useAwait: Implementing async interface
   async readResource(uri: string): Promise<ResourceContents[]> {
     if (uri === 'ui://dashboard') {
-      return [
+      return Promise.resolve([
         {
           uri,
           mimeType: 'text/html',
           text: getDashboardHtml(),
         },
-      ];
+      ]);
     }
     throw new Error(`Resource not found: ${uri}`);
   }
