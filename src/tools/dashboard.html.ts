@@ -42,8 +42,11 @@ export function getDashboardHtml() {
     </div>
 
     <script type="module">
+        // Using esm.sh for client dependency.
+        // Note: This requires internet access. If running in an offline environment, this resource will fail to load the client.
         import { createClient } from 'https://esm.sh/@modelcontextprotocol/ext-apps@1.0.1';
 
+        const ERROR_DISPLAY_DURATION_MS = 5000;
         const client = createClient();
         const previewImg = document.getElementById('preview');
         const loadingPreview = document.getElementById('loading-preview');
@@ -54,7 +57,7 @@ export function getDashboardHtml() {
         function showError(msg) {
             errorDiv.textContent = msg;
             errorDiv.style.display = 'block';
-            setTimeout(() => errorDiv.style.display = 'none', 5000);
+            setTimeout(() => errorDiv.style.display = 'none', ERROR_DISPLAY_DURATION_MS);
         }
 
         async function updatePreview() {
@@ -65,7 +68,6 @@ export function getDashboardHtml() {
 
                 const result = await client.callTool('browser_take_screenshot', {
                     type: 'jpeg',
-                    quality: 50,
                     expectation: { includeSnapshot: false } // Reduce token usage/overhead
                 });
 
@@ -77,6 +79,7 @@ export function getDashboardHtml() {
                     previewImg.style.display = 'block';
                 } else {
                     console.warn('No image in screenshot result', result);
+                    showError('No image returned from screenshot tool');
                 }
             } catch (e) {
                 console.error('Failed to take screenshot', e);
@@ -104,13 +107,17 @@ export function getDashboardHtml() {
                     if (lines.length === 0) {
                          tabsList.innerHTML = '<li>No open tabs found.</li>';
                     } else {
-                        tabsList.innerHTML = lines.map(line => {
+                        // Use replaceChildren and create elements to prevent XSS
+                        tabsList.replaceChildren(...lines.map(line => {
                             // Format: "- 0: [Title] (URL)" or "- 0: (current) [Title] (URL)"
-                            // We can display it as is or parse it. Displaying as is simpler.
                             // Remove leading "- "
                             const content = line.substring(2);
-                            return \`<li><span>\${content}</span></li>\`;
-                        }).join('');
+                            const li = document.createElement('li');
+                            const span = document.createElement('span');
+                            span.textContent = content;
+                            li.appendChild(span);
+                            return li;
+                        }));
                     }
                 }
             } catch (e) {

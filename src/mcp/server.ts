@@ -5,6 +5,7 @@ import type {
   TextContent,
   Resource,
   ResourceContents,
+  ServerCapabilities,
 } from '@modelcontextprotocol/sdk/types.js';
 import {
   CallToolRequestSchema,
@@ -68,10 +69,10 @@ export function createServer(
   runHeartbeat: boolean
 ): Server {
   const initializedPromise = new ManualPromise<void>();
-  const capabilities: any = {
+  const capabilities: ServerCapabilities = {
     tools: {},
   };
-  if (backend.resources) {
+  if (backend.resources && backend.readResource) {
     capabilities.resources = {};
   }
   const server = new Server(
@@ -101,13 +102,14 @@ export function createServer(
     };
   });
 
-  if (backend.resources) {
+  if (backend.resources && backend.readResource) {
     server.setRequestHandler(ListResourcesRequestSchema, async () => {
       return {
         resources: backend.resources!(),
       };
     });
     server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      // Guard clause already checked above, but typescript needs to know
       if (!backend.readResource) {
         throw new Error('Resources supported but readResource not implemented');
       }
