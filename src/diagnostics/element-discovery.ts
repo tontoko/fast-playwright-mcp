@@ -359,10 +359,7 @@ export class ElementDiscovery extends DiagnosticBase {
 
       await Promise.all(
         excessElements.map((element, index) =>
-          this.safeDispose(
-            element,
-            `findByRole-excess-${maxResults + index}`
-          )
+          this.safeDispose(element, `findByRole-excess-${maxResults + index}`)
         )
       );
     } catch {
