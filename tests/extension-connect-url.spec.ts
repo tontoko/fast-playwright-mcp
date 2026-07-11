@@ -7,12 +7,17 @@ import {
 const relayEndpoint = 'ws://127.0.0.1:43123/extension/test-id';
 const clientInfo = { name: 'test-client', version: '1.2.3' };
 
+function expectExtensionLocation(url: URL, extensionId: string) {
+  expect(url.protocol).toBe('chrome-extension:');
+  expect(url.host).toBe(extensionId);
+  expect(url.pathname).toBe('/connect.html');
+}
+
 test('builds a valid URL for the bundled extension', () => {
   const url = buildExtensionConnectUrl({ relayEndpoint, clientInfo });
 
   expect(DEFAULT_EXTENSION_ID).toBe('jakfalbnbhgkpmoaakfflhflbfpkailf');
-  expect(url.origin).toBe(`chrome-extension://${DEFAULT_EXTENSION_ID}`);
-  expect(url.pathname).toBe('/connect.html');
+  expectExtensionLocation(url, DEFAULT_EXTENSION_ID);
   expect(url.searchParams.get('mcpRelayUrl')).toBe(relayEndpoint);
   expect(url.searchParams.get('client')).toBe(JSON.stringify(clientInfo));
   expect(url.searchParams.get('protocolVersion')).toBe('1');
@@ -28,8 +33,7 @@ test('supports the current Chrome Web Store extension and auth token', () => {
     token: 'test-token',
   });
 
-  expect(url.origin).toBe(`chrome-extension://${extensionId}`);
-  expect(url.pathname).toBe('/connect.html');
+  expectExtensionLocation(url, extensionId);
   expect(url.searchParams.get('protocolVersion')).toBe('1');
   expect(url.searchParams.get('token')).toBe('test-token');
 });
