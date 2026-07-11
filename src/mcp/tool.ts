@@ -26,13 +26,43 @@ export type ToolSchema<Input extends z.Schema> = {
   type: 'readOnly' | 'destructive';
 };
 
+const OMITTED_SCHEMA_KEYS = new Set(['description', '$schema']);
+
+/**
+ * Remove annotation-only prose from a JSON Schema without changing validation
+ * semantics. MCP clients inject the complete tools/list response into model
+ * context, so repeating every nested Zod description has a significant token
+ * cost. Property names, types, required fields, enums, defaults, constraints,
+ * and references are preserved.
+ */
+export function compactJsonSchema(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(compactJsonSchema);
+  }
+
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  const compacted: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (OMITTED_SCHEMA_KEYS.has(key)) {
+      continue;
+    }
+    compacted[key] = compactJsonSchema(child);
+  }
+  return compacted;
+}
+
 export function toMcpTool<T extends z.Schema>(tool: ToolSchema<T>): Tool {
+  const jsonSchema = zodToJsonSchema(tool.inputSchema, {
+    strictUnions: true,
+  });
+
   return {
     name: tool.name,
     description: tool.description,
-    inputSchema: zodToJsonSchema(tool.inputSchema, {
-      strictUnions: true,
-    }) as Tool['inputSchema'],
+    inputSchema: compactJsonSchema(jsonSchema) as Tool['inputSchema'],
     annotations: {
       title: tool.title,
       readOnlyHint: tool.type === 'readOnly',
