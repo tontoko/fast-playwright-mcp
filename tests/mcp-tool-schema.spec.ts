@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import { toMcpTool } from '../src/mcp/tool.js';
+import { allTools } from '../src/tools.js';
 
 function collectKeys(value: unknown, keys: string[] = []): string[] {
   if (Array.isArray(value)) {
@@ -49,4 +51,18 @@ test('MCP tool schemas omit nested descriptions while preserving the tool summar
   expect(collectKeys(tool.inputSchema)).not.toContain('$schema');
   expect(JSON.stringify(tool.inputSchema)).toContain('selector');
   expect(JSON.stringify(tool.inputSchema)).toContain('timeout');
+});
+
+test('the complete tool catalog keeps a substantial schema payload reduction', () => {
+  const rawSchemas = allTools.map((tool) =>
+    zodToJsonSchema(tool.schema.inputSchema, { strictUnions: true })
+  );
+  const compactSchemas = allTools.map(
+    (tool) => toMcpTool(tool.schema).inputSchema
+  );
+
+  const rawLength = JSON.stringify(rawSchemas).length;
+  const compactLength = JSON.stringify(compactSchemas).length;
+
+  expect(compactLength).toBeLessThan(rawLength * 0.85);
 });
