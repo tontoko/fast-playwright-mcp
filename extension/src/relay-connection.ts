@@ -42,7 +42,7 @@ export class RelayConnection {
   private readonly _eventListener: (
     source: chrome.debugger.DebuggerSession,
     method: string,
-    params: Record<string, unknown>
+    params?: object
   ) => void;
   private readonly _detachListener: (
     source: chrome.debugger.Debuggee,
@@ -98,7 +98,7 @@ export class RelayConnection {
   private _onDebuggerEvent(
     source: chrome.debugger.DebuggerSession,
     method: string,
-    params: Record<string, unknown>
+    params?: object
   ): void {
     if (source.tabId !== this._debuggee.tabId) {
       return;
@@ -110,7 +110,7 @@ export class RelayConnection {
       params: {
         sessionId,
         method,
-        params,
+        params: { ...(params ?? {}) },
       },
     });
   }
