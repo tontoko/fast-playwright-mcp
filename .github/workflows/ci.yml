@@ -32,7 +32,17 @@ jobs:
       - name: Build package
         run: bun run build:publish
       - name: Run lint
-        run: bun run lint
+        run: |
+          set -o pipefail
+          bun run lint 2>&1 | tee lint.log
+      - name: Upload lint failure log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-failure-log
+          path: lint.log
+          if-no-files-found: error
+          retention-days: 7
       - name: Ensure generated files are committed
         run: git diff --exit-code
 
@@ -84,7 +94,17 @@ jobs:
       - name: Install extension dependencies
         run: npm ci --prefix extension
       - name: Build extension
-        run: npm run build --prefix extension
+        run: |
+          set -o pipefail
+          npm run build --prefix extension 2>&1 | tee extension-build.log
+      - name: Upload extension build failure log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-build-failure-log
+          path: extension-build.log
+          if-no-files-found: error
+          retention-days: 7
       - name: Install Chromium and system dependencies
         run: bunx playwright install --with-deps chromium
       - name: Run extension E2E tests
