@@ -95,7 +95,7 @@ export class CDPRelayServer {
     this._connectBrowser(clientInfo);
     cdpRelayDebug('Waiting for incoming extension connection');
 
-    let removeAbortListener = () => {};
+    let removeAbortListener: (() => void) | undefined;
     const aborted = new Promise<never>((_, reject) => {
       const onAbort = () =>
         reject(
@@ -115,7 +115,7 @@ export class CDPRelayServer {
     try {
       await Promise.race([this._extensionConnectionPromise, aborted]);
     } finally {
-      removeAbortListener();
+      removeAbortListener?.();
     }
     cdpRelayDebug('Extension connection established');
   }
@@ -439,7 +439,7 @@ export class CDPRelayServer {
     return this._forwardToExtension(method, params, sessionId);
   }
 
-  private async _forwardToExtension(
+  private _forwardToExtension(
     method: string,
     params: CDPParams,
     sessionId: string | undefined
@@ -480,7 +480,11 @@ class ExtensionConnection {
   private readonly _ws: WebSocket;
   private readonly _callbacks = new Map<
     number,
-    { resolve: (value: unknown) => void; reject: (error: Error) => void; error: Error }
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+      error: Error;
+    }
   >();
   private _lastId = 0;
   private _closed = false;
