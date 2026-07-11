@@ -53,6 +53,29 @@ test('MCP tool schemas omit nested descriptions while preserving the tool summar
   expect(JSON.stringify(tool.inputSchema)).toContain('timeout');
 });
 
+test('MCP tool schemas preserve input fields named like schema annotations', () => {
+  const tool = toMcpTool({
+    name: 'browser_annotation_names',
+    title: 'Annotation names',
+    description: 'Tests property-name preservation.',
+    type: 'readOnly',
+    inputSchema: z.object({
+      description: z.string().describe('Description field annotation.'),
+      $schema: z.string().optional().describe('Schema field annotation.'),
+    }),
+  });
+
+  const properties = (
+    tool.inputSchema as {
+      properties?: Record<string, unknown>;
+    }
+  ).properties;
+
+  expect(properties).toHaveProperty('description');
+  expect(properties).toHaveProperty('$schema');
+  expect(collectKeys(properties?.description)).not.toContain('description');
+});
+
 test('the complete tool catalog keeps a substantial schema payload reduction', () => {
   const rawSchemas = allTools.map((tool) =>
     zodToJsonSchema(tool.schema.inputSchema, { strictUnions: true })
