@@ -328,11 +328,12 @@ export class ElementDiscovery extends DiagnosticBase {
       );
       const elements = await locator.elementHandles();
 
+      const excessElements: playwright.ElementHandle[] = [];
       await elements.reduce(async (previousPromise, element) => {
         const currentFound = await previousPromise;
 
         if (currentFound >= maxResults) {
-          await this.safeDispose(element, `findByRole-excess-${currentFound}`);
+          excessElements.push(element);
           return currentFound;
         }
 
@@ -355,6 +356,15 @@ export class ElementDiscovery extends DiagnosticBase {
           return currentFound;
         }
       }, Promise.resolve(0));
+
+      await Promise.all(
+        excessElements.map((element, index) =>
+          this.safeDispose(
+            element,
+            `findByRole-excess-${maxResults + index}`
+          )
+        )
+      );
     } catch {
       // Role search failed - continue with next search strategy
     }
