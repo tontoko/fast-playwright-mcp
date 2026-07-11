@@ -8,12 +8,12 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import type { z } from 'zod';
 import { ManualPromise } from '../manual-promise.js';
 import { logUnhandledError, mcpServerDebug } from '../utils/log.js';
 
 import { logRequest } from '../utils/request-logger.js';
+import { toMcpTool } from './tool.js';
 
 export type { Server } from '@modelcontextprotocol/sdk/server/index.js';
 export type ClientCapabilities = {
@@ -74,20 +74,7 @@ export function createServer(
   server.setRequestHandler(ListToolsRequestSchema, () => {
     const tools = backend.tools();
     return {
-      tools: tools.map((tool) => ({
-        name: tool.name,
-        description: tool.description,
-        inputSchema:
-          tool.inputSchema instanceof z.ZodType
-            ? zodToJsonSchema(tool.inputSchema)
-            : tool.inputSchema,
-        annotations: {
-          title: tool.title,
-          readOnlyHint: tool.type === 'readOnly',
-          destructiveHint: tool.type === 'destructive',
-          openWorldHint: true,
-        },
-      })),
+      tools: tools.map((tool) => toMcpTool(tool)),
     };
   });
   let heartbeatRunning = false;
