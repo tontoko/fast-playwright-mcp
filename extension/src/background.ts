@@ -118,6 +118,7 @@ class TabShareExtension {
         return true; // Return true to indicate that the response will be sent asynchronously
       case 'getConnectionStatus':
         sendResponse({
+          success: true,
           connectedTabId: this._connectedTabId,
         });
         return false;
