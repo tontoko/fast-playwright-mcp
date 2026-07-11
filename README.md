@@ -254,6 +254,8 @@ Playwright MCP server supports following arguments. They can be provided in the 
 
 <!--- End of options generated section -->
 
+For third-party browser binaries, compatibility guidance, and a Firefox example, see [Custom browser executables](./CUSTOM_BROWSER_EXECUTABLES.md).
+
 ### User profile
 
 You can run Playwright MCP with persistent profile like a regular browser (default), in isolated contexts for testing sessions, or connect to your existing browser using the browser extension.
