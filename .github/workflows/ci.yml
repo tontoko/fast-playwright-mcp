@@ -134,4 +134,14 @@ jobs:
           cache-to: type=gha,mode=max
           load: true
       - name: Run CLI smoke test
-        run: docker run --rm fast-playwright-mcp-ci:latest --version
+        run: |
+          set -o pipefail
+          docker run --rm fast-playwright-mcp-ci:latest --version 2>&1 | tee docker-smoke.log
+      - name: Upload Docker smoke-test failure log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-smoke-failure-log
+          path: docker-smoke.log
+          if-no-files-found: error
+          retention-days: 7
