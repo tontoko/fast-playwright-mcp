@@ -51,7 +51,10 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     return browser;
   }
   private async _startRelay(abortSignal: AbortSignal) {
-    const httpServer = await startHttpServer({});
+    // Both the bundled and current Web Store extensions intentionally reject
+    // non-numeric hosts. Binding explicitly also avoids exposing the relay on
+    // every interface when the OS default is :: or 0.0.0.0.
+    const httpServer = await startHttpServer({ host: '127.0.0.1' });
     const cdpRelayServer = new CDPRelayServer(httpServer, this._browserChannel);
     extensionContextFactoryDebug(
       `CDP relay server started, extension endpoint: ${cdpRelayServer.extensionEndpoint()}.`
@@ -59,7 +62,9 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     if (abortSignal.aborted) {
       cdpRelayServer.stop();
     } else {
-      abortSignal.addEventListener('abort', () => cdpRelayServer.stop());
+      abortSignal.addEventListener('abort', () => cdpRelayServer.stop(), {
+        once: true,
+      });
     }
     return cdpRelayServer;
   }
