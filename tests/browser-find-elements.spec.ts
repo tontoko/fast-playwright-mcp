@@ -84,6 +84,22 @@ test('browser_find_elements - limit results', async ({ client, server }) => {
   expectFindElementsSuccess(result);
 });
 
+test('browser_find_elements - role search respects max results', async ({
+  client,
+  server,
+}) => {
+  const result = await setupFindElementsTest(
+    client,
+    server,
+    FIND_ELEMENTS_HTML_TEMPLATES.MULTIPLE_BUTTONS(10),
+    { role: 'button' },
+    { maxResults: 3 }
+  );
+
+  expectFindElementsSuccess(result);
+  expect(result.content[0].text).toContain('Found 3 elements');
+});
+
 // Regression coverage for https://github.com/tontoko/fast-playwright-mcp/issues/27
 // Playwright's role locator must handle both explicit and implicit ARIA roles.
 const implicitRoleCases = [
