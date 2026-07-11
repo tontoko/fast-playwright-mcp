@@ -1,0 +1,104 @@
+name: Apply role-disposal optimization
+
+on:
+  push:
+    branches: [fix/all-open-issues]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.repository == 'tontoko/fast-playwright-mcp' && github.ref == 'refs/heads/fix/all-open-issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/all-open-issues
+      - name: Apply exact source replacement
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/diagnostics/element-discovery.ts')
+          source = path.read_text()
+          old = '''      await elements.reduce(async (previousPromise, element) => {
+                  const currentFound = await previousPromise;
+
+                  if (currentFound >= maxResults) {
+                    await this.safeDispose(element, `findByRole-excess-${currentFound}`);
+                    return currentFound;
+                  }
+
+                  try {
+                    const smartElement = this.smartHandleBatch.add(element);
+                    alternatives.push({
+                      selector: await this.generateSelector(element),
+                      confidence: 0.7,
+                      reason: `role match: "${role}"`,
+                      element: smartElement,
+                      elementId: `role_${currentFound}`,
+                    });
+                    return currentFound + 1;
+                  } catch (elementError) {
+                    elementDiscoveryDebug(
+                      'Element role processing failed:',
+                      elementError
+                    );
+                    await this.safeDispose(element, `findByRole-element-${currentFound}`);
+                    return currentFound;
+                  }
+                }, Promise.resolve(0));'''
+          new = '''      const excessElements: playwright.ElementHandle[] = [];
+                await elements.reduce(async (previousPromise, element) => {
+                  const currentFound = await previousPromise;
+
+                  if (currentFound >= maxResults) {
+                    excessElements.push(element);
+                    return currentFound;
+                  }
+
+                  try {
+                    const smartElement = this.smartHandleBatch.add(element);
+                    alternatives.push({
+                      selector: await this.generateSelector(element),
+                      confidence: 0.7,
+                      reason: `role match: "${role}"`,
+                      element: smartElement,
+                      elementId: `role_${currentFound}`,
+                    });
+                    return currentFound + 1;
+                  } catch (elementError) {
+                    elementDiscoveryDebug(
+                      'Element role processing failed:',
+                      elementError
+                    );
+                    await this.safeDispose(element, `findByRole-element-${currentFound}`);
+                    return currentFound;
+                  }
+                }, Promise.resolve(0));
+
+                await Promise.all(
+                  excessElements.map((element, index) =>
+                    this.safeDispose(
+                      element,
+                      `findByRole-excess-${maxResults + index}`
+                    )
+                  )
+                );'''
+          if old not in source:
+              print('Target snippet already replaced or not found')
+              raise SystemExit(0)
+          path.write_text(source.replace(old, new, 1))
+          PY
+      - name: Commit source change
+        run: |
+          if git diff --quiet; then
+            echo "No source changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/diagnostics/element-discovery.ts
+          git commit -m "perf: dispose excess role matches concurrently"
+          git push origin HEAD:fix/all-open-issues
