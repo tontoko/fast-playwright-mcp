@@ -61,7 +61,8 @@ RUN npx -y playwright-core install --no-shell chromium
 FROM base
 
 ARG PLAYWRIGHT_BROWSERS_PATH
-ARG USERNAME=node
+# The official oven/bun image provides the non-root "bun" user.
+ARG USERNAME=bun
 ENV NODE_ENV=production
 
 # Set read-only permissions for node_modules to prevent unnecessary write access
