@@ -46,7 +46,10 @@ export function compactJsonSchema(value: unknown): unknown {
 
   const compacted: Record<string, unknown> = {};
   for (const [key, child] of Object.entries(value)) {
-    if (OMITTED_SCHEMA_KEYS.has(key)) {
+    // JSON Schema annotations are strings. Checking the value type preserves
+    // legitimate input properties named "description" or "$schema", whose
+    // values are themselves schema objects inside the properties map.
+    if (OMITTED_SCHEMA_KEYS.has(key) && typeof child === 'string') {
       continue;
     }
     compacted[key] = compactJsonSchema(child);
