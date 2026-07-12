@@ -40,6 +40,83 @@ jobs:
           path: dashboard-build.log
           if-no-files-found: warn
           retention-days: 7
+      - name: Apply mechanical lint fixes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str, count: int = 1) -> None:
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              actual = text.count(old)
+              if actual == 0 and new in text:
+                  return
+              if actual != count:
+                  raise SystemExit(
+                      f'{path}: expected {count} occurrence(s), found {actual}: {old!r}'
+                  )
+              file.write_text(text.replace(old, new, count), encoding='utf-8')
+
+          replace(
+              'src/config.ts',
+              "const DEFAULT_CDP_TIMEOUT = 30_000;\n",
+              "const DEFAULT_CDP_TIMEOUT = 30_000;\nconst LINE_SEPARATOR_PATTERN = /\\r?\\n/u;\n",
+          )
+          replace(
+              'src/config.ts',
+              'for (const rawLine of content.split(/\\r?\\n/u)) {',
+              'for (const rawLine of content.split(LINE_SEPARATOR_PATTERN)) {',
+          )
+
+          replace(
+              'src/context.ts',
+              '  private _outputManagerPromise: Promise<OutputManager> | undefined;\n',
+              '  private _outputManager: OutputManager | undefined;\n',
+          )
+          replace(
+              'src/context.ts',
+              '    const manager = await this._getOutputManager(path);',
+              '    const manager = this._getOutputManager(path);',
+              count=2,
+          )
+          replace(
+              'src/context.ts',
+              "  private async _getOutputManager(path: string): Promise<OutputManager> {\n    this._outputManagerPromise ??= Promise.resolve(\n      new OutputManager(dirname(path), this.config.outputMaxSize)\n    );\n    return this._outputManagerPromise;\n  }",
+              "  private _getOutputManager(path: string): OutputManager {\n    this._outputManager ??= new OutputManager(\n      dirname(path),\n      this.config.outputMaxSize\n    );\n    return this._outputManager;\n  }",
+          )
+          replace(
+              'src/context.ts',
+              "export class InputRecorder {\n  private constructor(\n    private readonly context: Context,\n    private readonly browserContext: BrowserContext\n  ) {}",
+              "export class InputRecorder {\n  private readonly context: Context;\n  private readonly browserContext: BrowserContext;\n\n  private constructor(context: Context, browserContext: BrowserContext) {\n    this.context = context;\n    this.browserContext = browserContext;\n  }",
+          )
+          replace(
+              'src/context.ts',
+              "        actionAdded: (page: Page, data: actions.ActionInContext, code: string) => {\n          if (this.context.isRunningTool()) return;\n          Tab.forPage(page)?.context.sessionLog?.logUserAction(\n            data.action,\n            Tab.forPage(page)!,\n            code,\n            false\n          );\n        },",
+              "        actionAdded: (page: Page, data: actions.ActionInContext, code: string) => {\n          if (this.context.isRunningTool()) {\n            return;\n          }\n          const tab = Tab.forPage(page);\n          if (tab) {\n            sessionLog.logUserAction(data.action, tab, code, false);\n          }\n        },",
+          )
+          replace(
+              'src/context.ts',
+              "          if (this.context.isRunningTool()) return;\n          const tab = Tab.forPage(page);\n          if (tab) sessionLog.logUserAction(data.action, tab, code, true);",
+              "          if (this.context.isRunningTool()) {\n            return;\n          }\n          const tab = Tab.forPage(page);\n          if (tab) {\n            sessionLog.logUserAction(data.action, tab, code, true);\n          }",
+          )
+
+          replace(
+              'src/batch/batch-executor.ts',
+              '        const result = await this.executeStep(',
+              '        // biome-ignore lint/nursery/noAwaitInLoop: browser actions must execute sequentially\n        const result = await this.executeStep(',
+          )
+
+          for path in [
+              'tests/tool-registry.spec.ts',
+              'tests/tool-search.spec.ts',
+              'tests/tool-visibility.spec.ts',
+          ]:
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              text = text.replace('async handle() {},', 'handle: () => Promise.resolve(),')
+              file.write_text(text, encoding='utf-8')
+          PY
       - name: Format changed sources
         shell: bash
         run: |
