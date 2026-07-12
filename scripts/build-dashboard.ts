@@ -12,6 +12,20 @@ function hash(value: string): string {
   return `sha256-${createHash('sha256').update(value).digest('base64')}`;
 }
 
+function replacePlaceholder(
+  source: string,
+  placeholder: string,
+  value: string
+): string {
+  const occurrences = source.split(placeholder).length - 1;
+  if (occurrences !== 1) {
+    throw new Error(
+      `Dashboard template must contain exactly one ${placeholder} placeholder.`
+    );
+  }
+  return source.replace(placeholder, value);
+}
+
 const result = await build({
   entryPoints: [clientPath],
   bundle: true,
@@ -42,13 +56,9 @@ const csp = [
   "form-action 'none'",
 ].join('; ');
 
-const html = template
-  .replace('__CSP__', csp)
-  .replace('__STYLE__', style)
-  .replace('__SCRIPT__', script);
-if (html.includes('__CSP__') || html.includes('__STYLE__') || html.includes('__SCRIPT__')) {
-  throw new Error('Dashboard template contains unresolved placeholders.');
-}
+let html = replacePlaceholder(template, '__CSP__', csp);
+html = replacePlaceholder(html, '__STYLE__', style);
+html = replacePlaceholder(html, '__SCRIPT__', script);
 
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(
