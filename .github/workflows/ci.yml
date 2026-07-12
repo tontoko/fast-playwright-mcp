@@ -108,7 +108,19 @@ jobs:
       - name: Install Chromium and system dependencies
         run: bunx playwright install --with-deps chromium
       - name: Run extension E2E tests
-        run: xvfb-run --auto-servernum bunx playwright test --config=extension/playwright.config.ts
+        run: |
+          set -o pipefail
+          xvfb-run --auto-servernum bunx playwright test --config=extension/playwright.config.ts 2>&1 | tee extension-e2e.log
+      - name: Upload extension E2E failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: extension-e2e-failure-diagnostics
+          path: |
+            extension-e2e.log
+            test-results
+          if-no-files-found: warn
+          retention-days: 7
       - name: Upload extension artifact
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
