@@ -193,6 +193,7 @@ class PersistentContextFactory implements BrowserContextFactory {
   readonly name = 'persistent';
   readonly description = 'Create a new persistent browser context';
   private readonly _userDataDirs = new Set<string>();
+  private readonly _closingUserDataDirs = new Map<string, Promise<void>>();
   constructor(config: FullConfig) {
     this.config = config;
   }
@@ -206,6 +207,18 @@ class PersistentContextFactory implements BrowserContextFactory {
       this.config.browser.userDataDir ??
       (await this._createUserDataDir(clientInfo.rootPath));
 
+    // Transport close notifications are asynchronous. Give a just-closed
+    // session one event-loop turn to move its profile from active to closing,
+    // then await that concrete close operation. A genuinely concurrent client
+    // still receives the existing "use --isolated" error immediately after
+    // the turn, without launching a second browser process against the profile.
+    if (this._userDataDirs.has(userDataDir)) {
+      await new Promise<void>((resolve) => setImmediate(resolve));
+    }
+    const closingUserDataDir = this._closingUserDataDirs.get(userDataDir);
+    if (closingUserDataDir) {
+      await closingUserDataDir;
+    }
     if (this._userDataDirs.has(userDataDir)) {
       throw new Error(
         `Browser is already in use for ${userDataDir}, use --isolated to run multiple instances of the same browser`
@@ -286,11 +299,19 @@ class PersistentContextFactory implements BrowserContextFactory {
     userDataDir: string
   ) {
     testDebug('close browser context (persistent)');
-    testDebug('release user data dir', userDataDir);
-    await browserContext.close().catch((error) => {
+    const closePromise = browserContext.close().catch((error) => {
       browserDebug('Failed to close browser context:', error);
     });
     this._userDataDirs.delete(userDataDir);
+    this._closingUserDataDirs.set(userDataDir, closePromise);
+    testDebug('release user data dir', userDataDir);
+    try {
+      await closePromise;
+    } finally {
+      if (this._closingUserDataDirs.get(userDataDir) === closePromise) {
+        this._closingUserDataDirs.delete(userDataDir);
+      }
+    }
     testDebug('close browser context complete (persistent)');
   }
   private async _createUserDataDir(rootPath: string | undefined) {
