@@ -7,6 +7,7 @@
  */
 import { spawn } from 'node:child_process';
 import type http from 'node:http';
+import { platform } from 'node:os';
 import { isAbsolute } from 'node:path';
 import type websocket from 'ws';
 import { WebSocket, WebSocketServer } from 'ws';
@@ -47,6 +48,8 @@ type CDPResponse = {
 export class CDPRelayServer {
   private readonly _wsHost: string;
   private readonly _browserChannel: string;
+  private readonly _userDataDir: string | undefined;
+  private readonly _executablePath: string | undefined;
   private readonly _cdpPath: string;
   private readonly _extensionPath: string;
   private readonly _wss: WebSocketServer;
@@ -61,12 +64,19 @@ export class CDPRelayServer {
     | undefined;
   private _extensionConnectionPromise!: ManualPromise<void>;
 
-  constructor(server: http.Server, browserChannel: string) {
+  constructor(
+    server: http.Server,
+    browserChannel: string,
+    userDataDir?: string,
+    executablePath?: string
+  ) {
     this._wsHost = httpAddressToString(server.address()).replace(
       HTTP_TO_WS_REGEX,
       'ws'
     );
     this._browserChannel = browserChannel;
+    this._userDataDir = userDataDir;
+    this._executablePath = executablePath;
     const uuid = crypto.randomUUID();
     this._cdpPath = `/cdp/${uuid}`;
     this._extensionPath = `/extension/${uuid}`;
@@ -130,15 +140,37 @@ export class CDPRelayServer {
       token: process.env.PLAYWRIGHT_MCP_EXTENSION_TOKEN,
     });
 
-    const executableInfo = registry.findExecutable(this._browserChannel);
-    if (!executableInfo) {
-      throw new Error(`Unsupported channel: "${this._browserChannel}"`);
+    const executablePath = this._resolveBrowserExecutablePath();
+    const args: string[] = [];
+    if (this._userDataDir) {
+      args.push(`--user-data-dir=${this._userDataDir}`);
     }
-    const executablePath = executableInfo.executablePath();
+    if (platform() === 'linux' && this._browserChannel === 'chromium') {
+      args.push('--no-sandbox');
+    }
+    args.push(url.toString());
+
+    spawn(executablePath, args, {
+      windowsHide: true,
+      detached: true,
+      shell: false,
+      stdio: 'ignore',
+    });
+  }
+
+  private _resolveBrowserExecutablePath(): string {
+    let executablePath = this._executablePath;
     if (!executablePath) {
-      throw new Error(
-        `"${this._browserChannel}" executable not found. Make sure it is installed at a standard location.`
-      );
+      const executableInfo = registry.findExecutable(this._browserChannel);
+      if (!executableInfo) {
+        throw new Error(`Unsupported channel: "${this._browserChannel}"`);
+      }
+      executablePath = executableInfo.executablePath();
+      if (!executablePath) {
+        throw new Error(
+          `"${this._browserChannel}" executable not found. Make sure it is installed at a standard location.`
+        );
+      }
     }
 
     // spawn() is invoked with shell:false, so shell metacharacters in legitimate
@@ -148,13 +180,7 @@ export class CDPRelayServer {
     if (!isAbsolute(executablePath)) {
       throw new Error('Browser executable path must be absolute');
     }
-
-    spawn(executablePath, [url.toString()], {
-      windowsHide: true,
-      detached: true,
-      shell: false,
-      stdio: 'ignore',
-    });
+    return executablePath;
   }
 
   private _sanitizeClientInfo(clientInfo: ClientInfo): ClientInfo {
@@ -237,7 +263,6 @@ export class CDPRelayServer {
     } else if (url.pathname === this._extensionPath) {
       this._handleExtensionConnection(ws);
     } else {
-      cdpRelayDebug(`Invalid path: ${url.pathname}`);
       ws.close(4004, 'Invalid path');
     }
   }
