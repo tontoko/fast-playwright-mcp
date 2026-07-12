@@ -21,104 +21,100 @@ export type ToolCapability =
   | 'core-tabs'
   | 'core-install'
   | 'vision'
-  | 'pdf';
+  | 'pdf'
+  | 'apps';
+
+export type ToolProfile = 'adaptive' | 'full' | 'minimal';
 
 export type Config = {
+  /**
+   * Tool catalog profile. Adaptive is the default and exposes a small bootstrap
+   * catalog while keeping all registered tools callable by name.
+   */
+  toolProfile?: ToolProfile;
+
   /**
    * The browser to use.
    */
   browser?: {
-    /**
-     * The type of browser to use.
-     */
+    /** The type of browser to use. */
     browserName?: 'chromium' | 'firefox' | 'webkit';
 
-    /**
-     * Keep the browser profile in memory, do not save it to disk.
-     */
+    /** Keep the browser profile in memory, do not save it to disk. */
     isolated?: boolean;
 
-    /**
-     * Path to a user data directory for browser profile persistence.
-     * Temporary directory is created by default.
-     */
+    /** Path to a user data directory for browser profile persistence. */
     userDataDir?: string;
 
-    /**
-     * Launch options passed to
-     * @see https://playwright.dev/docs/api/class-browsertype#browser-type-launch-persistent-context
-     *
-     * This is useful for settings options like `channel`, `headless`, `executablePath`, etc.
-     */
+    /** Launch options passed to Playwright. */
     launchOptions?: playwright.LaunchOptions;
 
-    /**
-     * Context options for the browser context.
-     *
-     * This is useful for settings options like `viewport`.
-     */
+    /** Context options for the browser context. */
     contextOptions?: playwright.BrowserContextOptions;
 
-    /**
-     * Chrome DevTools Protocol endpoint to connect to an existing browser instance in case of Chromium family browsers.
-     */
+    /** Chrome DevTools Protocol endpoint. */
     cdpEndpoint?: string;
 
-    /**
-     * Remote endpoint to connect to an existing Playwright server.
-     */
+    /** Headers sent when connecting to a CDP endpoint. */
+    cdpHeaders?: Record<string, string>;
+
+    /** CDP connection timeout in milliseconds. */
+    cdpTimeout?: number;
+
+    /** Remote Playwright server endpoint. */
     remoteEndpoint?: string;
   };
 
   server?: {
-    /**
-     * The port to listen on for SSE or MCP transport.
-     */
+    /** The port to listen on for SSE or MCP transport. */
     port?: number;
 
-    /**
-     * The host to bind the server to. Default is localhost. Use 0.0.0.0 to bind to all interfaces.
-     */
+    /** The host to bind the server to. */
     host?: string;
+
+    /** Allowed HTTP Host header values. Use `*` to disable host checks. */
+    allowedHosts?: string[];
   };
 
-  /**
-   * List of enabled tool capabilities. Possible values:
-   *   - 'core': Core browser automation features.
-   *   - 'pdf': PDF generation and manipulation.
-   *   - 'vision': Coordinate-based interactions.
-   */
+  /** List of enabled optional capabilities. */
   capabilities?: ToolCapability[];
 
-  /**
-   * Whether to save the Playwright session into the output directory.
-   */
+  /** Whether to save the Playwright session into the output directory. */
   saveSession?: boolean;
 
-  /**
-   * Whether to save the Playwright trace of the session into the output directory.
-   */
+  /** Whether to save a Playwright trace into the output directory. */
   saveTrace?: boolean;
 
-  /**
-   * The directory to save output files.
-   */
+  /** The directory to save output files. */
   outputDir?: string;
 
+  /** Maximum output directory size in bytes. Zero disables eviction. */
+  outputMaxSize?: number;
+
+  /** Literal values to redact from textual tool responses. */
+  secrets?: Record<string, string>;
+
+  /** Attribute used by Playwright test-id selectors. */
+  testIdAttribute?: string;
+
+  /** Browser operation timeout configuration. */
+  timeouts?: {
+    action?: number;
+    navigation?: number;
+    expect?: number;
+  };
+
+  /** Generated Playwright code output mode. */
+  codegen?: 'typescript' | 'none';
+
   network?: {
-    /**
-     * List of origins to allow the browser to request. Default is to allow all. Origins matching both `allowedOrigins` and `blockedOrigins` will be blocked.
-     */
+    /** List of origins to allow the browser to request. */
     allowedOrigins?: string[];
 
-    /**
-     * List of origins to block the browser to request. Origins matching both `allowedOrigins` and `blockedOrigins` will be blocked.
-     */
+    /** List of origins to block the browser from requesting. */
     blockedOrigins?: string[];
   };
 
-  /**
-   * Whether to send image responses to the client. Can be "allow", "omit", or "auto". Defaults to "auto", which sends images if the client can display them.
-   */
+  /** Whether to send image responses to the client. */
   imageResponses?: 'allow' | 'omit';
 };
