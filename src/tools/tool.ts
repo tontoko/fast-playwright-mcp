@@ -2,20 +2,24 @@ import type * as playwright from 'playwright';
 import type { z } from 'zod';
 import type { ToolCapability } from '../../config.js';
 import type { Context } from '../context.js';
-import type { ToolSchema } from '../mcp/server.js';
+import type { ToolResponse, ToolSchema } from '../mcp/types.js';
 import type { Response } from '../response.js';
 import type { Tab } from '../tab.js';
+
 export type FileUploadModalState = {
   type: 'fileChooser';
   description: string;
   fileChooser: playwright.FileChooser;
 };
+
 export type DialogModalState = {
   type: 'dialog';
   description: string;
   dialog: playwright.Dialog;
 };
+
 export type ModalState = FileUploadModalState | DialogModalState;
+
 export type Tool<
   Input extends z.ZodType = z.ZodType<unknown, z.ZodTypeDef, unknown>,
 > = {
@@ -24,16 +28,19 @@ export type Tool<
   handle: (
     context: Context,
     params: z.output<Input>,
-    response: Response
-  ) => Promise<void>;
+    response: Response,
+    signal?: AbortSignal
+  ) => Promise<void | ToolResponse>;
 };
 
 export type AnyTool = Tool<z.ZodTypeAny>;
+
 export function defineTool<Input extends z.ZodType>(
   tool: Tool<Input>
 ): Tool<Input> {
   return tool;
 }
+
 export type TabTool<Input extends z.ZodType = z.ZodType> = {
   capability: ToolCapability;
   schema: ToolSchema<Input>;
@@ -41,15 +48,17 @@ export type TabTool<Input extends z.ZodType = z.ZodType> = {
   handle: (
     tab: Tab,
     params: z.output<Input>,
-    response: Response
-  ) => Promise<void>;
+    response: Response,
+    signal?: AbortSignal
+  ) => Promise<void | ToolResponse>;
 };
+
 export function defineTabTool<Input extends z.ZodType>(
   tool: TabTool<Input>
 ): Tool<Input> {
   return {
     ...tool,
-    handle: async (context, params, response) => {
+    handle: async (context, params, response, signal) => {
       const tab = context.currentTabOrDie();
       const modalStates = tab.modalStates().map((state) => state.type);
       if (
@@ -60,14 +69,16 @@ export function defineTabTool<Input extends z.ZodType>(
           `Error: The tool "${tool.schema.name}" can only be used when there is related modal state present.\n` +
             tab.modalStatesMarkdown().join('\n')
         );
-      } else if (!tool.clearsModalState && modalStates.length) {
+        return;
+      }
+      if (!tool.clearsModalState && modalStates.length) {
         response.addError(
           `Error: Tool "${tool.schema.name}" does not handle the modal state.\n` +
             tab.modalStatesMarkdown().join('\n')
         );
-      } else {
-        return await tool.handle(tab, params, response);
+        return;
       }
+      return await tool.handle(tab, params, response, signal);
     },
   };
 }
