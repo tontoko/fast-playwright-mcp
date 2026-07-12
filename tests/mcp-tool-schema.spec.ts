@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import { toMcpTool } from '../src/mcp/tool.js';
+import { compactJsonSchema, toMcpTool } from '../src/mcp/tool.js';
 import { allTools } from '../src/tools.js';
 
 function collectKeys(value: unknown, keys: string[] = []): string[] {
@@ -74,6 +74,50 @@ test('MCP tool schemas preserve input fields named like schema annotations', () 
   expect(properties).toHaveProperty('description');
   expect(properties).toHaveProperty('$schema');
   expect(collectKeys(properties?.description)).not.toContain('description');
+});
+
+test('schema compaction preserves literal values that contain annotation-like keys', () => {
+  const defaultValue = {
+    description: 'default description value',
+    $schema: 'default schema value',
+    nested: { description: 'nested default value' },
+  };
+  const constValue = { description: 'const description value' };
+  const enumValue = { description: 'enum description value' };
+  const exampleValue = { description: 'example description value' };
+
+  const compacted = compactJsonSchema({
+    type: 'object',
+    description: 'Root annotation to remove.',
+    properties: {
+      payload: {
+        type: 'object',
+        description: 'Nested annotation to remove.',
+        default: defaultValue,
+        const: constValue,
+        enum: [enumValue],
+        examples: [exampleValue],
+      },
+    },
+  }) as {
+    description?: string;
+    properties: {
+      payload: {
+        description?: string;
+        default: typeof defaultValue;
+        const: typeof constValue;
+        enum: typeof enumValue[];
+        examples: typeof exampleValue[];
+      };
+    };
+  };
+
+  expect(compacted).not.toHaveProperty('description');
+  expect(compacted.properties.payload).not.toHaveProperty('description');
+  expect(compacted.properties.payload.default).toEqual(defaultValue);
+  expect(compacted.properties.payload.const).toEqual(constValue);
+  expect(compacted.properties.payload.enum).toEqual([enumValue]);
+  expect(compacted.properties.payload.examples).toEqual([exampleValue]);
 });
 
 test('the complete tool catalog keeps a substantial schema payload reduction', () => {
