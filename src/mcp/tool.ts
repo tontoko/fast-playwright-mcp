@@ -71,9 +71,7 @@ function compactDependencies(value: unknown): unknown {
   return Object.fromEntries(
     Object.entries(value).map(([key, dependency]) => [
       key,
-      Array.isArray(dependency)
-        ? dependency
-        : compactJsonSchema(dependency),
+      Array.isArray(dependency) ? dependency : compactJsonSchema(dependency),
     ])
   );
 }
