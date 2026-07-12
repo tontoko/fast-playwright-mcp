@@ -17,17 +17,17 @@ export function dashboardResources(): Resource[] {
   ];
 }
 
-export async function readDashboardResource(
+export function readDashboardResource(
   uri: string
 ): Promise<ResourceContents[]> {
   if (uri !== DASHBOARD_RESOURCE_URI) {
-    throw new Error(`Resource not found: ${uri}`);
+    return Promise.reject(new Error(`Resource not found: ${uri}`));
   }
-  return [
+  return Promise.resolve([
     {
       uri,
       mimeType: 'text/html',
       text: DASHBOARD_HTML,
     },
-  ];
+  ]);
 }
