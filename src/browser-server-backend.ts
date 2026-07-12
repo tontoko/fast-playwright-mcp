@@ -1,5 +1,13 @@
 import { fileURLToPath } from 'node:url';
+import type {
+  Resource,
+  ResourceContents,
+} from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import {
+  dashboardResources,
+  readDashboardResource,
+} from './apps/dashboard/resource.js';
 import type { BrowserContextFactory } from './browser-context-factory.js';
 import type { FullConfig } from './config.js';
 import { Context } from './context.js';
@@ -33,6 +41,8 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
   name = 'Playwright';
   version = packageJSON.version;
   readonly supportsToolListChanges: boolean;
+  readonly resources?: () => Resource[];
+  readonly readResource?: (uri: string) => Promise<ResourceContents[]>;
 
   private readonly _registry: ToolRegistry;
   private readonly _visibility: ToolVisibility;
@@ -47,6 +57,10 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
     this._browserContextFactory = factories[0];
     this._visibility = new ToolVisibility(config.toolProfile);
     this.supportsToolListChanges = config.toolProfile !== 'full';
+    if (config.capabilities?.includes('apps')) {
+      this.resources = dashboardResources;
+      this.readResource = readDashboardResource;
+    }
 
     const baseTools = filteredTools(config);
     if (factories.length > 1) {
@@ -188,7 +202,7 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
         signal
       );
       if (rawResponse) {
-        return rawResponse;
+        return context.redactToolResponse(rawResponse);
       }
       await response.finish();
       this._sessionLog?.logResponse(response);
