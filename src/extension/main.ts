@@ -28,6 +28,7 @@ export function createExtensionClientFactory(
 export function createExtensionContextFactory(config: FullConfig) {
   return new ExtensionContextFactory(
     config.browser.launchOptions.channel || 'chrome',
-    config.browser.userDataDir
+    config.browser.userDataDir,
+    config.browser.launchOptions.executablePath
   );
 }
