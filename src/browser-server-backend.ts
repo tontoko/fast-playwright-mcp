@@ -133,8 +133,7 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
           );
           return;
         }
-        const requestedName =
-          params.name ?? params.method ?? factories[0].name;
+        const requestedName = params.name ?? params.method ?? factories[0].name;
         const selectedFactory = factories.find(
           (factory) => factory.name === requestedName
         );
