@@ -1,5 +1,10 @@
 import debug from 'debug';
 
+if (process.env.PWMCP_DEBUG) {
+  const namespaces = [process.env.DEBUG, 'pw:mcp:*'].filter(Boolean).join(',');
+  debug.enable(namespaces);
+}
+
 // Diagnostics module debug instances
 export const elementDiscoveryDebug = debug(
   'pw:mcp:diagnostics:element-discovery'
