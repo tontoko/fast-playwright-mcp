@@ -70,7 +70,19 @@ jobs:
       - name: Build package
         run: bun run build:publish
       - name: Run ${{ matrix.project }} tests
-        run: bunx playwright test --project=${{ matrix.project }}
+        run: |
+          set -o pipefail
+          bunx playwright test --project=${{ matrix.project }} 2>&1 | tee browser-${{ matrix.project }}.log
+      - name: Upload ${{ matrix.project }} failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: browser-${{ matrix.project }}-failure-diagnostics
+          path: |
+            browser-${{ matrix.project }}.log
+            test-results
+          if-no-files-found: warn
+          retention-days: 7
 
   extension:
     name: Browser extension build and E2E
