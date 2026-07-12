@@ -1,10 +1,10 @@
 {
   "name": "@tontoko/fast-playwright-mcp",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Fast Playwright Tools for MCP",
+  "description": "Context-efficient Playwright tools for MCP",
   "type": "module",
   "repository": {
     "type": "git",
@@ -22,11 +22,13 @@
     "build": "bun build ./src/**/**/*.ts ./src/**/*.ts ./src/*.ts --outdir ./lib --root ./src --target node --format esm --external '*'",
     "build:publish": "bun build ./src/**/**/*.ts ./src/**/*.ts ./src/*.ts --outdir ./lib --root ./src --target node --format esm --external '*'",
     "benchmark": "bun benchmark/src/index.ts",
+    "benchmark:tools": "bun benchmark/tool-catalog.ts",
     "benchmark:verbose": "bun benchmark/src/index.ts --verbose",
     "benchmark:quiet": "bun benchmark/src/index.ts --quiet",
     "lint": "ultracite lint",
     "lint-fix": "ultracite format",
     "update-readme": "bun utils/update-readme.js",
+    "upstream:check": "bun scripts/upstream-check.ts",
     "watch": "tsc --watch",
     "test": "playwright test",
     "ctest": "playwright test --project=chrome",
@@ -44,15 +46,15 @@
     }
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@modelcontextprotocol/sdk": "1.25.2",
     "@types/sharp": "^0.31.1",
     "commander": "^13.1.0",
     "debug": "^4.4.1",
     "dotenv": "^17.2.0",
     "fast-diff": "^1.3.0",
     "mime": "^4.0.7",
-    "playwright": "1.58.0-alpha-1766189059000",
-    "playwright-core": "1.58.0-alpha-1766189059000",
+    "playwright": "1.62.0-alpha-1783623505000",
+    "playwright-core": "1.62.0-alpha-1783623505000",
     "sharp": "^0.34.3",
     "ws": "^8.18.1",
     "zod": "^3.24.1",
@@ -61,7 +63,8 @@
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.57.0",
     "@biomejs/biome": "2.1.2",
-    "@playwright/test": "1.58.0-alpha-1766189059000",
+    "@modelcontextprotocol/ext-apps": "1.0.1",
+    "@playwright/test": "1.62.0-alpha-1783623505000",
     "@types/debug": "^4.1.12",
     "@types/node": "^22.13.10",
     "@types/ws": "^8.18.1",
