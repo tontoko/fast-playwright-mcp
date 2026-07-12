@@ -17,14 +17,9 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import type { ToolSchema } from './types.js';
 
-export type ToolSchema<Input extends z.Schema> = {
-  name: string;
-  title: string;
-  description: string;
-  inputSchema: Input;
-  type: 'readOnly' | 'destructive';
-};
+export type { ToolEffect, ToolSchema } from './types.js';
 
 const OMITTED_SCHEMA_KEYS = new Set(['description', '$schema']);
 const SCHEMA_MAP_KEYS = new Set([
@@ -49,12 +44,12 @@ const SCHEMA_VALUE_KEYS = new Set([
   'unevaluatedItems',
   'unevaluatedProperties',
 ]);
+const mcpToolCache = new WeakMap<object, Tool>();
 
 function compactSchemaMap(value: unknown): unknown {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return value;
   }
-
   return Object.fromEntries(
     Object.entries(value).map(([key, schema]) => [
       key,
@@ -67,7 +62,6 @@ function compactDependencies(value: unknown): unknown {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return value;
   }
-
   return Object.fromEntries(
     Object.entries(value).map(([key, dependency]) => [
       key,
@@ -82,18 +76,10 @@ function compactSchemaValue(value: unknown): unknown {
     : compactJsonSchema(value);
 }
 
-/**
- * Remove annotation-only prose from a JSON Schema without changing validation
- * semantics. MCP clients inject the complete tools/list response into model
- * context, so repeating every nested Zod description has a significant token
- * cost. Property names, types, required fields, enums, defaults, constraints,
- * and references are preserved.
- */
 export function compactJsonSchema(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(compactJsonSchema);
   }
-
   if (!value || typeof value !== 'object') {
     return value;
   }
@@ -103,7 +89,6 @@ export function compactJsonSchema(value: unknown): unknown {
     if (OMITTED_SCHEMA_KEYS.has(key) && typeof child === 'string') {
       continue;
     }
-
     if (SCHEMA_MAP_KEYS.has(key)) {
       compacted[key] = compactSchemaMap(child);
     } else if (SCHEMA_ARRAY_KEYS.has(key) || SCHEMA_VALUE_KEYS.has(key)) {
@@ -111,9 +96,6 @@ export function compactJsonSchema(value: unknown): unknown {
     } else if (key === 'dependencies') {
       compacted[key] = compactDependencies(child);
     } else {
-      // Literal-bearing keywords such as default, const, enum, and examples
-      // must remain byte-for-byte equivalent, even when their data contains
-      // keys named "description" or "$schema".
       compacted[key] = child;
     }
   }
@@ -121,11 +103,15 @@ export function compactJsonSchema(value: unknown): unknown {
 }
 
 export function toMcpTool<T extends z.Schema>(tool: ToolSchema<T>): Tool {
+  const cached = mcpToolCache.get(tool);
+  if (cached) {
+    return cached;
+  }
+
   const jsonSchema = zodToJsonSchema(tool.inputSchema, {
     strictUnions: true,
   });
-
-  return {
+  const result = Object.freeze({
     name: tool.name,
     description: tool.description,
     inputSchema: compactJsonSchema(jsonSchema) as Tool['inputSchema'],
@@ -135,5 +121,7 @@ export function toMcpTool<T extends z.Schema>(tool: ToolSchema<T>): Tool {
       destructiveHint: tool.type === 'destructive',
       openWorldHint: true,
     },
-  };
+  }) as Tool;
+  mcpToolCache.set(tool, result);
+  return result;
 }
