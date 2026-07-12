@@ -1,0 +1,1290 @@
+name: Apply adaptive catalog foundation
+
+on:
+  push:
+    branches:
+      - agent/adaptive-tool-discovery
+    paths:
+      - .github/workflows/apply-adaptive-stage1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/adaptive-tool-discovery
+          fetch-depth: 0
+
+      - name: Check whether stage is complete
+        id: stage
+        shell: bash
+        run: |
+          if [[ -f src/tools/catalog/registry.ts ]]; then
+            echo 'needed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'needed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        if: steps.stage.outputs.needed == 'true'
+        with:
+          bun-version: 1.3.5
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.stage.outputs.needed == 'true'
+        with:
+          node-version: '22'
+
+      - name: Install current dependencies
+        if: steps.stage.outputs.needed == 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Write failing tests
+        if: steps.stage.outputs.needed == 'true'
+        shell: bash
+        run: |
+          cat > tests/tool-registry.spec.ts <<'EOF'
+          import { expect, test } from '@playwright/test';
+          import { z } from 'zod';
+          import {
+            ToolRegistry,
+            registerTools,
+          } from '../src/tools/catalog/registry.js';
+          import { defineTool } from '../src/tools/tool.js';
+
+          const sample = defineTool({
+            capability: 'core',
+            schema: {
+              name: 'browser_sample',
+              title: 'Sample',
+              description: 'Sample tool.',
+              inputSchema: z.object({ value: z.string() }),
+              type: 'readOnly',
+            },
+            async handle() {},
+          });
+
+          test('registry resolves tools and metadata by stable name', () => {
+            const registry = new ToolRegistry(
+              registerTools([sample], {
+                browser_sample: {
+                  group: 'inspection',
+                  aliases: ['sample'],
+                  keywords: ['example'],
+                },
+              })
+            );
+            expect(registry.require('browser_sample').group).toBe('inspection');
+            expect(registry.require('browser_sample').aliases).toEqual(['sample']);
+            expect(registry.names()).toEqual(['browser_sample']);
+          });
+
+          test('registry rejects duplicate names', () => {
+            expect(
+              () =>
+                new ToolRegistry([
+                  ...registerTools([sample]),
+                  ...registerTools([sample]),
+                ])
+            ).toThrow('Duplicate tool registration: browser_sample');
+          });
+
+          test('registry rejects overlong top-level descriptions', () => {
+            const verbose = defineTool({
+              ...sample,
+              schema: {
+                ...sample.schema,
+                name: 'browser_verbose',
+                description: 'x'.repeat(181),
+              },
+            });
+            expect(() => new ToolRegistry(registerTools([verbose]))).toThrow(
+              'Tool description exceeds 180 characters: browser_verbose'
+            );
+          });
+          EOF
+
+          cat > tests/tool-visibility.spec.ts <<'EOF'
+          import { expect, test } from '@playwright/test';
+          import { z } from 'zod';
+          import { ToolRegistry, registerTools } from '../src/tools/catalog/registry.js';
+          import {
+            ADAPTIVE_BOOTSTRAP_NAMES,
+            MINIMAL_BOOTSTRAP_NAMES,
+            ToolVisibility,
+          } from '../src/tools/catalog/visibility.js';
+          import { defineTool } from '../src/tools/tool.js';
+
+          function tool(name: string) {
+            return defineTool({
+              capability: 'core',
+              schema: {
+                name,
+                title: name,
+                description: `${name} description`,
+                inputSchema: z.object({}),
+                type: name === 'browser_execute' ? 'action' : 'readOnly',
+              },
+              async handle() {},
+            });
+          }
+
+          const names = [
+            ...ADAPTIVE_BOOTSTRAP_NAMES,
+            'browser_console_messages',
+            'browser_click',
+          ];
+          const registry = new ToolRegistry(registerTools(names.map(tool)));
+
+          test('adaptive profile exposes the exact bootstrap set', () => {
+            const visible = new ToolVisibility('adaptive')
+              .visible(registry)
+              .map(({ tool: item }) => item.schema.name)
+              .sort();
+            expect(visible).toEqual([...ADAPTIVE_BOOTSTRAP_NAMES].sort());
+          });
+
+          test('minimal profile exposes only the three gateways', () => {
+            const visible = new ToolVisibility('minimal')
+              .visible(registry)
+              .map(({ tool: item }) => item.schema.name)
+              .sort();
+            expect(visible).toEqual([...MINIMAL_BOOTSTRAP_NAMES].sort());
+          });
+
+          test('full profile exposes the complete registry', () => {
+            expect(new ToolVisibility('full').visible(registry)).toHaveLength(
+              names.length
+            );
+          });
+
+          test('enable, disable, and reset are session-local', () => {
+            const first = new ToolVisibility('adaptive');
+            const second = new ToolVisibility('adaptive');
+            expect(first.enableTools(registry, ['browser_console_messages'])).toBe(
+              true
+            );
+            expect(first.visibleNames(registry)).toContain(
+              'browser_console_messages'
+            );
+            expect(second.visibleNames(registry)).not.toContain(
+              'browser_console_messages'
+            );
+            expect(first.disableTools(registry, ['browser_console_messages'])).toBe(
+              true
+            );
+            first.enableTools(registry, ['browser_click']);
+            expect(first.reset()).toBe(true);
+            expect(first.visibleNames(registry).sort()).toEqual(
+              [...ADAPTIVE_BOOTSTRAP_NAMES].sort()
+            );
+          });
+
+          test('unknown enable requests are atomic', () => {
+            const visibility = new ToolVisibility('adaptive');
+            expect(() =>
+              visibility.enableTools(registry, [
+                'browser_console_messages',
+                'browser_missing',
+              ])
+            ).toThrow('Unknown tool: browser_missing');
+            expect(visibility.visibleNames(registry)).not.toContain(
+              'browser_console_messages'
+            );
+          });
+          EOF
+
+          cat > tests/tool-search.spec.ts <<'EOF'
+          import { expect, test } from '@playwright/test';
+          import { z } from 'zod';
+          import { ToolRegistry, registerTools } from '../src/tools/catalog/registry.js';
+          import { searchTools } from '../src/tools/catalog/search.js';
+          import { defineTool } from '../src/tools/tool.js';
+
+          function tool(name: string, title: string, description: string) {
+            return defineTool({
+              capability: 'core',
+              schema: {
+                name,
+                title,
+                description,
+                inputSchema: z.object({}),
+                type: 'readOnly',
+              },
+              async handle() {},
+            });
+          }
+
+          const registry = new ToolRegistry(
+            registerTools(
+              [
+                tool('browser_snapshot', 'Capture snapshot', 'Read page structure'),
+                tool('browser_screenshot', 'Capture image', 'Take a page image'),
+                tool('browser_console_messages', 'Console messages', 'Read browser logs'),
+              ],
+              {
+                browser_snapshot: {
+                  aliases: ['page tree'],
+                  keywords: ['accessibility'],
+                },
+                browser_screenshot: { aliases: ['image'] },
+              }
+            )
+          );
+
+          test('search uses deterministic score ordering', () => {
+            expect(searchTools(registry, 'browser_snapshot')[0]).toMatchObject({
+              name: 'browser_snapshot',
+              score: 100,
+            });
+            expect(searchTools(registry, 'page tree')[0]).toMatchObject({
+              name: 'browser_snapshot',
+              score: 90,
+            });
+            expect(searchTools(registry, 'accessibility')[0]).toMatchObject({
+              name: 'browser_snapshot',
+              score: 30,
+            });
+          });
+
+          test('search limits results and sorts ties by name', () => {
+            const results = searchTools(registry, 'capture', 1);
+            expect(results).toHaveLength(1);
+            expect(results[0].name).toBe('browser_screenshot');
+          });
+          EOF
+
+          cat >> tests/mcp-tool-schema.spec.ts <<'EOF'
+
+          test('action tools are neither read-only nor destructive', () => {
+            const tool = toMcpTool({
+              name: 'browser_action_example',
+              title: 'Action example',
+              description: 'Changes session state without destructive browser effects.',
+              type: 'action',
+              inputSchema: z.object({}),
+            });
+
+            expect(tool.annotations).toMatchObject({
+              readOnlyHint: false,
+              destructiveHint: false,
+              openWorldHint: true,
+            });
+          });
+          EOF
+
+          cat >> tests/config.spec.ts <<'EOF'
+
+          test.describe('tool profile configuration', () => {
+            test('defaults to adaptive', async () => {
+              const { resolveConfig } = await import('../src/config.js');
+              expect(resolveConfig({}).toolProfile).toBe('adaptive');
+            });
+
+            test('accepts full from CLI options', async () => {
+              const { configFromCLIOptions } = await import('../src/config.js');
+              expect(configFromCLIOptions({ toolProfile: 'full' }).toolProfile).toBe(
+                'full'
+              );
+            });
+
+            test('reads the dedicated environment variable', async () => {
+              const previous = process.env.FAST_PLAYWRIGHT_TOOL_PROFILE;
+              process.env.FAST_PLAYWRIGHT_TOOL_PROFILE = 'minimal';
+              try {
+                const { resolveCLIConfig } = await import('../src/config.js');
+                expect((await resolveCLIConfig({})).toolProfile).toBe('minimal');
+              } finally {
+                if (previous === undefined) {
+                  delete process.env.FAST_PLAYWRIGHT_TOOL_PROFILE;
+                } else {
+                  process.env.FAST_PLAYWRIGHT_TOOL_PROFILE = previous;
+                }
+              }
+            });
+
+            test('rejects an unknown profile', async () => {
+              const { parseToolProfile } = await import('../src/config.js');
+              expect(() => parseToolProfile('large')).toThrow(
+                'Invalid tool profile: large'
+              );
+            });
+          });
+          EOF
+
+      - name: Verify RED
+        if: steps.stage.outputs.needed == 'true'
+        shell: bash
+        run: |
+          set +e
+          bunx playwright test \
+            tests/mcp-tool-schema.spec.ts \
+            tests/config.spec.ts \
+            tests/tool-registry.spec.ts \
+            tests/tool-visibility.spec.ts \
+            tests/tool-search.spec.ts \
+            --project=chromium > /tmp/adaptive-stage1-red.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/adaptive-stage1-red.log
+          if [[ "$status" -eq 0 ]]; then
+            echo 'Expected foundation tests to fail before implementation.'
+            exit 1
+          fi
+
+      - name: Write foundation implementation
+        if: steps.stage.outputs.needed == 'true'
+        shell: bash
+        run: |
+          mkdir -p src/tools/catalog
+
+          cat > src/mcp/types.ts <<'EOF'
+          import type {
+            ImageContent,
+            TextContent,
+          } from '@modelcontextprotocol/sdk/types.js';
+          import type { z } from 'zod';
+
+          export type ToolEffect = 'readOnly' | 'action' | 'destructive';
+
+          export type ToolResponse = {
+            content: (TextContent | ImageContent)[];
+            isError?: boolean;
+          };
+
+          export type ToolSchema<
+            Input extends z.ZodTypeAny = z.ZodTypeAny,
+          > = {
+            name: string;
+            title: string;
+            description: string;
+            inputSchema: Input;
+            type: ToolEffect;
+          };
+          EOF
+
+          cat > src/mcp/tool.ts <<'EOF'
+          /**
+           * Copyright (c) Microsoft Corporation.
+           *
+           * Licensed under the Apache License, Version 2.0 (the "License");
+           * you may not use this file except in compliance with the License.
+           * You may obtain a copy of the License at
+           *
+           * http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           */
+
+          import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+          import type { z } from 'zod';
+          import { zodToJsonSchema } from 'zod-to-json-schema';
+          import type { ToolSchema } from './types.js';
+
+          export type { ToolEffect, ToolSchema } from './types.js';
+
+          const OMITTED_SCHEMA_KEYS = new Set(['description', '$schema']);
+          const SCHEMA_MAP_KEYS = new Set([
+            '$defs',
+            'definitions',
+            'dependentSchemas',
+            'patternProperties',
+            'properties',
+          ]);
+          const SCHEMA_ARRAY_KEYS = new Set([
+            'allOf',
+            'anyOf',
+            'oneOf',
+            'prefixItems',
+          ]);
+          const SCHEMA_VALUE_KEYS = new Set([
+            'additionalItems',
+            'additionalProperties',
+            'contains',
+            'contentSchema',
+            'else',
+            'if',
+            'items',
+            'not',
+            'propertyNames',
+            'then',
+            'unevaluatedItems',
+            'unevaluatedProperties',
+          ]);
+          const mcpToolCache = new WeakMap<object, Tool>();
+
+          function compactSchemaMap(value: unknown): unknown {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) {
+              return value;
+            }
+            return Object.fromEntries(
+              Object.entries(value).map(([key, schema]) => [
+                key,
+                compactJsonSchema(schema),
+              ])
+            );
+          }
+
+          function compactDependencies(value: unknown): unknown {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) {
+              return value;
+            }
+            return Object.fromEntries(
+              Object.entries(value).map(([key, dependency]) => [
+                key,
+                Array.isArray(dependency)
+                  ? dependency
+                  : compactJsonSchema(dependency),
+              ])
+            );
+          }
+
+          function compactSchemaValue(value: unknown): unknown {
+            return Array.isArray(value)
+              ? value.map(compactJsonSchema)
+              : compactJsonSchema(value);
+          }
+
+          export function compactJsonSchema(value: unknown): unknown {
+            if (Array.isArray(value)) {
+              return value.map(compactJsonSchema);
+            }
+            if (!value || typeof value !== 'object') {
+              return value;
+            }
+            const compacted: Record<string, unknown> = {};
+            for (const [key, child] of Object.entries(value)) {
+              if (OMITTED_SCHEMA_KEYS.has(key) && typeof child === 'string') {
+                continue;
+              }
+              if (SCHEMA_MAP_KEYS.has(key)) {
+                compacted[key] = compactSchemaMap(child);
+              } else if (
+                SCHEMA_ARRAY_KEYS.has(key) ||
+                SCHEMA_VALUE_KEYS.has(key)
+              ) {
+                compacted[key] = compactSchemaValue(child);
+              } else if (key === 'dependencies') {
+                compacted[key] = compactDependencies(child);
+              } else {
+                compacted[key] = child;
+              }
+            }
+            return compacted;
+          }
+
+          export function toMcpTool<T extends z.Schema>(
+            tool: ToolSchema<T>
+          ): Tool {
+            const cached = mcpToolCache.get(tool);
+            if (cached) {
+              return cached;
+            }
+            const jsonSchema = zodToJsonSchema(tool.inputSchema, {
+              strictUnions: true,
+            });
+            const result: Tool = Object.freeze({
+              name: tool.name,
+              description: tool.description,
+              inputSchema: compactJsonSchema(jsonSchema) as Tool['inputSchema'],
+              annotations: {
+                title: tool.title,
+                readOnlyHint: tool.type === 'readOnly',
+                destructiveHint: tool.type === 'destructive',
+                openWorldHint: true,
+              },
+            });
+            mcpToolCache.set(tool, result);
+            return result;
+          }
+          EOF
+
+          cat > src/mcp/server.ts <<'EOF'
+          import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+          import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+          import {
+            CallToolRequestSchema,
+            ListToolsRequestSchema,
+          } from '@modelcontextprotocol/sdk/types.js';
+          import { ManualPromise } from '../manual-promise.js';
+          import { logUnhandledError, mcpServerDebug } from '../utils/log.js';
+          import { logRequest } from '../utils/request-logger.js';
+          import { toMcpTool } from './tool.js';
+          import type { ToolResponse, ToolSchema } from './types.js';
+
+          export type { Server } from '@modelcontextprotocol/sdk/server/index.js';
+          export type { ToolResponse, ToolSchema } from './types.js';
+
+          export type ClientCapabilities = {
+            roots?: { listRoots?: boolean };
+          };
+
+          export type ToolHandler = (
+            toolName: string,
+            params: Record<string, unknown>
+          ) => Promise<ToolResponse>;
+
+          export interface ServerBackend {
+            name: string;
+            version: string;
+            initialize?(server: Server): Promise<void>;
+            tools(): ToolSchema[];
+            resolveTool?(name: string): ToolSchema | undefined;
+            callTool(
+              schema: ToolSchema,
+              rawArguments: Record<string, unknown> | undefined,
+              signal?: AbortSignal
+            ): Promise<ToolResponse>;
+            serverClosed?(): void;
+          }
+
+          export type ServerBackendFactory = () => ServerBackend;
+
+          export async function connect(
+            serverBackendFactory: ServerBackendFactory,
+            transport: Transport,
+            runHeartbeat: boolean
+          ) {
+            const backend = serverBackendFactory();
+            const server = createServer(backend, runHeartbeat);
+            await server.connect(transport);
+          }
+
+          export function createServer(
+            backend: ServerBackend,
+            runHeartbeat: boolean
+          ): Server {
+            const initializedPromise = new ManualPromise<void>();
+            const server = new Server(
+              { name: backend.name, version: backend.version },
+              { capabilities: { tools: {} } }
+            );
+
+            server.setRequestHandler(ListToolsRequestSchema, () => ({
+              tools: backend.tools().map((tool) => toMcpTool(tool)),
+            }));
+
+            let heartbeatRunning = false;
+            server.setRequestHandler(
+              CallToolRequestSchema,
+              async (request, extra) => {
+                await initializedPromise;
+                if (runHeartbeat && !heartbeatRunning) {
+                  heartbeatRunning = true;
+                  startHeartbeat(server);
+                }
+                const errorResult = (...messages: string[]): ToolResponse => ({
+                  content: [
+                    {
+                      type: 'text',
+                      text: `### Result\n${messages.join('\n')}`,
+                    },
+                  ],
+                  isError: true,
+                });
+                const tool =
+                  backend.resolveTool?.(request.params.name) ??
+                  backend.tools().find((candidate) =>
+                    candidate.name === request.params.name
+                  );
+                if (!tool) {
+                  return errorResult(
+                    `Error: Tool "${request.params.name}" not found`
+                  );
+                }
+                try {
+                  logRequest(
+                    request.params.name,
+                    request.params.arguments ?? {}
+                  );
+                  return await backend.callTool(
+                    tool,
+                    request.params.arguments || {},
+                    extra.signal
+                  );
+                } catch (error) {
+                  return errorResult(String(error));
+                }
+              }
+            );
+            addServerListener(server, 'initialized', () => {
+              backend
+                .initialize?.(server)
+                .then(() => initializedPromise.resolve())
+                .catch(logUnhandledError);
+            });
+            addServerListener(server, 'close', () => backend.serverClosed?.());
+            return server;
+          }
+
+          const startHeartbeat = (server: Server) => {
+            const beat = async () => {
+              try {
+                await Promise.race([
+                  server.ping(),
+                  new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('ping timeout')), 5000)
+                  ),
+                ]);
+                setTimeout(beat, 3000);
+              } catch (error) {
+                mcpServerDebug('Heartbeat ping failed:', error);
+                try {
+                  await server.close();
+                } catch (closeError) {
+                  mcpServerDebug(
+                    'Failed to close server after heartbeat failure:',
+                    closeError
+                  );
+                }
+              }
+            };
+            beat().catch((error) => {
+              mcpServerDebug('Heartbeat initialization failed:', error);
+            });
+          };
+
+          function addServerListener(
+            server: Server,
+            event: 'close' | 'initialized',
+            listener: () => void
+          ) {
+            const oldListener = server[`on${event}`];
+            server[`on${event}`] = () => {
+              oldListener?.();
+              listener();
+            };
+          }
+          EOF
+
+          cat > src/tools/tool.ts <<'EOF'
+          import type * as playwright from 'playwright';
+          import type { z } from 'zod';
+          import type { ToolResponse, ToolSchema } from '../mcp/types.js';
+          import type { ToolCapability } from '../../config.js';
+          import type { Context } from '../context.js';
+          import type { Response } from '../response.js';
+          import type { Tab } from '../tab.js';
+
+          export type FileUploadModalState = {
+            type: 'fileChooser';
+            description: string;
+            fileChooser: playwright.FileChooser;
+          };
+          export type DialogModalState = {
+            type: 'dialog';
+            description: string;
+            dialog: playwright.Dialog;
+          };
+          export type ModalState = FileUploadModalState | DialogModalState;
+
+          export type Tool<
+            Input extends z.ZodType = z.ZodType<unknown, z.ZodTypeDef, unknown>,
+          > = {
+            capability: ToolCapability;
+            schema: ToolSchema<Input>;
+            handle: (
+              context: Context,
+              params: z.output<Input>,
+              response: Response,
+              signal?: AbortSignal
+            ) => Promise<void | ToolResponse>;
+          };
+
+          export type AnyTool = Tool<z.ZodTypeAny>;
+
+          export function defineTool<Input extends z.ZodType>(
+            tool: Tool<Input>
+          ): Tool<Input> {
+            return tool;
+          }
+
+          export type TabTool<Input extends z.ZodType = z.ZodType> = {
+            capability: ToolCapability;
+            schema: ToolSchema<Input>;
+            clearsModalState?: ModalState['type'];
+            handle: (
+              tab: Tab,
+              params: z.output<Input>,
+              response: Response,
+              signal?: AbortSignal
+            ) => Promise<void | ToolResponse>;
+          };
+
+          export function defineTabTool<Input extends z.ZodType>(
+            tool: TabTool<Input>
+          ): Tool<Input> {
+            return {
+              ...tool,
+              handle: async (context, params, response, signal) => {
+                const tab = context.currentTabOrDie();
+                const modalStates = tab.modalStates().map((state) => state.type);
+                if (
+                  tool.clearsModalState &&
+                  !modalStates.includes(tool.clearsModalState)
+                ) {
+                  response.addError(
+                    `Error: The tool "${tool.schema.name}" can only be used when there is related modal state present.\n` +
+                      tab.modalStatesMarkdown().join('\n')
+                  );
+                  return;
+                }
+                if (!tool.clearsModalState && modalStates.length) {
+                  response.addError(
+                    `Error: Tool "${tool.schema.name}" does not handle the modal state.\n` +
+                      tab.modalStatesMarkdown().join('\n')
+                  );
+                  return;
+                }
+                return await tool.handle(tab, params, response, signal);
+              },
+            };
+          }
+          EOF
+
+          cat > src/tools/catalog/types.ts <<'EOF'
+          import type { AnyTool } from '../tool.js';
+
+          export type ToolGroup =
+            | 'bootstrap'
+            | 'navigation'
+            | 'interaction'
+            | 'inspection'
+            | 'diagnostics'
+            | 'network'
+            | 'storage'
+            | 'testing'
+            | 'devtools'
+            | 'vision'
+            | 'pdf'
+            | 'apps';
+
+          export type UpstreamSource = {
+            repository: string;
+            commit: string;
+            path: string;
+          };
+
+          export type ToolRegistration = {
+            tool: AnyTool;
+            group: ToolGroup;
+            aliases: readonly string[];
+            keywords: readonly string[];
+            bootstrap: boolean;
+            upstreamSource?: UpstreamSource;
+          };
+
+          export type RegistrationOverrides = Record<
+            string,
+            Partial<Omit<ToolRegistration, 'tool'>>
+          >;
+          EOF
+
+          cat > src/tools/catalog/registry.ts <<'EOF'
+          import type { AnyTool } from '../tool.js';
+          import type {
+            RegistrationOverrides,
+            ToolGroup,
+            ToolRegistration,
+          } from './types.js';
+
+          const MAX_DESCRIPTION_LENGTH = 180;
+          const WORD_PATTERN = /[a-z0-9]+/gu;
+
+          function unique(values: readonly string[]): string[] {
+            return [...new Set(values.map((value) => value.toLowerCase()))];
+          }
+
+          function inferToolGroup(tool: AnyTool): ToolGroup {
+            const name = tool.schema.name;
+            if (tool.capability === 'vision') return 'vision';
+            if (tool.capability === 'pdf' || name.includes('pdf')) return 'pdf';
+            if (name.startsWith('browser_network')) return 'network';
+            if (
+              name.startsWith('browser_tab_') ||
+              name.startsWith('browser_navigate') ||
+              name.includes('navigate_back') ||
+              name.includes('navigate_forward')
+            ) {
+              return 'navigation';
+            }
+            if (
+              name.includes('diagnose') ||
+              name.includes('find_elements')
+            ) {
+              return 'diagnostics';
+            }
+            if (
+              name.includes('snapshot') ||
+              name.includes('screenshot') ||
+              name.includes('inspect') ||
+              name.includes('console') ||
+              name.includes('evaluate') ||
+              name.includes('wait') ||
+              name === 'browser_find'
+            ) {
+              return 'inspection';
+            }
+            if (
+              name.includes('storage') ||
+              name.includes('cookie')
+            ) {
+              return 'storage';
+            }
+            if (name.includes('verify') || name.includes('expect')) {
+              return 'testing';
+            }
+            return 'interaction';
+          }
+
+          function defaultKeywords(tool: AnyTool): string[] {
+            const source = [
+              tool.schema.name,
+              tool.schema.title,
+              tool.schema.description,
+            ]
+              .join(' ')
+              .toLowerCase();
+            return unique(source.match(WORD_PATTERN) ?? []);
+          }
+
+          export function registerTools(
+            tools: readonly AnyTool[],
+            overrides: RegistrationOverrides = {}
+          ): ToolRegistration[] {
+            return tools.map((tool) => {
+              const override = overrides[tool.schema.name] ?? {};
+              const alias = tool.schema.name
+                .replace(/^browser_/u, '')
+                .replaceAll('_', ' ');
+              return {
+                tool,
+                group: override.group ?? inferToolGroup(tool),
+                aliases: Object.freeze(
+                  unique(override.aliases ?? (alias ? [alias] : []))
+                ),
+                keywords: Object.freeze(
+                  unique(override.keywords ?? defaultKeywords(tool))
+                ),
+                bootstrap: override.bootstrap ?? false,
+                upstreamSource: override.upstreamSource,
+              };
+            });
+          }
+
+          export class ToolRegistry {
+            readonly registrations: readonly ToolRegistration[];
+            private readonly byName: ReadonlyMap<string, ToolRegistration>;
+
+            constructor(registrations: readonly ToolRegistration[]) {
+              const byName = new Map<string, ToolRegistration>();
+              for (const registration of registrations) {
+                const name = registration.tool.schema.name;
+                if (byName.has(name)) {
+                  throw new Error(`Duplicate tool registration: ${name}`);
+                }
+                if (
+                  registration.tool.schema.description.length >
+                  MAX_DESCRIPTION_LENGTH
+                ) {
+                  throw new Error(
+                    `Tool description exceeds 180 characters: ${name}`
+                  );
+                }
+                byName.set(
+                  name,
+                  Object.freeze({
+                    ...registration,
+                    aliases: Object.freeze([...registration.aliases]),
+                    keywords: Object.freeze([...registration.keywords]),
+                  })
+                );
+              }
+              this.registrations = Object.freeze([...byName.values()]);
+              this.byName = byName;
+            }
+
+            get(name: string): ToolRegistration | undefined {
+              return this.byName.get(name);
+            }
+
+            require(name: string): ToolRegistration {
+              const registration = this.get(name);
+              if (!registration) {
+                throw new Error(`Unknown tool: ${name}`);
+              }
+              return registration;
+            }
+
+            names(): string[] {
+              return this.registrations.map(({ tool }) => tool.schema.name);
+            }
+
+            byGroup(group: ToolGroup): ToolRegistration[] {
+              return this.registrations.filter(
+                (registration) => registration.group === group
+              );
+            }
+          }
+          EOF
+
+          cat > src/tools/catalog/visibility.ts <<'EOF'
+          import type { ToolProfile } from '../../../config.js';
+          import type { ToolRegistry } from './registry.js';
+          import type { ToolGroup, ToolRegistration } from './types.js';
+
+          export const ADAPTIVE_BOOTSTRAP_NAMES = Object.freeze([
+            'browser_tools',
+            'browser_query',
+            'browser_execute',
+            'browser_batch_execute',
+            'browser_navigate',
+            'browser_snapshot',
+            'browser_find',
+          ] as const);
+
+          export const MINIMAL_BOOTSTRAP_NAMES = Object.freeze([
+            'browser_tools',
+            'browser_query',
+            'browser_execute',
+          ] as const);
+
+          export class ToolVisibility {
+            private readonly enabled = new Set<string>();
+
+            constructor(readonly profile: ToolProfile) {}
+
+            visible(registry: ToolRegistry): ToolRegistration[] {
+              if (this.profile === 'full') {
+                return [...registry.registrations];
+              }
+              const bootstrap =
+                this.profile === 'minimal'
+                  ? MINIMAL_BOOTSTRAP_NAMES
+                  : ADAPTIVE_BOOTSTRAP_NAMES;
+              const names = new Set<string>([...bootstrap, ...this.enabled]);
+              return registry.registrations.filter(({ tool }) =>
+                names.has(tool.schema.name)
+              );
+            }
+
+            visibleNames(registry: ToolRegistry): string[] {
+              return this.visible(registry).map(({ tool }) => tool.schema.name);
+            }
+
+            enableTools(
+              registry: ToolRegistry,
+              names: readonly string[]
+            ): boolean {
+              if (this.profile === 'full') return false;
+              for (const name of names) registry.require(name);
+              const before = this.enabled.size;
+              for (const name of names) this.enabled.add(name);
+              return before !== this.enabled.size;
+            }
+
+            enableGroups(
+              registry: ToolRegistry,
+              groups: readonly ToolGroup[]
+            ): boolean {
+              return this.enableTools(
+                registry,
+                groups.flatMap((group) =>
+                  registry.byGroup(group).map(({ tool }) => tool.schema.name)
+                )
+              );
+            }
+
+            disableTools(
+              registry: ToolRegistry,
+              names: readonly string[]
+            ): boolean {
+              if (this.profile === 'full') return false;
+              for (const name of names) registry.require(name);
+              let changed = false;
+              for (const name of names) {
+                changed = this.enabled.delete(name) || changed;
+              }
+              return changed;
+            }
+
+            disableGroups(
+              registry: ToolRegistry,
+              groups: readonly ToolGroup[]
+            ): boolean {
+              return this.disableTools(
+                registry,
+                groups.flatMap((group) =>
+                  registry.byGroup(group).map(({ tool }) => tool.schema.name)
+                )
+              );
+            }
+
+            reset(): boolean {
+              if (this.profile === 'full') return false;
+              const changed = this.enabled.size > 0;
+              this.enabled.clear();
+              return changed;
+            }
+          }
+          EOF
+
+          cat > src/tools/catalog/search.ts <<'EOF'
+          import type { ToolEffect } from '../../mcp/types.js';
+          import type { ToolRegistry } from './registry.js';
+          import type { ToolGroup, ToolRegistration } from './types.js';
+
+          export type ToolSearchResult = {
+            name: string;
+            title: string;
+            summary: string;
+            group: ToolGroup;
+            type: ToolEffect;
+            score: number;
+          };
+
+          const GATEWAY_NAMES = new Set([
+            'browser_tools',
+            'browser_query',
+            'browser_execute',
+          ]);
+
+          function score(
+            registration: ToolRegistration,
+            query: string
+          ): number {
+            const name = registration.tool.schema.name.toLowerCase();
+            const title = registration.tool.schema.title.toLowerCase();
+            const description =
+              registration.tool.schema.description.toLowerCase();
+            if (name === query) return 100;
+            if (registration.aliases.some((alias) => alias === query)) return 90;
+            if (name.includes(query)) return 70;
+            if (registration.aliases.some((alias) => alias.includes(query))) {
+              return 60;
+            }
+            if (title.includes(query)) return 50;
+            if (registration.keywords.some((keyword) => keyword === query)) {
+              return 30;
+            }
+            if (description.includes(query)) return 10;
+            return 0;
+          }
+
+          export function searchTools(
+            registry: ToolRegistry,
+            rawQuery: string,
+            limit = 6
+          ): ToolSearchResult[] {
+            const query = rawQuery.trim().toLowerCase();
+            if (!query) return [];
+            return registry.registrations
+              .filter(
+                ({ tool }) =>
+                  !GATEWAY_NAMES.has(tool.schema.name) ||
+                  tool.schema.name === query
+              )
+              .map((registration) => ({
+                registration,
+                score: score(registration, query),
+              }))
+              .filter(({ score: value }) => value > 0)
+              .sort(
+                (left, right) =>
+                  right.score - left.score ||
+                  left.registration.tool.schema.name.localeCompare(
+                    right.registration.tool.schema.name
+                  )
+              )
+              .slice(0, Math.max(1, Math.min(limit, 20)))
+              .map(({ registration, score: value }) => ({
+                name: registration.tool.schema.name,
+                title: registration.tool.schema.title,
+                summary: registration.tool.schema.description,
+                group: registration.group,
+                type: registration.tool.schema.type,
+                score: value,
+              }));
+          }
+          EOF
+
+          cat > src/tools.ts <<'EOF'
+          import type { FullConfig } from './config.js';
+          import { batchExecuteTool } from './tools/batch-execute.js';
+          import common from './tools/common.js';
+          import consoleTools from './tools/console.js';
+          import { browserDiagnose } from './tools/diagnose.js';
+          import dialogs from './tools/dialogs.js';
+          import evaluate from './tools/evaluate.js';
+          import files from './tools/files.js';
+          import { browserFindElements } from './tools/find-elements.js';
+          import inspectHtml from './tools/inspect-html.js';
+          import install from './tools/install.js';
+          import keyboard from './tools/keyboard.js';
+          import mouse from './tools/mouse.js';
+          import navigate from './tools/navigate.js';
+          import network from './tools/network.js';
+          import pdf from './tools/pdf.js';
+          import screenshot from './tools/screenshot.js';
+          import snapshot from './tools/snapshot.js';
+          import tabs from './tools/tabs.js';
+          import { ToolRegistry, registerTools } from './tools/catalog/registry.js';
+          import type { AnyTool } from './tools/tool.js';
+          import wait from './tools/wait.js';
+
+          export const allTools: AnyTool[] = [
+            ...common,
+            ...consoleTools,
+            ...dialogs,
+            ...evaluate,
+            ...files,
+            ...install,
+            ...inspectHtml,
+            ...keyboard,
+            ...navigate,
+            ...network,
+            ...mouse,
+            ...pdf,
+            ...screenshot,
+            ...snapshot,
+            ...tabs,
+            ...wait,
+            batchExecuteTool,
+            browserFindElements,
+            browserDiagnose,
+          ];
+
+          export function filteredTools(config: FullConfig): AnyTool[] {
+            return allTools.filter(
+              (tool) =>
+                tool.capability.startsWith('core') ||
+                config.capabilities?.includes(tool.capability)
+            );
+          }
+
+          export function createBaseToolRegistry(
+            config: FullConfig
+          ): ToolRegistry {
+            return new ToolRegistry(registerTools(filteredTools(config)));
+          }
+          EOF
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}: {old!r}')
+              p.write_text(text.replace(old, new))
+
+          # Public config type.
+          replace_once(
+              'config.d.ts',
+              "  | 'pdf';\n\nexport type Config = {",
+              "  | 'pdf';\n\nexport type ToolProfile = 'adaptive' | 'full' | 'minimal';\n\nexport type Config = {\n  /** Tool catalog profile. Defaults to adaptive. */\n  toolProfile?: ToolProfile;",
+          )
+
+          # Internal config imports and fields.
+          replace_once(
+              'src/config.ts',
+              "import type { Config, ToolCapability } from '../config.js';",
+              "import type { Config, ToolCapability, ToolProfile } from '../config.js';",
+          )
+          replace_once(
+              'src/config.ts',
+              'export type CLIOptions = {\n',
+              'export type CLIOptions = {\n  toolProfile?: ToolProfile;\n',
+          )
+          replace_once(
+              'src/config.ts',
+              'const defaultConfig: FullConfig = {\n',
+              "const defaultConfig: FullConfig = {\n  toolProfile: 'adaptive',\n",
+          )
+          replace_once(
+              'src/config.ts',
+              'export type FullConfig = Config & {\n',
+              'export type FullConfig = Config & {\n  toolProfile: ToolProfile;\n',
+          )
+          text = Path('src/config.ts').read_text()
+          target = "    | 'capabilities'\n"
+          if text.count(target) != 2:
+              raise SystemExit(f'src/config.ts: expected two Pick capability entries, found {text.count(target)}')
+          text = text.replace(target, "    | 'toolProfile'\n    | 'capabilities'\n")
+          Path('src/config.ts').write_text(text)
+          replace_once(
+              'src/config.ts',
+              '  return {\n    capabilities: cliOptions.caps as ToolCapability[],',
+              '  return {\n    toolProfile: cliOptions.toolProfile,\n    capabilities: cliOptions.caps as ToolCapability[],',
+          )
+          replace_once(
+              'src/config.ts',
+              'function populateMiscellaneousOptions(options: CLIOptions): void {\n',
+              "function populateMiscellaneousOptions(options: CLIOptions): void {\n  options.toolProfile = process.env.FAST_PLAYWRIGHT_TOOL_PROFILE\n    ? parseToolProfile(process.env.FAST_PLAYWRIGHT_TOOL_PROFILE)\n    : undefined;\n",
+          )
+          replace_once(
+              'src/config.ts',
+              'export function semicolonSeparatedList(\n',
+              "export function parseToolProfile(value: string): ToolProfile {\n  if (value === 'adaptive' || value === 'full' || value === 'minimal') {\n    return value;\n  }\n  throw new Error(`Invalid tool profile: ${value}`);\n}\n\nexport function semicolonSeparatedList(\n",
+          )
+
+          # CLI option.
+          replace_once(
+              'src/program.ts',
+              '  commaSeparatedList,\n  resolveCLIConfig,',
+              '  commaSeparatedList,\n  parseToolProfile,\n  resolveCLIConfig,',
+          )
+          replace_once(
+              'src/program.ts',
+              "  .option('--cdp-endpoint <endpoint>', 'CDP endpoint to connect to.')",
+              "  .option(\n    '--tool-profile <profile>',\n    'tool catalog profile: adaptive, full, or minimal',\n    parseToolProfile\n  )\n  .option('--cdp-endpoint <endpoint>', 'CDP endpoint to connect to.')",
+          )
+
+          # Package pin.
+          package_path = Path('package.json')
+          package = json.loads(package_path.read_text())
+          package['dependencies']['@modelcontextprotocol/sdk'] = '1.25.2'
+          package_path.write_text(json.dumps(package, indent=2) + '\n')
+          PY
+
+      - name: Refresh lockfile and format
+        if: steps.stage.outputs.needed == 'true'
+        run: |
+          bun install
+          bun run lint-fix
+
+      - name: Verify GREEN
+        if: steps.stage.outputs.needed == 'true'
+        run: |
+          bun run build:publish
+          bunx playwright test \
+            tests/mcp-tool-schema.spec.ts \
+            tests/config.spec.ts \
+            tests/tool-registry.spec.ts \
+            tests/tool-visibility.spec.ts \
+            tests/tool-search.spec.ts \
+            --project=chromium
+          bun run lint
+
+      - name: Commit foundation
+        if: steps.stage.outputs.needed == 'true'
+        shell: bash
+        run: |
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat: add adaptive tool catalog foundation'
+          git push origin HEAD:agent/adaptive-tool-discovery
