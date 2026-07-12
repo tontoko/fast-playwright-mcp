@@ -10,6 +10,7 @@ export type McpContent = {
   mimeType?: string;
 };
 
+const TAB_LINE_PATTERN = /^-\s+(\d+):\s+(.+)$/u;
 const ALLOWED_IMAGE_TYPES = new Set([
   'image/png',
   'image/jpeg',
@@ -19,7 +20,7 @@ const ALLOWED_IMAGE_TYPES = new Set([
 export function parseTabLines(text: string): TabEntry[] {
   return text
     .split('\n')
-    .map((line) => /^-\s+(\d+):\s+(.+)$/u.exec(line.trim()))
+    .map((line) => TAB_LINE_PATTERN.exec(line.trim()))
     .filter((match): match is RegExpExecArray => Boolean(match))
     .map((match) => ({ index: Number(match[1]), label: match[2] }));
 }
