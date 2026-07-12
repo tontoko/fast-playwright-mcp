@@ -28,11 +28,33 @@ jobs:
       - name: Install and refresh lockfile
         run: bun install
       - name: Generate dashboard
-        run: bun run build:dashboard
+        shell: bash
+        run: |
+          set -o pipefail
+          bun run build:dashboard 2>&1 | tee dashboard-build.log
+      - name: Upload dashboard build failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dashboard-build-failure
+          path: dashboard-build.log
+          if-no-files-found: warn
+          retention-days: 7
       - name: Format changed sources
         run: bun run lint-fix
       - name: Build package
-        run: bun run build:publish
+        shell: bash
+        run: |
+          set -o pipefail
+          bun run build:publish 2>&1 | tee package-build.log
+      - name: Upload package build failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: package-build-failure
+          path: package-build.log
+          if-no-files-found: warn
+          retention-days: 7
       - name: Run foundation tests
         run: |
           bunx playwright test \
@@ -43,7 +65,18 @@ jobs:
             tests/tool-search.spec.ts \
             --project=chromium
       - name: Run lint
-        run: bun run lint
+        shell: bash
+        run: |
+          set -o pipefail
+          bun run lint 2>&1 | tee implementation-lint.log
+      - name: Upload lint failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: implementation-lint-failure
+          path: implementation-lint.log
+          if-no-files-found: warn
+          retention-days: 7
       - name: Commit generated and formatted files
         shell: bash
         run: |
