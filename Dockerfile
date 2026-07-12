@@ -74,7 +74,9 @@ USER ${USERNAME}
 
 COPY --from=browser --chown=${USERNAME}:${USERNAME} --chmod=755 ${PLAYWRIGHT_BROWSERS_PATH} ${PLAYWRIGHT_BROWSERS_PATH}
 COPY --chown=${USERNAME}:${USERNAME} --chmod=444 cli.js package.json ./
-COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=444 /app/lib /app/lib
+# COPY --chmod applies recursively, so use 0555 to keep directories traversable
+# while leaving the compiled output read-only for the non-root runtime user.
+COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=555 /app/lib /app/lib
 
 # Run in headless and only with chromium (other browsers need more dependencies not included in this image)
 ENTRYPOINT ["bun", "cli.js", "--headless", "--browser", "chromium", "--no-sandbox"]
