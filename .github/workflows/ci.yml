@@ -108,6 +108,9 @@ jobs:
       - name: Install Chromium and system dependencies
         run: bunx playwright install --with-deps chromium
       - name: Run extension E2E tests
+        env:
+          DEBUG: 'pw:mcp:*'
+          PWMCP_DEBUG: '1'
         run: |
           set -o pipefail
           xvfb-run --auto-servernum bunx playwright test --config=extension/playwright.config.ts 2>&1 | tee extension-e2e.log
