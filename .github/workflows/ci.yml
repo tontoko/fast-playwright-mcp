@@ -65,8 +65,14 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      - name: Install ${{ matrix.project }} and system dependencies
-        run: bunx playwright install --with-deps ${{ matrix.project }}
+      - name: Install test browsers and system dependencies
+        shell: bash
+        run: |
+          if [[ "${{ matrix.project }}" == "chromium" ]]; then
+            bunx playwright install --with-deps chromium
+          else
+            bunx playwright install --with-deps chromium "${{ matrix.project }}"
+          fi
       - name: Build package
         run: bun run build:publish
       - name: Run ${{ matrix.project }} tests
