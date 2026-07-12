@@ -6,6 +6,9 @@ import { Context } from './context.js';
 import type * as mcpServer from './mcp/server.js';
 import { Response } from './response.js';
 import { SessionLog } from './session-log.js';
+import { createCatalogTools } from './tools/catalog/gateways.js';
+import { ToolRegistry, registerTools } from './tools/catalog/registry.js';
+import { ToolVisibility } from './tools/catalog/visibility.js';
 import type { AnyTool } from './tools/tool.js';
 import { defineTool } from './tools/tool.js';
 import { filteredTools } from './tools.js';
@@ -14,23 +17,63 @@ import { packageJSON } from './utils/package.js';
 
 type NonEmptyArray<T> = [T, ...T[]];
 export type FactoryList = NonEmptyArray<BrowserContextFactory>;
+
+const DISALLOWED_GATEWAY_TARGETS = new Set([
+  'browser_tools',
+  'browser_query',
+  'browser_execute',
+  'browser_batch_execute',
+]);
+
+type ToolListServer = mcpServer.Server & {
+  sendToolListChanged?: () => Promise<void>;
+};
+
 export class BrowserServerBackend implements mcpServer.ServerBackend {
   name = 'Playwright';
   version = packageJSON.version;
-  private readonly _tools: AnyTool[];
+  readonly supportsToolListChanges: boolean;
+
+  private readonly _registry: ToolRegistry;
+  private readonly _visibility: ToolVisibility;
   private _context: Context | undefined;
   private _sessionLog: SessionLog | undefined;
+  private _server: mcpServer.Server | undefined;
   private readonly _config: FullConfig;
   private _browserContextFactory: BrowserContextFactory;
+
   constructor(config: FullConfig, factories: FactoryList) {
     this._config = config;
     this._browserContextFactory = factories[0];
-    this._tools = filteredTools(config);
+    this._visibility = new ToolVisibility(config.toolProfile);
+    this.supportsToolListChanges = config.toolProfile !== 'full';
+
+    const baseTools = filteredTools(config);
     if (factories.length > 1) {
-      this._tools.push(this._defineContextSwitchTool(factories));
+      baseTools.push(this._defineContextSwitchTool(factories));
     }
+
+    let registry: ToolRegistry;
+    const catalogTools = createCatalogTools({
+      registry: () => registry,
+      visibility: this._visibility,
+      notifyChanged: () => this._notifyToolsChanged(),
+      executeTarget: (name, args, expected, signal) =>
+        this._executeTarget(name, args, expected, signal),
+    });
+    registry = new ToolRegistry([
+      ...registerTools(baseTools),
+      ...registerTools(catalogTools, {
+        browser_tools: { group: 'bootstrap', bootstrap: true },
+        browser_query: { group: 'bootstrap', bootstrap: true },
+        browser_execute: { group: 'bootstrap', bootstrap: true },
+      }),
+    ]);
+    this._registry = registry;
   }
+
   async initialize(server: mcpServer.Server): Promise<void> {
+    this._server = server;
     const capabilities =
       server.getClientCapabilities() as mcpServer.ClientCapabilities;
     let rootPath: string | undefined;
@@ -41,65 +84,148 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
     ) {
       const { roots } = await server.listRoots();
       const firstRootUri = roots[0]?.uri;
-      const url = firstRootUri ? new URL(firstRootUri) : undefined;
-      rootPath = url ? fileURLToPath(url) : undefined;
+      rootPath = firstRootUri
+        ? fileURLToPath(new URL(firstRootUri))
+        : undefined;
     }
+
     this._sessionLog = this._config.saveSession
       ? await SessionLog.create(this._config, rootPath)
       : undefined;
     this._context = new Context({
-      tools: this._tools,
+      tools: this._registry.registrations.map(({ tool }) => tool),
       config: this._config,
       browserContextFactory: this._browserContextFactory,
       sessionLog: this._sessionLog,
       clientInfo: { ...server.getClientVersion(), rootPath },
     });
   }
+
   tools(): mcpServer.ToolSchema[] {
-    return this._tools.map((tool) => tool.schema);
+    return this._visibility
+      .visible(this._registry)
+      .map(({ tool }) => tool.schema);
   }
+
+  resolveTool(name: string): mcpServer.ToolSchema | undefined {
+    return this._registry.get(name)?.tool.schema;
+  }
+
   async callTool(
     schema: mcpServer.ToolSchema,
-    rawArguments: Record<string, unknown> | undefined
-  ) {
+    rawArguments: Record<string, unknown> | undefined,
+    signal?: AbortSignal
+  ): Promise<mcpServer.ToolResponse> {
+    const registration = this._registry.get(schema.name);
+    if (!registration) {
+      throw new Error(`Tool not found: ${schema.name}`);
+    }
+    return this._executeRegistration(
+      registration.tool,
+      rawArguments,
+      signal,
+      true
+    );
+  }
+
+  serverClosed() {
+    this._context?.dispose().catch(logUnhandledError);
+  }
+
+  private async _executeTarget(
+    name: string,
+    rawArguments: Record<string, unknown> | undefined,
+    expected: 'readOnly' | 'action',
+    signal?: AbortSignal
+  ): Promise<mcpServer.ToolResponse> {
+    if (DISALLOWED_GATEWAY_TARGETS.has(name)) {
+      throw new Error(`Tool cannot be dispatched through a gateway: ${name}`);
+    }
+    const registration = this._registry.require(name);
+    const effect = registration.tool.schema.type;
+    if (expected === 'readOnly' && effect !== 'readOnly') {
+      throw new Error(`browser_query only accepts read-only tools: ${name}`);
+    }
+    if (expected === 'action' && effect === 'readOnly') {
+      throw new Error(`browser_execute requires an action tool: ${name}`);
+    }
+    return this._executeRegistration(
+      registration.tool,
+      rawArguments,
+      signal,
+      false
+    );
+  }
+
+  private async _executeRegistration(
+    tool: AnyTool,
+    rawArguments: Record<string, unknown> | undefined,
+    signal: AbortSignal | undefined,
+    manageRunningState: boolean
+  ): Promise<mcpServer.ToolResponse> {
     if (!this._context) {
       throw new Error('Context not initialized. Call initialize() first.');
     }
 
     const context = this._context;
-    const parsedArguments = schema.inputSchema.parse(rawArguments || {});
+    const parsedArguments = tool.schema.inputSchema.parse(rawArguments || {});
     const response = new Response(
       context,
-      schema.name,
+      tool.schema.name,
       parsedArguments,
       parsedArguments.expectation
     );
 
-    const matchedTool = this._tools.find((t) => t.schema.name === schema.name);
-    if (!matchedTool) {
-      throw new Error(`Tool not found: ${schema.name}`);
+    if (manageRunningState) {
+      context.setRunningTool(true);
     }
-
-    context.setRunningTool(true);
-    browserServerBackendDebug(`Executing tool: ${schema.name}`);
+    browserServerBackendDebug(`Executing tool: ${tool.schema.name}`);
     try {
-      await matchedTool.handle(context, parsedArguments, response);
+      const rawResponse = await tool.handle(
+        context,
+        parsedArguments,
+        response,
+        signal
+      );
+      if (rawResponse) {
+        return rawResponse;
+      }
       await response.finish();
       this._sessionLog?.logResponse(response);
-      browserServerBackendDebug(`Tool ${schema.name} completed successfully`);
+      browserServerBackendDebug(
+        `Tool ${tool.schema.name} completed successfully`
+      );
     } catch (error: unknown) {
-      browserServerBackendDebug(`Error executing tool ${schema.name}:`, error);
+      browserServerBackendDebug(
+        `Error executing tool ${tool.schema.name}:`,
+        error
+      );
       response.addError(String(error));
     } finally {
-      context.setRunningTool(false);
+      if (manageRunningState) {
+        context.setRunningTool(false);
+      }
     }
     return response.serialize();
   }
-  serverClosed() {
-    this._context?.dispose().catch(logUnhandledError);
+
+  private async _notifyToolsChanged(): Promise<void> {
+    const send = (this._server as ToolListServer | undefined)
+      ?.sendToolListChanged;
+    if (!send) {
+      return;
+    }
+    try {
+      await send.call(this._server);
+    } catch (error) {
+      browserServerBackendDebug(
+        'Failed to notify the client about tool-list changes:',
+        error
+      );
+    }
   }
+
   private _defineContextSwitchTool(factories: FactoryList): AnyTool {
-    const self = this;
     const factoryNames = factories.map((factory) => factory.name) as [
       string,
       ...string[],
@@ -110,23 +236,14 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
       schema: {
         name: 'browser_connect',
         title: 'Connect to a browser context',
-        description: [
-          'Connect to a browser using one of the available methods:',
-          ...factories.map(
-            (factory) => `- "${factory.name}": ${factory.description}`
-          ),
-        ].join('\n'),
+        description: 'Switch between configured browser connection methods.',
         inputSchema: z.object({
-          name: factoryNameSchema
-            .optional()
-            .describe('The connection method name to use'),
-          method: factoryNameSchema
-            .optional()
-            .describe('Deprecated alias for name'),
+          name: factoryNameSchema.optional(),
+          method: factoryNameSchema.optional(),
         }),
-        type: 'readOnly',
+        type: 'action',
       },
-      async handle(_context, params, response) {
+      handle: async (_context, params, response) => {
         if (params.name && params.method && params.name !== params.method) {
           response.addError(
             `Conflicting connection methods: name="${params.name}" and method="${params.method}"`
@@ -141,11 +258,12 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
           response.addError(`Unknown connection method: ${requestedName}`);
           return;
         }
-        await self._setContextFactory(selectedFactory);
+        await this._setContextFactory(selectedFactory);
         response.addResult('Successfully changed connection method.');
       },
     });
   }
+
   private async _setContextFactory(newFactory: BrowserContextFactory) {
     if (this._context) {
       const options = {
