@@ -1,4 +1,4 @@
-import { createClient } from '@modelcontextprotocol/ext-apps';
+import { App } from '@modelcontextprotocol/ext-apps';
 import {
   clearError,
   firstText,
@@ -9,7 +9,7 @@ import {
   type McpContent,
 } from './render.js';
 
-const client = createClient();
+const app = new App({ name: 'Browser dashboard', version: '1.0.0' });
 const compactExpectation = {
   includeSnapshot: false,
   includeTabs: false,
@@ -33,6 +33,13 @@ function contentFrom(result: unknown): McpContent[] {
   return Array.isArray(content) ? (content as McpContent[]) : [];
 }
 
+async function callTool(
+  name: string,
+  args: Record<string, unknown>
+): Promise<unknown> {
+  return await app.callServerTool({ name, arguments: args });
+}
+
 const preview = element<HTMLImageElement>('preview');
 const tabs = element<HTMLUListElement>('tabs');
 const refreshButton = element<HTMLButtonElement>('refresh');
@@ -40,7 +47,7 @@ const status = element<HTMLElement>('status');
 const error = element<HTMLElement>('error');
 
 async function updatePreview(): Promise<void> {
-  const result = await client.callTool('browser_take_screenshot', {
+  const result = await callTool('browser_take_screenshot', {
     type: 'jpeg',
     expectation: compactExpectation,
   });
@@ -53,7 +60,7 @@ async function selectTab(index: number): Promise<void> {
   clearError(error);
   status.textContent = `Selecting tab ${index}…`;
   try {
-    await client.callTool('browser_tab_select', {
+    await callTool('browser_tab_select', {
       index,
       expectation: compactExpectation,
     });
@@ -69,7 +76,7 @@ async function selectTab(index: number): Promise<void> {
 }
 
 async function updateTabs(): Promise<void> {
-  const result = await client.callTool('browser_tab_list', {
+  const result = await callTool('browser_tab_list', {
     expectation: compactExpectation,
   });
   const text = firstText(contentFrom(result));
@@ -100,4 +107,14 @@ refreshButton.addEventListener('click', () => {
   void refresh();
 });
 
-void refresh();
+app.onerror = (cause) => {
+  renderError(
+    error,
+    `MCP Apps connection error: ${
+      cause instanceof Error ? cause.message : String(cause)
+    }`
+  );
+};
+
+await app.connect();
+await refresh();
