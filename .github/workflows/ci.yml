@@ -18,7 +18,7 @@ jobs:
     name: Apply verified SonarQube cleanup
     if: github.event_name == 'pull_request' && github.head_ref == 'fix/all-open-issues'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:
@@ -28,15 +28,28 @@ jobs:
           ref: fix/all-open-issues
           fetch-depth: 0
 
+      - name: Check whether cleanup is needed
+        id: cleanup
+        shell: bash
+        run: |
+          if grep -q 'expectPartialSnapshotForSelector' tests/test-helpers.ts; then
+            echo 'needed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'needed=true' >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Bun
+        if: steps.cleanup.outputs.needed == 'true'
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.5
 
       - name: Install dependencies
+        if: steps.cleanup.outputs.needed == 'true'
         run: bun install --frozen-lockfile
 
       - name: Add regression test and verify RED
+        if: steps.cleanup.outputs.needed == 'true'
         shell: bash
         run: |
           cat > tests/test-helpers-sonar.spec.ts <<'EOF'
@@ -81,6 +94,7 @@ jobs:
           fi
 
       - name: Apply SonarQube fixes
+        if: steps.cleanup.outputs.needed == 'true'
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -103,7 +117,7 @@ jobs:
           replace_exact(
               'extension/src/relay-connection.ts',
               '        params: { ...(params ?? {}) },',
-              '        params: { ...params },',
+              '        params,',
           )
 
           replace_exact(
@@ -142,7 +156,7 @@ jobs:
           replace_exact(
               'tests/test-helpers.ts',
               "  const countMatches = (pattern: RegExp) =>\n    lines.filter((line) => line.match(pattern)).length;",
-              "  const countMatches = (pattern: RegExp) =>\n    lines.filter((line) => {\n      pattern.lastIndex = 0;\n      return pattern.exec(line) !== null;\n    }).length;",
+              "  const countMatches = (pattern: RegExp) => {\n    const statelessFlags = pattern.flags.replaceAll('g', '').replaceAll('y', '');\n    const matcher = new RegExp(pattern.source, statelessFlags);\n    return lines.filter((line) => matcher.exec(line) !== null).length;\n  };",
           )
 
           old_helper = '''export function expectPartialSnapshotBehavior(
@@ -178,23 +192,50 @@ jobs:
           replace_exact('tests/test-helpers.ts', old_helper, new_helpers)
           PY
 
+      - name: Format cleanup changes
+        if: steps.cleanup.outputs.needed == 'true'
+        run: bun run lint-fix
+
       - name: Verify GREEN
+        if: steps.cleanup.outputs.needed == 'true'
         run: bunx playwright test tests/test-helpers-sonar.spec.ts --project=chromium
 
       - name: Build package
+        if: steps.cleanup.outputs.needed == 'true'
         run: bun run build:publish
 
       - name: Build extension
+        if: steps.cleanup.outputs.needed == 'true'
         run: |
           npm ci --prefix extension
           npm run build --prefix extension
 
       - name: Run lint
-        run: bun run lint
-
-      - name: Commit cleanup
+        if: steps.cleanup.outputs.needed == 'true'
         shell: bash
         run: |
+          set -o pipefail
+          bun run lint 2>&1 | tee sonar-cleanup-lint.log
+
+      - name: Upload cleanup lint failure log
+        if: failure() && steps.cleanup.outputs.needed == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sonar-cleanup-lint-failure
+          path: sonar-cleanup-lint.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Commit cleanup
+        if: steps.cleanup.outputs.needed == 'true'
+        shell: bash
+        run: |
+          unexpected=$(git status --short | awk '{print $2}' | grep -Ev '^(extension/src/relay-connection.ts|src/extension/cdp-relay.ts|tests/test-helpers.ts|tests/test-helpers-sonar.spec.ts)$' || true)
+          if [[ -n "$unexpected" ]]; then
+            echo 'Unexpected files changed:'
+            echo "$unexpected"
+            exit 1
+          fi
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
