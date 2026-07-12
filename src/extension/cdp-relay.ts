@@ -27,7 +27,7 @@ const HTTP_TO_WS_REGEX = /^http/;
 const MAX_MESSAGE_SIZE = 1024 * 1024;
 const DANGEROUS_PROPS = new Set(['__proto__', 'constructor', 'prototype']);
 
-type CDPParams = Record<string, unknown> | undefined;
+type CDPParams = Record<string, unknown>;
 
 type CDPCommand = {
   id: number;
@@ -378,7 +378,7 @@ export class CDPRelayServer {
         this._sendToPlaywright({
           sessionId,
           method: params.method as string | undefined,
-          params: params.params as CDPParams,
+          params: params.params as CDPParams | undefined,
         });
         break;
       }
@@ -417,7 +417,7 @@ export class CDPRelayServer {
 
   private async _handleCDPCommand(
     method: string,
-    params: CDPParams,
+    params: CDPParams | undefined,
     sessionId: string | undefined
   ): Promise<unknown> {
     switch (method) {
@@ -466,7 +466,7 @@ export class CDPRelayServer {
 
   private _forwardToExtension(
     method: string,
-    params: CDPParams,
+    params: CDPParams | undefined,
     sessionId: string | undefined
   ): Promise<unknown> {
     if (!this._extensionConnection) {

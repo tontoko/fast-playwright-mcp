@@ -110,7 +110,7 @@ export class RelayConnection {
       params: {
         sessionId,
         method,
-        params: { ...(params ?? {}) },
+        params,
       },
     });
   }
