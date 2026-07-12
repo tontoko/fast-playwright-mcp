@@ -11,11 +11,21 @@ export class ExtensionContextFactory implements BrowserContextFactory {
   name = 'extension';
   description = 'Connect to a browser using the Playwright MCP extension';
   private readonly _browserChannel: string;
+  private readonly _userDataDir: string | undefined;
+  private readonly _executablePath: string | undefined;
   private _relayPromise: Promise<CDPRelayServer> | undefined;
   private _browserPromise: Promise<Browser> | undefined;
-  constructor(browserChannel: string, _userDataDir?: string) {
+
+  constructor(
+    browserChannel: string,
+    userDataDir?: string,
+    executablePath?: string
+  ) {
     this._browserChannel = browserChannel;
+    this._userDataDir = userDataDir;
+    this._executablePath = executablePath;
   }
+
   async createContext(
     clientInfo: ClientInfo,
     abortSignal: AbortSignal
@@ -35,6 +45,7 @@ export class ExtensionContextFactory implements BrowserContextFactory {
       },
     };
   }
+
   private async _obtainBrowser(
     clientInfo: ClientInfo,
     abortSignal: AbortSignal
@@ -50,12 +61,18 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     });
     return browser;
   }
+
   private async _startRelay(abortSignal: AbortSignal) {
     // Both the bundled and current Web Store extensions intentionally reject
     // non-numeric hosts. Binding explicitly also avoids exposing the relay on
     // every interface when the OS default is :: or 0.0.0.0.
     const httpServer = await startHttpServer({ host: '127.0.0.1' });
-    const cdpRelayServer = new CDPRelayServer(httpServer, this._browserChannel);
+    const cdpRelayServer = new CDPRelayServer(
+      httpServer,
+      this._browserChannel,
+      this._userDataDir,
+      this._executablePath
+    );
     extensionContextFactoryDebug(
       `CDP relay server started, extension endpoint: ${cdpRelayServer.extensionEndpoint()}.`
     );
