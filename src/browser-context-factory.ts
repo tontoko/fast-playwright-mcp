@@ -205,6 +205,13 @@ class PersistentContextFactory implements BrowserContextFactory {
     const userDataDir =
       this.config.browser.userDataDir ??
       (await this._createUserDataDir(clientInfo.rootPath));
+
+    if (this._userDataDirs.has(userDataDir)) {
+      throw new Error(
+        `Browser is already in use for ${userDataDir}, use --isolated to run multiple instances of the same browser`
+      );
+    }
+
     let tracesDir: string | undefined;
     if (this.config.saveTrace) {
       tracesDir = await outputFile(
@@ -266,7 +273,13 @@ class PersistentContextFactory implements BrowserContextFactory {
       }
     };
 
-    return launchWithRetry(0);
+    try {
+      return await launchWithRetry(0);
+    } catch (error) {
+      this._userDataDirs.delete(userDataDir);
+      testDebug('release user data dir after launch failure', userDataDir);
+      throw error;
+    }
   }
   private async _closeBrowserContext(
     browserContext: BrowserContext,
