@@ -106,8 +106,8 @@ test('schema compaction preserves literal values that contain annotation-like ke
         description?: string;
         default: typeof defaultValue;
         const: typeof constValue;
-        enum: typeof enumValue[];
-        examples: typeof exampleValue[];
+        enum: (typeof enumValue)[];
+        examples: (typeof exampleValue)[];
       };
     };
   };
