@@ -29,15 +29,16 @@ function contentFrom(result: unknown): McpContent[] {
   if (!result || typeof result !== 'object' || !('content' in result)) {
     return [];
   }
-  const content = result.content;
-  return Array.isArray(content) ? (content as McpContent[]) : [];
+  return Array.isArray(result.content)
+    ? (result.content as McpContent[])
+    : [];
 }
 
-async function callTool(
+function callTool(
   name: string,
   args: Record<string, unknown>
 ): Promise<unknown> {
-  return await app.callServerTool({ name, arguments: args });
+  return app.callServerTool({ name, arguments: args });
 }
 
 const preview = element<HTMLImageElement>('preview');
@@ -81,7 +82,9 @@ async function updateTabs(): Promise<void> {
   });
   const text = firstText(contentFrom(result));
   renderTabs(document, tabs, parseTabLines(text ?? ''), (index) => {
-    void selectTab(index);
+    selectTab(index).catch((cause) => {
+      renderError(error, `Failed to select tab: ${String(cause)}`);
+    });
   });
 }
 
@@ -104,7 +107,9 @@ async function refresh(): Promise<void> {
 }
 
 refreshButton.addEventListener('click', () => {
-  void refresh();
+  refresh().catch((cause) => {
+    renderError(error, `Refresh failed: ${String(cause)}`);
+  });
 });
 
 app.onerror = (cause) => {
