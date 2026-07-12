@@ -27,6 +27,62 @@ export type ToolSchema<Input extends z.Schema> = {
 };
 
 const OMITTED_SCHEMA_KEYS = new Set(['description', '$schema']);
+const SCHEMA_MAP_KEYS = new Set([
+  '$defs',
+  'definitions',
+  'dependentSchemas',
+  'patternProperties',
+  'properties',
+]);
+const SCHEMA_ARRAY_KEYS = new Set(['allOf', 'anyOf', 'oneOf', 'prefixItems']);
+const SCHEMA_VALUE_KEYS = new Set([
+  'additionalItems',
+  'additionalProperties',
+  'contains',
+  'contentSchema',
+  'else',
+  'if',
+  'items',
+  'not',
+  'propertyNames',
+  'then',
+  'unevaluatedItems',
+  'unevaluatedProperties',
+]);
+
+function compactSchemaMap(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, schema]) => [
+      key,
+      compactJsonSchema(schema),
+    ])
+  );
+}
+
+function compactDependencies(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, dependency]) => [
+      key,
+      Array.isArray(dependency)
+        ? dependency
+        : compactJsonSchema(dependency),
+    ])
+  );
+}
+
+function compactSchemaValue(value: unknown): unknown {
+  return Array.isArray(value)
+    ? value.map(compactJsonSchema)
+    : compactJsonSchema(value);
+}
 
 /**
  * Remove annotation-only prose from a JSON Schema without changing validation
@@ -46,13 +102,22 @@ export function compactJsonSchema(value: unknown): unknown {
 
   const compacted: Record<string, unknown> = {};
   for (const [key, child] of Object.entries(value)) {
-    // JSON Schema annotations are strings. Checking the value type preserves
-    // legitimate input properties named "description" or "$schema", whose
-    // values are themselves schema objects inside the properties map.
     if (OMITTED_SCHEMA_KEYS.has(key) && typeof child === 'string') {
       continue;
     }
-    compacted[key] = compactJsonSchema(child);
+
+    if (SCHEMA_MAP_KEYS.has(key)) {
+      compacted[key] = compactSchemaMap(child);
+    } else if (SCHEMA_ARRAY_KEYS.has(key) || SCHEMA_VALUE_KEYS.has(key)) {
+      compacted[key] = compactSchemaValue(child);
+    } else if (key === 'dependencies') {
+      compacted[key] = compactDependencies(child);
+    } else {
+      // Literal-bearing keywords such as default, const, enum, and examples
+      // must remain byte-for-byte equivalent, even when their data contains
+      // keys named "description" or "$schema".
+      compacted[key] = child;
+    }
   }
   return compacted;
 }
