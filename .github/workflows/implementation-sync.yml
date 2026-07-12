@@ -41,7 +41,18 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Format changed sources
-        run: bun run lint-fix
+        shell: bash
+        run: |
+          set -o pipefail
+          bun run lint-fix 2>&1 | tee implementation-format.log
+      - name: Upload formatting failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: implementation-format-failure
+          path: implementation-format.log
+          if-no-files-found: warn
+          retention-days: 7
       - name: Build package
         shell: bash
         run: |
