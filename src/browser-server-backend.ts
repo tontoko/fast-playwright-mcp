@@ -100,6 +100,11 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
   }
   private _defineContextSwitchTool(factories: FactoryList): AnyTool {
     const self = this;
+    const factoryNames = factories.map((factory) => factory.name) as [
+      string,
+      ...string[],
+    ];
+    const factoryNameSchema = z.enum(factoryNames);
     return defineTool({
       capability: 'core',
       schema: {
@@ -112,17 +117,29 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
           ),
         ].join('\n'),
         inputSchema: z.object({
-          method: z
-            .enum(factories.map((f) => f.name) as [string, ...string[]])
-            .default(factories[0].name)
-            .describe('The method to use to connect to the browser'),
+          name: factoryNameSchema
+            .optional()
+            .describe('The connection method name to use'),
+          method: factoryNameSchema
+            .optional()
+            .describe('Deprecated alias for name'),
         }),
         type: 'readOnly',
       },
       async handle(_context, params, response) {
-        const selectedFactory = factories.find((f) => f.name === params.method);
+        if (params.name && params.method && params.name !== params.method) {
+          response.addError(
+            `Conflicting connection methods: name="${params.name}" and method="${params.method}"`
+          );
+          return;
+        }
+        const requestedName =
+          params.name ?? params.method ?? factories[0].name;
+        const selectedFactory = factories.find(
+          (factory) => factory.name === requestedName
+        );
         if (!selectedFactory) {
-          response.addError(`Unknown connection method: ${params.method}`);
+          response.addError(`Unknown connection method: ${requestedName}`);
           return;
         }
         await self._setContextFactory(selectedFactory);
