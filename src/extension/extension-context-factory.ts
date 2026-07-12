@@ -67,6 +67,14 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     // non-numeric hosts. Binding explicitly also avoids exposing the relay on
     // every interface when the OS default is :: or 0.0.0.0.
     const httpServer = await startHttpServer({ host: '127.0.0.1' });
+    extensionContextFactoryDebug(
+      'Starting CDP relay',
+      JSON.stringify({
+        browserChannel: this._browserChannel,
+        executablePath: this._executablePath,
+        userDataDir: this._userDataDir,
+      })
+    );
     const cdpRelayServer = new CDPRelayServer(
       httpServer,
       this._browserChannel,
