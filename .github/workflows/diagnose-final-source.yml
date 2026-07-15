@@ -1,0 +1,42 @@
+name: Diagnose staged final source
+
+on:
+  pull_request:
+    branches:
+      - agent/pr31-staging-base
+    paths:
+      - .github/workflows/diagnose-final-source.yml
+      - .github/final-source/source.b64
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/adaptive-tool-discovery
+          fetch-depth: 0
+      - name: Inspect staged archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode .github/final-source/source.b64 > /tmp/source.tar.gz
+          {
+            echo "base64_bytes=$(wc -c < .github/final-source/source.b64)"
+            echo "archive_bytes=$(wc -c < /tmp/source.tar.gz)"
+            echo "archive_sha256=$(sha256sum /tmp/source.tar.gz | awk '{print $1}')"
+            echo "archive_files=$(tar -tzf /tmp/source.tar.gz | wc -l)"
+            echo 'first_entries:'
+            tar -tzf /tmp/source.tar.gz | head -20
+            echo 'last_entries:'
+            tar -tzf /tmp/source.tar.gz | tail -20
+          } > .github/final-source/diagnostic.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/final-source/diagnostic.txt
+          git commit -m 'chore: record staged source diagnostics'
+          git push origin HEAD:agent/adaptive-tool-discovery
