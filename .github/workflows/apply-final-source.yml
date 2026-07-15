@@ -6,6 +6,12 @@ on:
       - agent/adaptive-tool-discovery
     paths:
       - .github/final-source/READY
+  pull_request:
+    branches:
+      - agent/pr31-staging-base
+    paths:
+      - .github/final-source/READY
+      - .github/workflows/apply-final-source.yml
 
 permissions:
   contents: write
@@ -19,6 +25,7 @@ concurrency:
 
 jobs:
   apply:
+    if: github.event_name == 'push' || (github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery')
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
