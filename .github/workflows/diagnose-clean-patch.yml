@@ -9,7 +9,7 @@ on:
       - .github/final-patch-clean/part-00.b64
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   diagnose:
@@ -19,23 +19,29 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: agent/adaptive-tool-discovery
-          fetch-depth: 0
       - name: Inspect staged patch
         shell: bash
         run: |
-          set -u
-          mkdir -p .github/final-patch-clean
+          set +e
+          mkdir -p /tmp/diagnostic
+          file=.github/final-patch-clean/part-00.b64
           {
-            echo "base64_bytes=$(wc -c < .github/final-patch-clean/part-00.b64)"
-            base64 --decode .github/final-patch-clean/part-00.b64 > /tmp/patch.gz
+            echo "base64_bytes=$(wc -c < "$file")"
+            echo "base64_sha256=$(sha256sum "$file" | awk '{print $1}')"
+            base64 --decode "$file" > /tmp/diagnostic/patch.gz
             echo "decode_status=$?"
-            echo "decoded_bytes=$(wc -c < /tmp/patch.gz)"
-            echo "decoded_sha256=$(sha256sum /tmp/patch.gz | awk '{print $1}')"
-            gzip -t /tmp/patch.gz
+            echo "decoded_bytes=$(wc -c < /tmp/diagnostic/patch.gz)"
+            echo "decoded_sha256=$(sha256sum /tmp/diagnostic/patch.gz | awk '{print $1}')"
+            gzip -t /tmp/diagnostic/patch.gz
             echo "gzip_status=$?"
-          } > .github/final-patch-clean/diagnostic.txt 2>&1
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .github/final-patch-clean/diagnostic.txt
-          git commit -m 'chore: record clean patch diagnostics'
-          git push origin HEAD:agent/adaptive-tool-discovery
+          } > /tmp/diagnostic/diagnostic.txt 2>&1
+          cat /tmp/diagnostic/diagnostic.txt
+          exit 0
+      - name: Upload diagnostic
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clean-patch-diagnostic
+          path: /tmp/diagnostic
+          if-no-files-found: error
+          retention-days: 1
