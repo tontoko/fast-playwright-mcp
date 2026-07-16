@@ -40,7 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           cat .github/final-source-v4/part-*.b64 | tr -d '\n' | base64 --decode > /tmp/pr31-source.tar.gz
-          echo '210653cfffa636d07a43c37dd7a9b2b6bcb9cca1acd093d7d87425e877be74c7  /tmp/pr31-source.tar.gz' | sha256sum --check --strict
+          echo '27d65493395b70d06baabd1a96a64dd4f3bcdfd3fb6d1b0d3b9b501b3570e0bc  /tmp/pr31-source.tar.gz' | sha256sum --check --strict
           tar -tzf /tmp/pr31-source.tar.gz > /tmp/pr31-source-files.txt
           if grep -E '(^|/)\.git(/|$)|(^|/)\.\./|(^|/)node_modules(/|$)' /tmp/pr31-source-files.txt; then
             echo 'Unsafe archive path detected.' >&2
