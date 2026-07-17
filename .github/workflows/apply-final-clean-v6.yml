@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(find .github/final-source-v6 -name 'part-*.b64' -type f | wc -l)" -eq 3
+          test "$(find .github/final-source-v6 -name 'part-*.b64' -type f | wc -l)" -eq 12
           cat .github/final-source-v6/part-*.b64 | base64 --decode > /tmp/pr31-final-clean.tar.xz
           echo 'b84d6f8540f1f7df793c04339a0c208eee87bbfbbf84e231e4b1f486a567ef3f  /tmp/pr31-final-clean.tar.xz' | sha256sum --check --strict
           tar -tJf /tmp/pr31-final-clean.tar.xz > /tmp/pr31-files.txt
