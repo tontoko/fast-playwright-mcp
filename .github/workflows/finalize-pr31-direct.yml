@@ -45,12 +45,29 @@ jobs:
           bun run build:dashboard
           echo '9772355c681b21a7b7aeaa158791f543267c0b38cb394bfbfa776b40d660c428  src/apps/generated/dashboard.ts' | sha256sum --check --strict
 
-      - name: Typecheck, build, lint, and context budget
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Build package
+        run: bun run build:publish
+
+      - name: Lint
+        shell: bash
         run: |
-          bun run typecheck
-          bun run build:publish
-          bun run lint
-          bun run benchmark:tools -- --check
+          set -o pipefail
+          bun run lint 2>&1 | tee lint.log
+
+      - name: Upload lint diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr31-direct-final-lint
+          path: lint.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Check context budget
+        run: bun run benchmark:tools -- --check
 
       - name: Verify deterministic upstream report
         shell: bash
@@ -98,7 +115,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf lib test-results playwright-report
-          rm -f -- *.tgz
+          rm -f -- *.tgz lint.log
           rm .github/workflows/finalize-pr31-direct.yml
           git diff --check
           git config user.name 'github-actions[bot]'
