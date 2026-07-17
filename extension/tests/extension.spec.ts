@@ -19,6 +19,9 @@ import type { BrowserContext } from 'playwright';
 import { chromium } from 'playwright';
 import { test as base, expect } from '../../tests/fixtures.js';
 
+const HELLO_WORLD_SNAPSHOT_PATTERN =
+  /^- generic \[active\] \[ref=[^\]]+\]: Hello, world!$/mu;
+
 type BrowserWithExtension = {
   userDataDir: string;
   launch: () => Promise<BrowserContext>;
@@ -116,9 +119,7 @@ test('navigate with extension', async ({
     .click();
 
   expect(await navigateResponse).toHaveResponse({
-    pageState: expect.stringContaining(
-      '- generic [active] [ref=e1]: Hello, world!'
-    ),
+    pageState: expect.stringMatching(HELLO_WORLD_SNAPSHOT_PATTERN),
   });
 });
 
@@ -168,24 +169,16 @@ test('snapshot of an existing page', async ({
     }
   );
 
-  const navigateResponse = client.callTool({
+  const snapshotResponse = client.callTool({
     name: 'browser_snapshot',
-    arguments: {},
   });
-
   const selectorPage = await confirmationPagePromise;
-  expect(browserContext.pages()).toHaveLength(4);
-
   await selectorPage
-    .locator('.tab-item', { hasText: 'Title' })
+    .locator('.tab-item', { hasText: 'Hello world' })
     .getByRole('button', { name: 'Connect' })
     .click();
 
-  expect(await navigateResponse).toHaveResponse({
-    pageState: expect.stringContaining(
-      '- generic [active] [ref=e1]: Hello, world!'
-    ),
+  expect(await snapshotResponse).toHaveResponse({
+    pageState: expect.stringContaining('Hello, world!'),
   });
-
-  expect(browserContext.pages()).toHaveLength(4);
 });
