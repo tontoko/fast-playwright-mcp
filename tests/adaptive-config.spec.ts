@@ -16,18 +16,11 @@ test.describe('tool profile configuration', () => {
   });
 
   test('reads the dedicated environment variable', async () => {
-    const previous = process.env.FAST_PLAYWRIGHT_TOOL_PROFILE;
-    process.env.FAST_PLAYWRIGHT_TOOL_PROFILE = 'minimal';
-    try {
-      const { resolveCLIConfig } = await import('../src/config.js');
-      expect((await resolveCLIConfig({})).toolProfile).toBe('minimal');
-    } finally {
-      if (previous === undefined) {
-        delete process.env.FAST_PLAYWRIGHT_TOOL_PROFILE;
-      } else {
-        process.env.FAST_PLAYWRIGHT_TOOL_PROFILE = previous;
-      }
-    }
+    const { resolveCLIConfig } = await import('../src/config.js');
+    expect(
+      (await resolveCLIConfig({}, { FAST_PLAYWRIGHT_TOOL_PROFILE: 'minimal' }))
+        .toolProfile
+    ).toBe('minimal');
   });
 
   test('rejects an unknown profile', async () => {

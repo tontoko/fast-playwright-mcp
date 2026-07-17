@@ -17,9 +17,6 @@ import { logUnhandledError } from './utils/log.js';
 
 // Regex constants
 
-type PageEx = playwright.Page & {
-  _snapshotForAI: () => Promise<{ full: string }>;
-};
 export const TabEvents = {
   modalState: 'modalState',
 };
@@ -119,8 +116,8 @@ export class Tab extends EventEmitter<TabEventsInterface> {
       this._navigationState.isNavigating = true;
     });
 
-    page.setDefaultNavigationTimeout(60_000);
-    page.setDefaultTimeout(TIMEOUTS.DEFAULT_PAGE_TIMEOUT);
+    page.setDefaultNavigationTimeout(context.config.timeouts.navigation);
+    page.setDefaultTimeout(context.config.timeouts.action);
     (page as { [tabSymbol]?: Tab })[tabSymbol] = this;
   }
   static forPage(page: playwright.Page): Tab | undefined {
@@ -156,6 +153,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
     };
     this._downloads.push(entry);
     await download.saveAs(entry.outputFile);
+    await this.context.finalizeOutputFile(entry.outputFile);
     entry.finished = true;
   }
   private _clearCollectedArtifacts() {
@@ -223,17 +221,17 @@ export class Tab extends EventEmitter<TabEventsInterface> {
         // Timeout after configured duration
         if (
           Date.now() - this._navigationState.lastNavigationStart >
-          getNavigationTimeouts().navigationTimeout
+          this.context.config.timeouts.navigation
         ) {
           this._navigationState.isNavigating = false;
           resolve();
           return;
         }
 
-        setTimeout(checkComplete, getNavigationTimeouts().checkInterval);
+        setTimeout(checkComplete, NAVIGATION_CHECK_INTERVAL);
       };
 
-      setTimeout(checkComplete, getNavigationTimeouts().checkInterval);
+      setTimeout(checkComplete, NAVIGATION_CHECK_INTERVAL);
     });
   }
 
@@ -244,7 +242,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
     // Consider stale if navigation started more than configured timeout ago
     const isStale =
       Date.now() - this._navigationState.lastNavigationStart >
-      getNavigationTimeouts().staleTimeout;
+      this.context.config.timeouts.navigation;
     if (isStale && this._navigationState.isNavigating) {
       this._navigationState.isNavigating = false;
     }
@@ -309,52 +307,45 @@ export class Tab extends EventEmitter<TabEventsInterface> {
   ): Promise<TabSnapshot> {
     return await this._captureSnapshotInternal(selector, maxLength);
   }
+  async captureAriaSnapshot(): Promise<string> {
+    let ariaSnapshot = '';
+    await this._raceAgainstModalStates(async () => {
+      ariaSnapshot = await this.page.ariaSnapshot({ mode: 'ai' });
+    });
+    return ariaSnapshot;
+  }
   private async _captureSnapshotInternal(
     selector?: string,
     maxLength?: number
   ): Promise<TabSnapshot> {
-    let tabSnapshot: TabSnapshot | undefined;
-    const modalStates = await this._raceAgainstModalStates(async () => {
-      const result = await (this.page as PageEx)._snapshotForAI();
-      let snapshot: string;
+    const result: TabSnapshot = {
+      url: this.page.url(),
+      title: await this.page.title(),
+      ariaSnapshot: '',
+      modalStates: this.modalStates(),
+      consoleMessages: this._recentConsoleMessages,
+      downloads: this._downloads,
+    };
+    // Console messages are consumed immediately after collecting them
+    this._recentConsoleMessages = [];
+    await this._raceAgainstModalStates(async () => {
+      let ariaSnapshot = await this.page.ariaSnapshot({ mode: 'ai' });
+      // Apply selector filtering if specified
       if (selector) {
-        // Extract the part of the snapshot that matches the selector
-        snapshot = this._extractPartialSnapshot(result.full, selector);
-      } else {
-        // Full snapshot if no selector specified
-        snapshot = result.full;
+        ariaSnapshot = this._filterAriaSnapshotBySelector(
+          ariaSnapshot,
+          selector
+        );
       }
-      // Apply maxLength truncation with word boundary consideration
-      if (maxLength && snapshot.length > maxLength) {
-        snapshot = this._truncateAtWordBoundary(snapshot, maxLength);
+      // Apply maxLength truncation if specified
+      if (maxLength && ariaSnapshot.length > maxLength) {
+        ariaSnapshot = this._truncateAtWordBoundary(ariaSnapshot, maxLength);
       }
-      tabSnapshot = {
-        url: this.page.url(),
-        title: await this.page.title(),
-        ariaSnapshot: snapshot,
-        modalStates: [],
-        consoleMessages: [],
-        downloads: this._downloads,
-      };
+      result.ariaSnapshot = ariaSnapshot;
     });
-    if (tabSnapshot) {
-      // Assign console message late so that we did not lose any to modal state.
-      tabSnapshot.consoleMessages = this._recentConsoleMessages;
-      this._recentConsoleMessages = [];
-    }
-    return (
-      tabSnapshot ?? {
-        url: this.page.url(),
-        title: '',
-        ariaSnapshot: '',
-        modalStates,
-        consoleMessages: [],
-        downloads: [],
-      }
-    );
+    return result;
   }
-
-  private _extractPartialSnapshot(
+  private _filterAriaSnapshotBySelector(
     fullSnapshot: string,
     selector: string
   ): string {
@@ -656,10 +647,4 @@ export function renderModalStates(
 }
 const tabSymbol = Symbol('tabSymbol');
 
-function getNavigationTimeouts() {
-  return {
-    navigationTimeout: TIMEOUTS.DEFAULT_PAGE_TIMEOUT,
-    checkInterval: 100,
-    staleTimeout: 10_000,
-  };
-}
+const NAVIGATION_CHECK_INTERVAL = 100;

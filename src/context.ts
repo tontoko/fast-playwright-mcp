@@ -1,5 +1,5 @@
 import { dirname } from 'node:path';
-import { selectors, type BrowserContext, type Page } from 'playwright';
+import { type BrowserContext, type Page, selectors } from 'playwright';
 import type * as actions from './actions.js';
 import { BatchExecutor } from './batch/batch-executor.js';
 import type {
@@ -35,6 +35,7 @@ export class Context {
     | Promise<{
         browserContext: BrowserContext;
         close: () => Promise<void>;
+        traceDir?: string;
       }>
     | undefined;
   private readonly _browserContextFactory: BrowserContextFactory;
@@ -142,6 +143,11 @@ export class Context {
     await manager.finalizeFile(path);
   }
 
+  async finalizeOutputDirectory(path: string): Promise<void> {
+    const manager = await this._getOutputManager(path);
+    await manager.finalizeDirectory(path);
+  }
+
   redactToolResponse(response: ToolResponse): ToolResponse {
     if (!this.secretRedactor.enabled) {
       return response;
@@ -156,7 +162,7 @@ export class Context {
     };
   }
 
-  private async _getOutputManager(path: string): Promise<OutputManager> {
+  private _getOutputManager(path: string): Promise<OutputManager> {
     this._outputManagerPromise ??= Promise.resolve(
       new OutputManager(dirname(path), this.config.outputMaxSize)
     );
@@ -225,9 +231,12 @@ export class Context {
     testDebug('close context');
     const promise = this._browserContextPromise;
     this._browserContextPromise = undefined;
-    await promise.then(async ({ browserContext, close }) => {
+    await promise.then(async ({ browserContext, close, traceDir }) => {
       if (this.config.saveTrace) {
         await browserContext.tracing.stop();
+        if (traceDir) {
+          await this.finalizeOutputDirectory(traceDir);
+        }
       }
       await close();
     });
@@ -248,10 +257,7 @@ export class Context {
   }
 
   private _acquireTestIdAttribute(attribute: string): void {
-    if (
-      Context._testIdAttribute &&
-      Context._testIdAttribute !== attribute
-    ) {
+    if (Context._testIdAttribute && Context._testIdAttribute !== attribute) {
       throw new Error(
         `Conflicting test-id attributes: ${Context._testIdAttribute} and ${attribute}`
       );
@@ -297,6 +303,7 @@ export class Context {
   private async _setupBrowserContext(): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }> {
     if (this._closeBrowserContextPromise) {
       throw new Error('Another browser context is being closed.');
@@ -327,10 +334,13 @@ export class Context {
 }
 
 export class InputRecorder {
-  private constructor(
-    private readonly context: Context,
-    private readonly browserContext: BrowserContext
-  ) {}
+  private readonly context: Context;
+  private readonly browserContext: BrowserContext;
+
+  private constructor(context: Context, browserContext: BrowserContext) {
+    this.context = context;
+    this.browserContext = browserContext;
+  }
 
   static async create(context: Context, browserContext: BrowserContext) {
     const recorder = new InputRecorder(context, browserContext);
@@ -350,26 +360,35 @@ export class InputRecorder {
     )._enableRecorder(
       { mode: 'recording', recorderMode: 'api' },
       {
-        actionAdded: (page: Page, data: actions.ActionInContext, code: string) => {
-          if (this.context.isRunningTool()) return;
-          Tab.forPage(page)?.context.sessionLog?.logUserAction(
-            data.action,
-            Tab.forPage(page)!,
-            code,
-            false
-          );
+        actionAdded: (
+          page: Page,
+          data: actions.ActionInContext,
+          code: string
+        ) => {
+          if (this.context.isRunningTool()) {
+            return;
+          }
+          const tab = Tab.forPage(page);
+          tab?.context.sessionLog?.logUserAction(data.action, tab, code, false);
         },
         actionUpdated: (
           page: Page,
           data: actions.ActionInContext,
           code: string
         ) => {
-          if (this.context.isRunningTool()) return;
+          if (this.context.isRunningTool()) {
+            return;
+          }
           const tab = Tab.forPage(page);
-          if (tab) sessionLog.logUserAction(data.action, tab, code, true);
+          if (tab) {
+            sessionLog.logUserAction(data.action, tab, code, true);
+          }
         },
         signalAdded: (page: Page, data: actions.SignalInContext) => {
-          if (this.context.isRunningTool() || data.signal.name !== 'navigation') {
+          if (
+            this.context.isRunningTool() ||
+            data.signal.name !== 'navigation'
+          ) {
             return;
           }
           const tab = Tab.forPage(page);

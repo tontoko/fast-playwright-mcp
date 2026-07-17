@@ -11,12 +11,11 @@ export type ToolResponse = {
   isError?: boolean;
 };
 
-export type ToolSchema<
-  Input extends z.ZodTypeAny = z.ZodTypeAny,
-> = {
+export type ToolSchema<Input extends z.ZodTypeAny = z.ZodTypeAny> = {
   name: string;
   title: string;
   description: string;
   inputSchema: Input;
   type: ToolEffect;
+  _meta?: Record<string, unknown>;
 };

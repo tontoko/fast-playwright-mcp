@@ -1,0 +1,7 @@
+{
+  "repository": "microsoft/playwright-mcp",
+  "playwrightRepository": "microsoft/playwright",
+  "reviewedCommit": "5f8fc00210b27b4407c375b59cda4838045d429c",
+  "packageVersion": "0.0.78",
+  "playwrightVersion": "1.62.0-alpha-1783623505000"
+}

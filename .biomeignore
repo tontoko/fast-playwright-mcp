@@ -5,3 +5,4 @@ lib/
 .next/
 dist/
 build/
+src/apps/generated/

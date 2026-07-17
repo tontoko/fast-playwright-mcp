@@ -10,8 +10,11 @@ import {
   webkit,
 } from 'playwright';
 //
-// @ts-expect-error - Type definitions for playwright-core internal registry are not available
-import { registryDirectory } from 'playwright-core/lib/server/registry/index';
+// @ts-expect-error - playwright-core does not publish types for its exported coreBundle entry.
+import coreBundle from 'playwright-core/lib/coreBundle';
+
+const { registryDirectory } = coreBundle.registry;
+
 import type { FullConfig } from './config.js';
 import { outputFile } from './config.js';
 import { createHash } from './utils/guid.js';
@@ -52,6 +55,7 @@ export interface BrowserContextFactory {
   ): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }>;
 }
 class BaseContextFactory implements BrowserContextFactory {
@@ -89,6 +93,7 @@ class BaseContextFactory implements BrowserContextFactory {
   async createContext(clientInfo: ClientInfo): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }> {
     if (this.config.saveTrace) {
       this._tracesDir = await outputFile(
@@ -103,6 +108,7 @@ class BaseContextFactory implements BrowserContextFactory {
     return {
       browserContext,
       close: () => this._closeBrowserContext(browserContext, browser),
+      traceDir: this._tracesDir,
     };
   }
   protected _doCreateContext(_browser: Browser): Promise<BrowserContext> {
@@ -157,7 +163,10 @@ class CdpContextFactory extends BaseContextFactory {
     super('cdp', 'Connect to a browser over CDP', config);
   }
   protected override _doObtainBrowser(): Promise<Browser> {
-    return chromium.connectOverCDP(this.config.browser.cdpEndpoint as string);
+    return chromium.connectOverCDP(this.config.browser.cdpEndpoint as string, {
+      headers: this.config.browser.cdpHeaders,
+      timeout: this.config.browser.cdpTimeout,
+    });
   }
   protected override async _doCreateContext(
     browser: Browser
@@ -200,6 +209,7 @@ class PersistentContextFactory implements BrowserContextFactory {
   async createContext(clientInfo: ClientInfo): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }> {
     await injectCdpPort(this.config.browser);
     testDebug('create browser context (persistent)');
@@ -243,6 +253,7 @@ class PersistentContextFactory implements BrowserContextFactory {
     ): Promise<{
       browserContext: BrowserContext;
       close: () => Promise<void>;
+      traceDir?: string;
     }> => {
       if (attempt >= 5) {
         throw new Error(
@@ -263,7 +274,7 @@ class PersistentContextFactory implements BrowserContextFactory {
         );
         const close = () =>
           this._closeBrowserContext(browserContext, userDataDir);
-        return { browserContext, close };
+        return { browserContext, close, traceDir: tracesDir };
       } catch (error: unknown) {
         if (
           error instanceof Error &&

@@ -36,7 +36,7 @@ const evaluate = defineTabTool({
     description:
       'Evaluate JavaScript expression on page or element and return result',
     inputSchema: evaluateSchema,
-    type: 'destructive',
+    type: 'action',
   },
   handle: async (tab, params, response) => {
     let locator: playwright.Locator | undefined;
@@ -66,16 +66,36 @@ const evaluate = defineTabTool({
 
     await tab.waitForCompletion(async () => {
       try {
-        // Use Playwright's internal _evaluateFunction which safely handles string functions
-        // This method is used by the upstream microsoft/playwright-mcp implementation
-        interface ReceiverWithEvaluate {
-          _evaluateFunction(functionString: string): Promise<unknown>;
+        const expression = params.function;
+        const evalResult = locator
+          ? await locator.evaluate(async (element, source) => {
+              // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
+              const value = eval(`(${source})`);
+              const isFunction = typeof value === 'function';
+              const result = await (isFunction ? value(element) : value);
+              return { result, isFunction };
+            }, expression)
+          : await tab.page.evaluate(async (source) => {
+              // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
+              const value = eval(`(${source})`);
+              const isFunction = typeof value === 'function';
+              const result = await (isFunction ? value() : value);
+              return { result, isFunction };
+            }, expression);
+
+        const codeExpression = evalResult.isFunction
+          ? expression
+          : `() => (${expression})`;
+        if (locator) {
+          response.addCode(
+            `await page.${await generateLocator(locator)}.evaluate(${quote(codeExpression)});`
+          );
+        } else {
+          response.addCode(`await page.evaluate(${quote(codeExpression)});`);
         }
-        const receiver = (locator ??
-          tab.page) as unknown as ReceiverWithEvaluate;
-        const result = await receiver._evaluateFunction(params.function);
-        const stringifiedResult = JSON.stringify(result, null, 2);
-        response.addResult(stringifiedResult ?? 'undefined');
+        response.addResult(
+          JSON.stringify(evalResult.result, null, 2) ?? 'undefined'
+        );
       } catch (error) {
         response.addError(
           `JavaScript evaluation failed: ${error instanceof Error ? error.message : String(error)}`

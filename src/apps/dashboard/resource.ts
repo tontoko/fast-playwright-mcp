@@ -5,6 +5,7 @@ import type {
 import { DASHBOARD_HTML } from '../generated/dashboard.js';
 
 export const DASHBOARD_RESOURCE_URI = 'ui://dashboard';
+export const DASHBOARD_MIME_TYPE = 'text/html;profile=mcp-app';
 
 export function dashboardResources(): Resource[] {
   return [
@@ -12,7 +13,7 @@ export function dashboardResources(): Resource[] {
       uri: DASHBOARD_RESOURCE_URI,
       name: 'Browser dashboard',
       description: 'Browser preview and explicit tab selection.',
-      mimeType: 'text/html',
+      mimeType: DASHBOARD_MIME_TYPE,
     },
   ];
 }
@@ -26,7 +27,7 @@ export function readDashboardResource(
   return Promise.resolve([
     {
       uri,
-      mimeType: 'text/html',
+      mimeType: DASHBOARD_MIME_TYPE,
       text: DASHBOARD_HTML,
     },
   ]);

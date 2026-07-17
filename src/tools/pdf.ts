@@ -17,7 +17,7 @@ const pdf = defineTabTool({
     title: 'Save as PDF',
     description: 'Save page as PDF',
     inputSchema: pdfSchema,
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (tab, params, response) => {
     const fileName = await tab.context.outputFile(
@@ -26,6 +26,7 @@ const pdf = defineTabTool({
     response.addCode(`await page.pdf(${formatObject({ path: fileName })});`);
     response.addResult(`Saved page as ${fileName}`);
     await tab.page.pdf({ path: fileName });
+    await tab.context.finalizeOutputFile(fileName);
   },
 });
 export default [pdf];

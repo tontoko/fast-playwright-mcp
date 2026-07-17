@@ -2,10 +2,6 @@ import { z } from 'zod';
 import { expectationSchema } from '../schemas/expectation.js';
 import { defineTabTool } from './tool.js';
 
-type SnapshotPage = {
-  _snapshotForAI(): Promise<{ full: string }>;
-};
-
 const findSchema = z.object({
   query: z.string().min(1).max(500),
   regex: z.boolean().optional().default(false),
@@ -82,10 +78,8 @@ export const browserFind = defineTabTool({
     type: 'readOnly',
   },
   handle: async (tab, params, response) => {
-    const snapshot = await (
-      tab.page as unknown as SnapshotPage
-    )._snapshotForAI();
-    const lines = snapshot.full.split('\n');
+    const snapshot = await tab.page.ariaSnapshot({ mode: 'ai' });
+    const lines = snapshot.split('\n');
     const matches = createMatcher(
       params.query,
       params.regex,

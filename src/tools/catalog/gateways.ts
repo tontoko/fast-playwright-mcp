@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import type { ToolResponse } from '../../mcp/types.js';
 import { toMcpTool } from '../../mcp/tool.js';
-import { defineTool, type AnyTool } from '../tool.js';
+import type { ToolResponse } from '../../mcp/types.js';
+import { type AnyTool, defineTool } from '../tool.js';
 import type { ToolRegistry } from './registry.js';
 import { searchTools } from './search.js';
 import type { ToolGroup } from './types.js';
@@ -80,9 +80,7 @@ function collectNames(
   return [...names].sort();
 }
 
-export function createCatalogTools(
-  options: CatalogGatewayOptions
-): AnyTool[] {
+export function createCatalogTools(options: CatalogGatewayOptions): AnyTool[] {
   const browserTools = defineTool({
     capability: 'core',
     schema: {
@@ -157,6 +155,8 @@ export function createCatalogTools(
             visibleTools: options.visibility.visibleNames(registry).sort(),
             registeredToolCount: registry.registrations.length,
           });
+        default:
+          throw new Error('Unsupported catalog action');
       }
     },
   });
@@ -172,12 +172,7 @@ export function createCatalogTools(
       type: 'readOnly',
     },
     handle: async (_context, params, _response, signal) =>
-      options.executeTarget(
-        params.tool,
-        params.arguments,
-        'readOnly',
-        signal
-      ),
+      options.executeTarget(params.tool, params.arguments, 'readOnly', signal),
   });
 
   const browserExecute = defineTool({

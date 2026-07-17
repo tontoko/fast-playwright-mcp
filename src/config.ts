@@ -3,11 +3,7 @@ import { platform, tmpdir } from 'node:os';
 import { join as pathJoin } from 'node:path';
 import type { BrowserContextOptions, LaunchOptions } from 'playwright';
 import { devices } from 'playwright';
-import type {
-  Config,
-  ToolCapability,
-  ToolProfile,
-} from '../config.js';
+import type { Config, ToolCapability, ToolProfile } from '../config.js';
 import { sanitizeForFilePath } from './utils/guid.js';
 
 const MAX_CONFIG_FILE_SIZE = 1024 * 1024;
@@ -15,6 +11,7 @@ const DEFAULT_ACTION_TIMEOUT = 5000;
 const DEFAULT_NAVIGATION_TIMEOUT = 60_000;
 const DEFAULT_EXPECT_TIMEOUT = 5000;
 const DEFAULT_CDP_TIMEOUT = 30_000;
+const LINE_BREAK_PATTERN = /\r?\n/u;
 
 export type CLIOptions = {
   allowedHosts?: string[];
@@ -113,10 +110,11 @@ export function resolveConfig(config: Config): FullConfig {
 }
 
 export async function resolveCLIConfig(
-  cliOptions: CLIOptions
+  cliOptions: CLIOptions,
+  env: NodeJS.ProcessEnv = process.env
 ): Promise<FullConfig> {
   const configInFile = await loadConfig(cliOptions.config);
-  const envOverrides = configFromEnv();
+  const envOverrides = configFromEnv(env);
   const cliOverrides = configFromCLIOptions(cliOptions);
   const secretOverrides = cliOptions.secretsFile
     ? { secrets: await loadSecretsFile(cliOptions.secretsFile) }
@@ -211,8 +209,7 @@ function parseViewportSize(viewportSize: string): {
 } {
   const [width, height] = viewportSize.split(',').map((value) => +value);
   if (
-    !Number.isFinite(width) ||
-    !Number.isFinite(height) ||
+    !(Number.isFinite(width) && Number.isFinite(height)) ||
     width <= 0 ||
     height <= 0
   ) {
@@ -276,65 +273,49 @@ export function configFromCLIOptions(cliOptions: CLIOptions): Config {
   };
 }
 
-function configFromEnv(): Config {
-  return configFromCLIOptions(buildEnvOptions());
+function configFromEnv(env: NodeJS.ProcessEnv): Config {
+  return configFromCLIOptions(buildEnvOptions(env));
 }
 
-function buildEnvOptions(): CLIOptions {
+function buildEnvOptions(env: NodeJS.ProcessEnv): CLIOptions {
   return {
-    allowedHosts: commaSeparatedList(process.env.PLAYWRIGHT_MCP_ALLOWED_HOSTS),
-    allowedOrigins: semicolonSeparatedList(
-      process.env.PLAYWRIGHT_MCP_ALLOWED_ORIGINS
-    ),
-    blockedOrigins: semicolonSeparatedList(
-      process.env.PLAYWRIGHT_MCP_BLOCKED_ORIGINS
-    ),
-    ignoreHttpsErrors: envToBoolean(
-      process.env.PLAYWRIGHT_MCP_IGNORE_HTTPS_ERRORS
-    ),
-    host: envToString(process.env.PLAYWRIGHT_MCP_HOST),
-    port: envToNumber(process.env.PLAYWRIGHT_MCP_PORT),
-    browser: envToString(process.env.PLAYWRIGHT_MCP_BROWSER),
-    executablePath: envToString(
-      process.env.PLAYWRIGHT_MCP_EXECUTABLE_PATH
-    ),
-    headless: envToBoolean(process.env.PLAYWRIGHT_MCP_HEADLESS),
-    sandbox: envToBoolean(process.env.PLAYWRIGHT_MCP_SANDBOX),
-    isolated: envToBoolean(process.env.PLAYWRIGHT_MCP_ISOLATED),
-    blockServiceWorkers: envToBoolean(
-      process.env.PLAYWRIGHT_MCP_BLOCK_SERVICE_WORKERS
-    ),
-    device: envToString(process.env.PLAYWRIGHT_MCP_DEVICE),
-    viewportSize: envToString(process.env.PLAYWRIGHT_MCP_VIEWPORT_SIZE),
-    userAgent: envToString(process.env.PLAYWRIGHT_MCP_USER_AGENT),
-    userDataDir: envToString(process.env.PLAYWRIGHT_MCP_USER_DATA_DIR),
-    storageState: envToString(process.env.PLAYWRIGHT_MCP_STORAGE_STATE),
-    proxyServer: envToString(process.env.PLAYWRIGHT_MCP_PROXY_SERVER),
-    proxyBypass: envToString(process.env.PLAYWRIGHT_MCP_PROXY_BYPASS),
-    outputDir: envToString(process.env.PLAYWRIGHT_MCP_OUTPUT_DIR),
-    outputMaxSize: envToNumber(process.env.PLAYWRIGHT_MCP_OUTPUT_MAX_SIZE),
-    saveTrace: envToBoolean(process.env.PLAYWRIGHT_MCP_SAVE_TRACE),
+    allowedHosts: commaSeparatedList(env.PLAYWRIGHT_MCP_ALLOWED_HOSTS),
+    allowedOrigins: semicolonSeparatedList(env.PLAYWRIGHT_MCP_ALLOWED_ORIGINS),
+    blockedOrigins: semicolonSeparatedList(env.PLAYWRIGHT_MCP_BLOCKED_ORIGINS),
+    ignoreHttpsErrors: envToBoolean(env.PLAYWRIGHT_MCP_IGNORE_HTTPS_ERRORS),
+    host: envToString(env.PLAYWRIGHT_MCP_HOST),
+    port: envToNumber(env.PLAYWRIGHT_MCP_PORT),
+    browser: envToString(env.PLAYWRIGHT_MCP_BROWSER),
+    executablePath: envToString(env.PLAYWRIGHT_MCP_EXECUTABLE_PATH),
+    headless: envToBoolean(env.PLAYWRIGHT_MCP_HEADLESS),
+    sandbox: envToBoolean(env.PLAYWRIGHT_MCP_SANDBOX),
+    isolated: envToBoolean(env.PLAYWRIGHT_MCP_ISOLATED),
+    blockServiceWorkers: envToBoolean(env.PLAYWRIGHT_MCP_BLOCK_SERVICE_WORKERS),
+    device: envToString(env.PLAYWRIGHT_MCP_DEVICE),
+    viewportSize: envToString(env.PLAYWRIGHT_MCP_VIEWPORT_SIZE),
+    userAgent: envToString(env.PLAYWRIGHT_MCP_USER_AGENT),
+    userDataDir: envToString(env.PLAYWRIGHT_MCP_USER_DATA_DIR),
+    storageState: envToString(env.PLAYWRIGHT_MCP_STORAGE_STATE),
+    proxyServer: envToString(env.PLAYWRIGHT_MCP_PROXY_SERVER),
+    proxyBypass: envToString(env.PLAYWRIGHT_MCP_PROXY_BYPASS),
+    outputDir: envToString(env.PLAYWRIGHT_MCP_OUTPUT_DIR),
+    outputMaxSize: envToNumber(env.PLAYWRIGHT_MCP_OUTPUT_MAX_SIZE),
+    saveTrace: envToBoolean(env.PLAYWRIGHT_MCP_SAVE_TRACE),
     imageResponses:
-      process.env.PLAYWRIGHT_MCP_IMAGE_RESPONSES === 'omit'
-        ? 'omit'
-        : undefined,
-    caps: commaSeparatedList(process.env.PLAYWRIGHT_MCP_CAPS),
-    cdpEndpoint: envToString(process.env.PLAYWRIGHT_MCP_CDP_ENDPOINT),
-    cdpHeaders: headerList(process.env.PLAYWRIGHT_MCP_CDP_HEADERS),
-    cdpTimeout: envToNumber(process.env.PLAYWRIGHT_MCP_CDP_TIMEOUT),
-    codegen: parseOptionalCodegen(process.env.PLAYWRIGHT_MCP_CODEGEN),
-    config: envToString(process.env.PLAYWRIGHT_MCP_CONFIG),
-    secretsFile: envToString(process.env.PLAYWRIGHT_MCP_SECRETS),
-    testIdAttribute: envToString(
-      process.env.PLAYWRIGHT_MCP_TEST_ID_ATTRIBUTE
-    ),
-    timeoutAction: envToNumber(process.env.PLAYWRIGHT_MCP_TIMEOUT_ACTION),
-    timeoutNavigation: envToNumber(
-      process.env.PLAYWRIGHT_MCP_TIMEOUT_NAVIGATION
-    ),
-    timeoutExpect: envToNumber(process.env.PLAYWRIGHT_MCP_TIMEOUT_EXPECT),
-    toolProfile: process.env.FAST_PLAYWRIGHT_TOOL_PROFILE
-      ? parseToolProfile(process.env.FAST_PLAYWRIGHT_TOOL_PROFILE)
+      env.PLAYWRIGHT_MCP_IMAGE_RESPONSES === 'omit' ? 'omit' : undefined,
+    caps: commaSeparatedList(env.PLAYWRIGHT_MCP_CAPS),
+    cdpEndpoint: envToString(env.PLAYWRIGHT_MCP_CDP_ENDPOINT),
+    cdpHeaders: headerList(env.PLAYWRIGHT_MCP_CDP_HEADERS),
+    cdpTimeout: envToNumber(env.PLAYWRIGHT_MCP_CDP_TIMEOUT),
+    codegen: parseOptionalCodegen(env.PLAYWRIGHT_MCP_CODEGEN),
+    config: envToString(env.PLAYWRIGHT_MCP_CONFIG),
+    secretsFile: envToString(env.PLAYWRIGHT_MCP_SECRETS),
+    testIdAttribute: envToString(env.PLAYWRIGHT_MCP_TEST_ID_ATTRIBUTE),
+    timeoutAction: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_ACTION),
+    timeoutNavigation: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_NAVIGATION),
+    timeoutExpect: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_EXPECT),
+    toolProfile: env.FAST_PLAYWRIGHT_TOOL_PROFILE
+      ? parseToolProfile(env.FAST_PLAYWRIGHT_TOOL_PROFILE)
       : undefined,
   };
 }
@@ -360,7 +341,7 @@ async function loadSecretsFile(path: string): Promise<Record<string, string>> {
     throw new Error('Secrets file too large');
   }
   const secrets: Record<string, string> = {};
-  for (const rawLine of content.split(/\r?\n/u)) {
+  for (const rawLine of content.split(LINE_BREAK_PATTERN)) {
     const line = rawLine.trim();
     if (!line || line.startsWith('#')) {
       continue;
@@ -479,8 +460,8 @@ function createMergedBrowserConfig(
       ...pickDefined(overrides.browser?.contextOptions),
     },
     cdpHeaders: {
-      ...pickDefined(base.browser.cdpHeaders),
-      ...pickDefined(overrides.browser?.cdpHeaders),
+      ...(base.browser.cdpHeaders ?? {}),
+      ...(overrides.browser?.cdpHeaders ?? {}),
     },
     cdpTimeout:
       overrides.browser?.cdpTimeout ??
@@ -531,15 +512,17 @@ export function headerParser(
   }
   const name = value.slice(0, separator).trim();
   const headerValue = value.slice(separator + 1).trim();
-  if (!name || !headerValue) {
+  if (!(name && headerValue)) {
     throw new Error(`Invalid header: ${value}`);
   }
   return { ...previous, [name]: headerValue };
 }
 
-function headerList(value: string | undefined): Record<string, string> | undefined {
+function headerList(
+  value: string | undefined
+): Record<string, string> | undefined {
   if (!value) {
-    return undefined;
+    return;
   }
   return value
     .split(';')
@@ -584,7 +567,7 @@ function envToBoolean(value: string | undefined): boolean | undefined {
   if (value === 'false' || value === '0') {
     return false;
   }
-  return undefined;
+  return;
 }
 
 function envToString(value: string | undefined): string | undefined {

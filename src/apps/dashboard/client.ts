@@ -2,11 +2,11 @@ import { App } from '@modelcontextprotocol/ext-apps';
 import {
   clearError,
   firstText,
+  type McpContent,
   parseTabLines,
   renderError,
   renderScreenshot,
   renderTabs,
-  type McpContent,
 } from './render.js';
 
 const app = new App({ name: 'Browser dashboard', version: '1.0.0' });
@@ -29,9 +29,7 @@ function contentFrom(result: unknown): McpContent[] {
   if (!result || typeof result !== 'object' || !('content' in result)) {
     return [];
   }
-  return Array.isArray(result.content)
-    ? (result.content as McpContent[])
-    : [];
+  return Array.isArray(result.content) ? (result.content as McpContent[]) : [];
 }
 
 function callTool(

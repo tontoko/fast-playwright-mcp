@@ -19,7 +19,7 @@ const snapshot = defineTool({
     inputSchema: z.object({
       expectation: expectationSchema.describe('Page state config'),
     }),
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (context, params, response) => {
     await context.ensureTab();

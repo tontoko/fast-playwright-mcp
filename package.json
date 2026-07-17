@@ -37,7 +37,11 @@
     "wtest": "playwright test --project=webkit",
     "run-server": "bun lib/browserServer.js",
     "clean": "rm -rf lib benchmark/lib",
-    "npm-publish": "npm run clean && npm run build:publish && npm run test && npm publish"
+    "npm-publish": "npm run clean && npm run build:publish && npm run test && npm publish",
+    "typecheck": "tsgo --noEmit -p tsconfig.json",
+    "test:package": "playwright test tests/package-smoke.spec.ts --project=chromium",
+    "check:review-threads": "bun scripts/check-review-threads.ts",
+    "upstream:check:fixture": "bun scripts/upstream-check.ts --fixture tests/upstream/fixtures/compare.json"
   },
   "exports": {
     "./package.json": "./package.json",

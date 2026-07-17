@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { z } from 'zod';
-import {
-  ToolRegistry,
-  registerTools,
-} from '../src/tools/catalog/registry.js';
+import { registerTools, ToolRegistry } from '../src/tools/catalog/registry.js';
 import {
   ADAPTIVE_BOOTSTRAP_NAMES,
   MINIMAL_BOOTSTRAP_NAMES,
@@ -21,7 +18,9 @@ function createTool(name: string) {
       inputSchema: z.object({}),
       type: name === 'browser_execute' ? 'action' : 'readOnly',
     },
-    async handle() {},
+    handle() {
+      return Promise.resolve();
+    },
   });
 }
 
@@ -33,9 +32,7 @@ const names = [
 const registry = new ToolRegistry(registerTools(names.map(createTool)));
 
 test('adaptive profile exposes the exact bootstrap set', () => {
-  const visible = new ToolVisibility('adaptive')
-    .visibleNames(registry)
-    .sort();
+  const visible = new ToolVisibility('adaptive').visibleNames(registry).sort();
   expect(visible).toEqual([...ADAPTIVE_BOOTSTRAP_NAMES].sort());
 });
 
@@ -45,7 +42,9 @@ test('minimal profile exposes only the three gateways', () => {
 });
 
 test('full profile exposes the complete registry', () => {
-  expect(new ToolVisibility('full').visible(registry)).toHaveLength(names.length);
+  expect(new ToolVisibility('full').visible(registry)).toHaveLength(
+    names.length
+  );
 });
 
 test('enable, disable, and reset are session-local', () => {
@@ -57,7 +56,7 @@ test('enable, disable, and reset are session-local', () => {
     'browser_console_messages'
   );
   expect(first.disableTools(registry, ['browser_console_messages'])).toBe(true);
-  first.enableTools(registry, ['browser_click']);
+  expect(first.enableTools(registry, ['browser_click'])).toBe(true);
   expect(first.reset()).toBe(true);
   expect(first.visibleNames(registry).sort()).toEqual(
     [...ADAPTIVE_BOOTSTRAP_NAMES].sort()

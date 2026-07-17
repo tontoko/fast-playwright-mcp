@@ -41,13 +41,19 @@ const wait = defineTool({
       response.addCode(
         `await page.getByText(${JSON.stringify(params.textGone)}).first().waitFor({ state: 'hidden' });`
       );
-      await goneLocator.waitFor({ state: 'hidden' });
+      await goneLocator.waitFor({
+        state: 'hidden',
+        timeout: context.config.timeouts.expect,
+      });
     }
     if (locator) {
       response.addCode(
         `await page.getByText(${JSON.stringify(params.text)}).first().waitFor({ state: 'visible' });`
       );
-      await locator.waitFor({ state: 'visible' });
+      await locator.waitFor({
+        state: 'visible',
+        timeout: context.config.timeouts.expect,
+      });
     }
     response.addResult(
       `Waited for ${params.text ?? params.textGone ?? params.time}`

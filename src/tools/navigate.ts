@@ -34,7 +34,7 @@ const goBack = defineTabTool({
     inputSchema: z.object({
       expectation: expectationSchema.describe('Page state after going back'),
     }),
-    type: 'readOnly',
+    type: 'destructive',
   },
   handle: async (tab, _params, response) => {
     await tab.page.goBack();
@@ -50,7 +50,7 @@ const goForward = defineTabTool({
     inputSchema: z.object({
       expectation: expectationSchema.describe('Page state after going forward'),
     }),
-    type: 'readOnly',
+    type: 'destructive',
   },
   handle: async (tab, _params, response) => {
     await tab.page.goForward();

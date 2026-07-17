@@ -229,7 +229,7 @@ export const browserInspectHtml = defineTabTool({
     name: 'browser_inspect_html',
     title: 'HTML inspection',
     description:
-      'Extract and analyze HTML content from web pages with intelligent filtering and size control. Optimized for LLM consumption with configurable depth, format options, and automatic truncation.',
+      'Extract filtered HTML with configurable depth, output format, size limits, and automatic truncation.',
     inputSchema: browserInspectHtmlSchema,
     type: 'readOnly',
   },

@@ -11,11 +11,7 @@ export type McpContent = {
 };
 
 const TAB_LINE_PATTERN = /^-\s+(\d+):\s+(.+)$/u;
-const ALLOWED_IMAGE_TYPES = new Set([
-  'image/png',
-  'image/jpeg',
-  'image/webp',
-]);
+const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 
 export function parseTabLines(text: string): TabEntry[] {
   return text
@@ -75,7 +71,7 @@ export function renderScreenshot(
       typeof candidate.mimeType === 'string' &&
       ALLOWED_IMAGE_TYPES.has(candidate.mimeType)
   );
-  if (!part?.data || !part.mimeType) {
+  if (!(part?.data && part.mimeType)) {
     image.removeAttribute('src');
     image.hidden = true;
     return false;

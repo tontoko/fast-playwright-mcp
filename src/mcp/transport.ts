@@ -3,16 +3,20 @@ import type http from 'node:http';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { httpAddressToString, startHttpServer } from '../http-server.js';
+import {
+  httpAddressToString,
+  isHostAllowed,
+  startHttpServer,
+} from '../http-server.js';
 import type { ServerBackendFactory } from './server.js';
 import { connect } from './server.js';
 export async function start(
   serverBackendFactory: ServerBackendFactory,
-  options: { host?: string; port?: number }
+  options: { host?: string; port?: number; allowedHosts?: string[] }
 ) {
   if (options.port !== undefined) {
     const httpServer = await startHttpServer(options);
-    startHttpTransport(httpServer, serverBackendFactory);
+    startHttpTransport(httpServer, serverBackendFactory, options);
   } else {
     await startStdioTransport(serverBackendFactory);
   }
@@ -134,11 +138,22 @@ async function handleStreamable(
 }
 function startHttpTransport(
   httpServer: http.Server,
-  serverBackendFactory: ServerBackendFactory
+  serverBackendFactory: ServerBackendFactory,
+  options: { host?: string; allowedHosts?: string[] }
 ) {
   const sseSessions = new Map();
   const streamableSessions = new Map();
   httpServer.on('request', async (req, res) => {
+    if (!req.headers.host) {
+      res.statusCode = 400;
+      res.end('Missing Host header');
+      return;
+    }
+    if (!isHostAllowed(req.headers.host, options.host, options.allowedHosts)) {
+      res.statusCode = 403;
+      res.end('Host not allowed');
+      return;
+    }
     const url = new URL(`http://localhost${req.url}`);
     if (url.pathname.startsWith('/sse')) {
       await handleSSE(serverBackendFactory, req, res, url, sseSessions);

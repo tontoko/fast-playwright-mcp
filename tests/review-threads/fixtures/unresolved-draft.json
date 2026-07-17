@@ -1,0 +1,4 @@
+{
+  "isDraft": true,
+  "reviewThreads": { "nodes": [{ "isResolved": false, "path": "a.ts" }] }
+}

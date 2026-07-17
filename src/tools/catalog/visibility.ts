@@ -19,19 +19,26 @@ export const MINIMAL_BOOTSTRAP_NAMES = Object.freeze([
 ] as const);
 
 export class ToolVisibility {
+  readonly profile: ToolProfile;
   private readonly enabled = new Set<string>();
 
-  constructor(readonly profile: ToolProfile) {}
+  constructor(profile: ToolProfile) {
+    this.profile = profile;
+  }
 
   visible(registry: ToolRegistry): ToolRegistration[] {
-    if (this.profile === 'full') return [...registry.registrations];
+    if (this.profile === 'full') {
+      return [...registry.registrations];
+    }
     const bootstrap =
       this.profile === 'minimal'
         ? MINIMAL_BOOTSTRAP_NAMES
         : ADAPTIVE_BOOTSTRAP_NAMES;
     const names = new Set<string>([...bootstrap, ...this.enabled]);
-    return registry.registrations.filter(({ tool }) =>
-      names.has(tool.schema.name)
+    return registry.registrations.filter(
+      (registration) =>
+        names.has(registration.tool.schema.name) ||
+        (this.profile === 'adaptive' && registration.bootstrap)
     );
   }
 
@@ -40,10 +47,16 @@ export class ToolVisibility {
   }
 
   enableTools(registry: ToolRegistry, names: readonly string[]): boolean {
-    if (this.profile === 'full') return false;
-    for (const name of names) registry.require(name);
+    if (this.profile === 'full') {
+      return false;
+    }
+    for (const name of names) {
+      registry.require(name);
+    }
     const before = this.enabled.size;
-    for (const name of names) this.enabled.add(name);
+    for (const name of names) {
+      this.enabled.add(name);
+    }
     return before !== this.enabled.size;
   }
 
@@ -57,10 +70,16 @@ export class ToolVisibility {
   }
 
   disableTools(registry: ToolRegistry, names: readonly string[]): boolean {
-    if (this.profile === 'full') return false;
-    for (const name of names) registry.require(name);
+    if (this.profile === 'full') {
+      return false;
+    }
+    for (const name of names) {
+      registry.require(name);
+    }
     let changed = false;
-    for (const name of names) changed = this.enabled.delete(name) || changed;
+    for (const name of names) {
+      changed = this.enabled.delete(name) || changed;
+    }
     return changed;
   }
 
@@ -74,7 +93,9 @@ export class ToolVisibility {
   }
 
   reset(): boolean {
-    if (this.profile === 'full') return false;
+    if (this.profile === 'full') {
+      return false;
+    }
     const changed = this.enabled.size > 0;
     this.enabled.clear();
     return changed;

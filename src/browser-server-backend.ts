@@ -14,12 +14,11 @@ import { Context } from './context.js';
 import type * as mcpServer from './mcp/server.js';
 import { Response } from './response.js';
 import { SessionLog } from './session-log.js';
-import { createCatalogTools } from './tools/catalog/gateways.js';
-import { ToolRegistry, registerTools } from './tools/catalog/registry.js';
+import type { ToolRegistry } from './tools/catalog/registry.js';
 import { ToolVisibility } from './tools/catalog/visibility.js';
 import type { AnyTool } from './tools/tool.js';
 import { defineTool } from './tools/tool.js';
-import { filteredTools } from './tools.js';
+import { createToolRegistry } from './tools.js';
 import { browserServerBackendDebug, logUnhandledError } from './utils/log.js';
 import { packageJSON } from './utils/package.js';
 
@@ -62,28 +61,18 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
       this.readResource = readDashboardResource;
     }
 
-    const baseTools = filteredTools(config);
-    if (factories.length > 1) {
-      baseTools.push(this._defineContextSwitchTool(factories));
-    }
-
-    let registry: ToolRegistry;
-    const catalogTools = createCatalogTools({
-      registry: () => registry,
-      visibility: this._visibility,
-      notifyChanged: () => this._notifyToolsChanged(),
-      executeTarget: (name, args, expected, signal) =>
-        this._executeTarget(name, args, expected, signal),
-    });
-    registry = new ToolRegistry([
-      ...registerTools(baseTools),
-      ...registerTools(catalogTools, {
-        browser_tools: { group: 'bootstrap', bootstrap: true },
-        browser_query: { group: 'bootstrap', bootstrap: true },
-        browser_execute: { group: 'bootstrap', bootstrap: true },
-      }),
-    ]);
-    this._registry = registry;
+    const extraTools =
+      factories.length > 1 ? [this._defineContextSwitchTool(factories)] : [];
+    this._registry = createToolRegistry(
+      config,
+      {
+        visibility: this._visibility,
+        notifyChanged: () => this._notifyToolsChanged(),
+        executeTarget: (name, args, expected, signal) =>
+          this._executeTarget(name, args, expected, signal),
+      },
+      extraTools
+    );
   }
 
   async initialize(server: mcpServer.Server): Promise<void> {
@@ -125,7 +114,7 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
     return this._registry.get(name)?.tool.schema;
   }
 
-  async callTool(
+  callTool(
     schema: mcpServer.ToolSchema,
     rawArguments: Record<string, unknown> | undefined,
     signal?: AbortSignal
@@ -143,10 +132,12 @@ export class BrowserServerBackend implements mcpServer.ServerBackend {
   }
 
   serverClosed() {
-    this._context?.dispose().catch(logUnhandledError);
+    Promise.all([this._context?.dispose(), this._sessionLog?.dispose()]).catch(
+      logUnhandledError
+    );
   }
 
-  private async _executeTarget(
+  private _executeTarget(
     name: string,
     rawArguments: Record<string, unknown> | undefined,
     expected: 'readOnly' | 'action',

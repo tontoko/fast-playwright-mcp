@@ -21,13 +21,27 @@ function score(registration: ToolRegistration, query: string): number {
   const name = registration.tool.schema.name.toLowerCase();
   const title = registration.tool.schema.title.toLowerCase();
   const description = registration.tool.schema.description.toLowerCase();
-  if (name === query) return 100;
-  if (registration.aliases.some((alias) => alias === query)) return 90;
-  if (name.includes(query)) return 70;
-  if (registration.aliases.some((alias) => alias.includes(query))) return 60;
-  if (title.includes(query)) return 50;
-  if (registration.keywords.some((keyword) => keyword === query)) return 30;
-  if (description.includes(query)) return 10;
+  if (name === query) {
+    return 100;
+  }
+  if (registration.aliases.some((alias) => alias === query)) {
+    return 90;
+  }
+  if (name.includes(query)) {
+    return 70;
+  }
+  if (registration.aliases.some((alias) => alias.includes(query))) {
+    return 60;
+  }
+  if (title.includes(query)) {
+    return 50;
+  }
+  if (registration.keywords.some((keyword) => keyword === query)) {
+    return 30;
+  }
+  if (description.includes(query)) {
+    return 10;
+  }
   return 0;
 }
 
@@ -37,7 +51,9 @@ export function searchTools(
   limit = 6
 ): ToolSearchResult[] {
   const query = rawQuery.trim().toLowerCase();
-  if (!query) return [];
+  if (!query) {
+    return [];
+  }
   return registry.registrations
     .filter(
       ({ tool }) =>

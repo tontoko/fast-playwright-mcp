@@ -1,6 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
   "extends": ["ultracite"],
+  "files": {
+    "includes": ["**", "!src/apps/generated/**"]
+  },
   "javascript": {
     "globals": ["chrome"]
   },

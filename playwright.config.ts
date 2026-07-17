@@ -27,7 +27,19 @@ export default defineConfig<TestOptions>({
   projects: [
     { name: 'chrome' },
     { name: 'msedge', use: { mcpBrowser: 'msedge' } },
-    { name: 'chromium', use: { mcpBrowser: 'chromium' } },
+    {
+      name: 'chromium',
+      use: {
+        mcpBrowser: 'chromium',
+        ...(process.env.PLAYWRIGHT_MCP_TEST_EXECUTABLE_PATH
+          ? {
+              launchOptions: {
+                executablePath: process.env.PLAYWRIGHT_MCP_TEST_EXECUTABLE_PATH,
+              },
+            }
+          : {}),
+      },
+    },
     ...(process.env.MCP_IN_DOCKER
       ? [
           {

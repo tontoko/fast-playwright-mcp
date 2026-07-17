@@ -1,1 +1,0 @@
-Retry complete validation after the source bundle upload.

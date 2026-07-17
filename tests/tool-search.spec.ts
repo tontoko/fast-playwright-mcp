@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { z } from 'zod';
-import {
-  ToolRegistry,
-  registerTools,
-} from '../src/tools/catalog/registry.js';
+import { registerTools, ToolRegistry } from '../src/tools/catalog/registry.js';
 import { searchTools } from '../src/tools/catalog/search.js';
 import { defineTool } from '../src/tools/tool.js';
 
@@ -17,23 +14,17 @@ function createTool(name: string, title: string, description: string) {
       inputSchema: z.object({}),
       type: 'readOnly',
     },
-    async handle() {},
+    handle() {
+      return Promise.resolve();
+    },
   });
 }
 
 const registry = new ToolRegistry(
   registerTools(
     [
-      createTool(
-        'browser_snapshot',
-        'Capture snapshot',
-        'Read page structure'
-      ),
-      createTool(
-        'browser_screenshot',
-        'Capture image',
-        'Take a page image'
-      ),
+      createTool('browser_snapshot', 'Capture snapshot', 'Read page structure'),
+      createTool('browser_screenshot', 'Capture image', 'Take a page image'),
       createTool(
         'browser_console_messages',
         'Console messages',

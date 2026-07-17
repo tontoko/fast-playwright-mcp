@@ -23,7 +23,7 @@ function replacePlaceholder(
       `Dashboard template must contain exactly one ${placeholder} placeholder.`
     );
   }
-  return source.replace(placeholder, value);
+  return source.replace(placeholder, () => value);
 }
 
 const result = await build({
@@ -46,7 +46,7 @@ const script = new TextDecoder()
   .replaceAll('</script', '<\\/script');
 const csp = [
   "default-src 'none'",
-  "img-src data:",
+  'img-src data:',
   `script-src '${hash(script)}'`,
   `style-src '${hash(style)}'`,
   "connect-src 'none'",

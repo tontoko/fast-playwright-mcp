@@ -95,7 +95,7 @@ export const browserDiagnose = defineTabTool({
     title: 'Diagnose page',
     type: 'readOnly',
     description:
-      'Analyze page complexity and performance characteristics. Reports on: iframe count, DOM size, modal states, element statistics. Use for: debugging slow pages, understanding page structure, or monitoring page complexity.',
+      'Analyze page complexity, iframe count, DOM size, modal state, element statistics, and performance characteristics.',
     inputSchema: diagnoseSchema,
   },
   handle: async (tab, params, response) => {

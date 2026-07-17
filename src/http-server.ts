@@ -31,3 +31,42 @@ export function httpAddressToString(
   }
   return `http://${resolvedHost}:${resolvedPort}`;
 }
+
+export function normalizeHostHeader(value: string): string | null {
+  if (value.includes('@')) {
+    return null;
+  }
+  try {
+    return new URL(`http://${value}`).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+export function isHostAllowed(
+  hostHeader: string | undefined,
+  boundHost: string | undefined,
+  allowedHosts: readonly string[] | undefined
+): boolean {
+  if (!hostHeader) {
+    return false;
+  }
+  if (allowedHosts?.includes('*')) {
+    return true;
+  }
+  const host = normalizeHostHeader(hostHeader);
+  if (!host) {
+    return false;
+  }
+  if (allowedHosts?.length) {
+    return allowedHosts.some((allowed) => {
+      const normalized = normalizeHostHeader(allowed);
+      return normalized === host || allowed.toLowerCase() === host;
+    });
+  }
+  const defaults = new Set(['localhost', '127.0.0.1', '::1']);
+  if (boundHost && boundHost !== '0.0.0.0' && boundHost !== '::') {
+    defaults.add(boundHost.toLowerCase());
+  }
+  return defaults.has(host);
+}

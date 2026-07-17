@@ -20,6 +20,9 @@ export type DialogModalState = {
 
 export type ModalState = FileUploadModalState | DialogModalState;
 
+// biome-ignore lint/suspicious/noConfusingVoidType: tool handlers return no value unless forwarding a raw MCP response.
+export type ToolHandlerValue = void | ToolResponse;
+
 export type Tool<
   Input extends z.ZodType = z.ZodType<unknown, z.ZodTypeDef, unknown>,
 > = {
@@ -30,7 +33,7 @@ export type Tool<
     params: z.output<Input>,
     response: Response,
     signal?: AbortSignal
-  ) => Promise<void | ToolResponse>;
+  ) => Promise<ToolHandlerValue>;
 };
 
 export type AnyTool = Tool<z.ZodTypeAny>;
@@ -50,7 +53,7 @@ export type TabTool<Input extends z.ZodType = z.ZodType> = {
     params: z.output<Input>,
     response: Response,
     signal?: AbortSignal
-  ) => Promise<void | ToolResponse>;
+  ) => Promise<ToolHandlerValue>;
 };
 
 export function defineTabTool<Input extends z.ZodType>(

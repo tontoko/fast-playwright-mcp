@@ -3,6 +3,7 @@ import path from 'node:path';
 import type * as actions from './actions.js';
 import type { FullConfig } from './config.js';
 import { outputFile } from './config.js';
+import { OutputManager } from './output-manager.js';
 import type { Response } from './response.js';
 import type { Tab, TabSnapshot } from './tab.js';
 import { logUnhandledError } from './utils/log.js';
@@ -26,9 +27,11 @@ export class SessionLog {
   private _sessionFileQueue = Promise.resolve();
   private _flushEntriesTimeout: NodeJS.Timeout | undefined;
   private _ordinal = 0;
-  constructor(sessionFolder: string) {
+  private readonly _outputManager: OutputManager;
+  constructor(sessionFolder: string, outputManager: OutputManager) {
     this._folder = sessionFolder;
     this._file = path.join(this._folder, 'session.md');
+    this._outputManager = outputManager;
   }
   static async create(
     config: FullConfig,
@@ -41,7 +44,10 @@ export class SessionLog {
     );
     await fs.promises.mkdir(sessionFolder, { recursive: true });
 
-    return new SessionLog(sessionFolder);
+    return new SessionLog(
+      sessionFolder,
+      new OutputManager(path.dirname(sessionFolder), config.outputMaxSize)
+    );
   }
   logResponse(response: Response) {
     const entry: LogEntry = {
@@ -175,9 +181,17 @@ export class SessionLog {
   }
 
   private _writeToFile(lines: string[]): void {
-    this._sessionFileQueue = this._sessionFileQueue.then(() =>
-      fs.promises.appendFile(this._file, lines.join('\n'))
-    );
+    this._sessionFileQueue = this._sessionFileQueue.then(async () => {
+      await fs.promises.appendFile(this._file, lines.join('\n'));
+      await this._outputManager.finalizeFile(this._file);
+    });
+  }
+
+  async dispose(): Promise<void> {
+    if (this._flushEntriesTimeout) {
+      this._flushEntries();
+    }
+    await this._sessionFileQueue;
   }
 
   private _formatSingleLogEntry(
@@ -296,8 +310,10 @@ export class SessionLog {
     lines: string[]
   ): void {
     const fileName = `${ordinal}.snapshot.yml`;
+    const snapshotPath = path.join(this._folder, fileName);
     fs.promises
-      .writeFile(path.join(this._folder, fileName), tabSnapshot.ariaSnapshot)
+      .writeFile(snapshotPath, tabSnapshot.ariaSnapshot)
+      .then(() => this._outputManager.finalizeFile(snapshotPath))
       .catch(logUnhandledError);
     lines.push(`- Snapshot: ${fileName}`);
   }

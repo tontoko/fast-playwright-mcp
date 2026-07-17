@@ -111,10 +111,23 @@ export function toMcpTool<T extends z.Schema>(tool: ToolSchema<T>): Tool {
   const jsonSchema = zodToJsonSchema(tool.inputSchema, {
     strictUnions: true,
   });
+  const compactInputSchema = compactJsonSchema(jsonSchema) as Record<
+    string,
+    unknown
+  >;
+  // The MCP protocol requires tool input schemas to declare an object root.
+  // Zod unions of object schemas serialize as a root `anyOf` without `type`,
+  // even though every accepted value is still an object. Preserve the union
+  // while making that contract explicit for strict MCP clients.
+  const inputSchema = Object.freeze({
+    ...compactInputSchema,
+    type: 'object' as const,
+  });
   const result = Object.freeze({
     name: tool.name,
     description: tool.description,
-    inputSchema: compactJsonSchema(jsonSchema) as Tool['inputSchema'],
+    inputSchema: inputSchema as Tool['inputSchema'],
+    ...(tool._meta ? { _meta: tool._meta } : {}),
     annotations: {
       title: tool.title,
       readOnlyHint: tool.type === 'readOnly',

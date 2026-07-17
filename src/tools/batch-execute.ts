@@ -19,12 +19,7 @@ export const batchExecuteTool = defineTool({
     inputSchema: batchExecuteSchema,
     type: 'destructive',
   },
-  handle: async (
-    context,
-    params: BatchExecuteOptions,
-    response,
-    signal
-  ) => {
+  handle: async (context, params: BatchExecuteOptions, response, signal) => {
     try {
       const batchExecutor = getBatchExecutorOrError(context, response);
       if (!batchExecutor) {
@@ -96,7 +91,9 @@ function addFinalStateIfNeeded(result: BatchResult, response: Response): void {
     return;
   }
   const lastSuccessful = result.steps
-    .filter((step) => step.success && step.result && !isErrorResult(step.result))
+    .filter(
+      (step) => step.success && step.result && !isErrorResult(step.result)
+    )
     .at(-1);
   const finalContent = lastSuccessful
     ? extractText(lastSuccessful.result)
@@ -110,11 +107,11 @@ function addFinalStateIfNeeded(result: BatchResult, response: Response): void {
 
 function extractText(value: unknown): string | undefined {
   if (!value || typeof value !== 'object' || !('content' in value)) {
-    return undefined;
+    return;
   }
   const content = value.content;
   if (!Array.isArray(content)) {
-    return undefined;
+    return;
   }
   const first = content[0];
   return first && typeof first === 'object' && 'text' in first
@@ -124,10 +121,7 @@ function extractText(value: unknown): string | undefined {
 
 function isErrorResult(value: unknown): boolean {
   return Boolean(
-    value &&
-      typeof value === 'object' &&
-      'isError' in value &&
-      value.isError
+    value && typeof value === 'object' && 'isError' in value && value.isError
   );
 }
 
@@ -153,5 +147,7 @@ function getStatusDisplay(stopReason: BatchResult['stopReason']): string {
       return '❌ Stopped on Error';
     case 'stopped':
       return '⏹️ Stopped';
+    default:
+      return '❓ Unknown';
   }
 }

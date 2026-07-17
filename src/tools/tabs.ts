@@ -13,9 +13,9 @@ const listTabs = defineTool({
     }),
     type: 'readOnly',
   },
-  handle: async (context, _params, response) => {
-    await context.ensureTab();
+  handle: (_context, _params, response) => {
     response.setIncludeTabs();
+    return Promise.resolve();
   },
 });
 const selectTab = defineTool({
@@ -28,7 +28,7 @@ const selectTab = defineTool({
       index: z.number().describe('The index of the tab to select'),
       expectation: expectationSchema.describe('Page state after tab switch'),
     }),
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (context, params, response) => {
     await context.selectTab(params.index);
@@ -45,7 +45,7 @@ const newTab = defineTool({
       url: z.string().optional().describe('URL for new tab (optional)'),
       expectation: expectationSchema.describe('Page state of new tab'),
     }),
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (context, params, response) => {
     const tab = await context.newTab();

@@ -46,10 +46,35 @@ const BASE_BROWSER_TOOLS = [
   'browser_close',
 ];
 
-test('test snapshot tool list', async ({ client }) => {
+test('default profile exposes the adaptive bootstrap catalog', async ({
+  client,
+}) => {
   const { tools } = await client.listTools();
-  expect(new Set(tools.map((t) => t.name))).toEqual(
-    new Set([...BASE_BROWSER_TOOLS, 'browser_select_option'])
+  expect(tools.map((tool) => tool.name).sort()).toEqual([
+    'browser_batch_execute',
+    'browser_execute',
+    'browser_find',
+    'browser_navigate',
+    'browser_query',
+    'browser_snapshot',
+    'browser_tools',
+  ]);
+});
+
+test('full profile preserves the static tool catalog', async ({
+  startClient,
+}) => {
+  const { client } = await startClient({ args: ['--tool-profile=full'] });
+  const { tools } = await client.listTools();
+  expect(new Set(tools.map((tool) => tool.name))).toEqual(
+    new Set([
+      ...BASE_BROWSER_TOOLS,
+      'browser_find',
+      'browser_tools',
+      'browser_query',
+      'browser_execute',
+      'browser_select_option',
+    ])
   );
 });
 
@@ -58,13 +83,7 @@ test('test tool list proxy mode', async ({ startClient }) => {
     args: ['--connect-tool'],
   });
   const { tools } = await client.listTools();
-  expect(new Set(tools.map((t) => t.name))).toEqual(
-    new Set([
-      ...BASE_BROWSER_TOOLS,
-      'browser_connect', // the extra tool
-      'browser_select_option',
-    ])
-  );
+  expect(tools.map((tool) => tool.name)).toContain('browser_connect');
 });
 
 test('test capabilities (pdf)', async ({ startClient }) => {

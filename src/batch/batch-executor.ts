@@ -43,15 +43,16 @@ export class BatchExecutor {
   validateAllSteps(steps: BatchStep[]): void {
     for (const [index, step] of steps.entries()) {
       if (DISALLOWED_BATCH_TARGETS.has(step.tool)) {
-        throw new Error(`Tool cannot be nested in batch execution: ${step.tool}`);
+        throw new Error(
+          `Tool cannot be nested in batch execution: ${step.tool}`
+        );
       }
       const tool = this.toolRegistry.get(step.tool);
       if (!tool) {
         const availableTools = Array.from(this.toolRegistry.keys())
           .filter(
             (name) =>
-              name.startsWith('browser_') &&
-              !DISALLOWED_BATCH_TARGETS.has(name)
+              name.startsWith('browser_') && !DISALLOWED_BATCH_TARGETS.has(name)
           )
           .sort((left, right) => left.localeCompare(right))
           .join(',');
@@ -88,15 +89,23 @@ export class BatchExecutor {
     );
     this.validateAllSteps(options.steps);
 
-    for (const [index, step] of options.steps.entries()) {
+    const executeSequentially = async (index: number): Promise<void> => {
+      if (index >= options.steps.length || stopReason === 'error') {
+        return;
+      }
       signal?.throwIfAborted();
+      const step = options.steps[index];
       const stepStartTime = Date.now();
       try {
-        this.currentBatchContext.currentStepIndex = index;
+        const batchContext = this.currentBatchContext;
+        if (!batchContext) {
+          throw new Error('Batch context is not initialized');
+        }
+        batchContext.currentStepIndex = index;
         const result = await this.executeStep(
           step,
           options.globalExpectation,
-          this.currentBatchContext,
+          batchContext,
           signal
         );
         results.push({
@@ -116,10 +125,12 @@ export class BatchExecutor {
         });
         if (!step.continueOnError || options.stopOnFirstError) {
           stopReason = 'error';
-          break;
+          return;
         }
       }
-    }
+      await executeSequentially(index + 1);
+    };
+    await executeSequentially(0);
 
     return {
       steps: results,

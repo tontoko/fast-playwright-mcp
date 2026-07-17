@@ -34,6 +34,11 @@ const screenshotSchema = z
       .describe(
         'Optional element selectors for element screenshots. If not provided, viewport screenshot will be taken.'
       ),
+    scale: z
+      .enum(['css', 'device'])
+      .optional()
+      .default('css')
+      .describe('Use CSS pixels or device pixels for the screenshot.'),
     fullPage: z
       .boolean()
       .optional()
@@ -66,12 +71,13 @@ async function prepareFileName(
 function createScreenshotOptions(
   fileType: string,
   fileName: string,
-  fullPage?: boolean
+  fullPage: boolean | undefined,
+  scale: 'css' | 'device'
 ): playwright.PageScreenshotOptions {
   return {
     type: fileType as 'png' | 'jpeg',
     quality: fileType === 'png' ? undefined : 90,
-    scale: 'css',
+    scale,
     path: fileName,
     ...(fullPage !== undefined && { fullPage }),
   };
@@ -148,7 +154,7 @@ const screenshot = defineTabTool({
     title: 'Take a screenshot',
     description: 'Take a screenshot of current page and return image data',
     inputSchema: screenshotSchema,
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (tab, params, response) => {
     const fileType = params.type ?? 'png';
@@ -160,7 +166,8 @@ const screenshot = defineTabTool({
     const options = createScreenshotOptions(
       fileType,
       fileName,
-      params.fullPage
+      params.fullPage,
+      params.scale
     );
 
     const isElementScreenshot = isElementScreenshotRequest(params);
@@ -178,6 +185,7 @@ const screenshot = defineTabTool({
     await addScreenshotCode(response, locator, options);
 
     const buffer = await takeScreenshot(tab, locator, options);
+    await tab.context.finalizeOutputFile(fileName);
 
     response.addResult(
       `Took the ${screenshotTarget} screenshot and saved it as ${fileName}`

@@ -9,11 +9,13 @@ type OutputEntry = {
 
 export class OutputManager {
   private queue = Promise.resolve();
+  private readonly outputDir: string;
+  private readonly maxSize: number;
 
-  constructor(
-    private readonly outputDir: string,
-    private readonly maxSize: number
-  ) {}
+  constructor(outputDir: string, maxSize: number) {
+    this.outputDir = outputDir;
+    this.maxSize = maxSize;
+  }
 
   async reserveFile(path: string): Promise<string> {
     const absolute = resolve(path);
@@ -27,52 +29,95 @@ export class OutputManager {
 
   async finalizeFile(path: string): Promise<void> {
     const target = resolve(path);
-    this.queue = this.queue.then(() => this.evict(target));
+    this.queue = this.queue.then(() => this.evict(target, false));
     await this.queue;
   }
 
-  private async evict(target: string): Promise<void> {
+  async finalizeDirectory(path: string): Promise<void> {
+    const target = resolve(path);
+    this.queue = this.queue.then(() => this.evict(target, true));
+    await this.queue;
+  }
+
+  private async evict(
+    target: string,
+    targetIsDirectory: boolean
+  ): Promise<void> {
     if (this.maxSize <= 0) {
       return;
     }
 
     const entries = await this.collectEntries();
-    let total = entries.reduce((sum, entry) => sum + entry.size, 0);
-    for (const entry of entries) {
-      if (total <= this.maxSize) {
-        break;
-      }
-      if (entry.path === target) {
-        continue;
-      }
-      await fs.unlink(entry.path).catch(() => undefined);
-      total -= entry.size;
+    const total = entries.reduce((sum, entry) => sum + entry.size, 0);
+    await this.removeOldest(entries, target, targetIsDirectory, total, 0);
+  }
+
+  private async removeOldest(
+    entries: readonly OutputEntry[],
+    target: string,
+    targetIsDirectory: boolean,
+    total: number,
+    index: number
+  ): Promise<void> {
+    if (total <= this.maxSize || index >= entries.length) {
+      return;
     }
+    const entry = entries[index];
+    const protectedTarget =
+      entry.path === target ||
+      (targetIsDirectory && entry.path.startsWith(`${target}/`));
+    if (protectedTarget) {
+      await this.removeOldest(
+        entries,
+        target,
+        targetIsDirectory,
+        total,
+        index + 1
+      );
+      return;
+    }
+    let nextTotal = total;
+    try {
+      await fs.unlink(entry.path);
+      nextTotal -= entry.size;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
+    }
+    await this.removeOldest(
+      entries,
+      target,
+      targetIsDirectory,
+      nextTotal,
+      index + 1
+    );
   }
 
   private async collectEntries(): Promise<OutputEntry[]> {
-    const entries: OutputEntry[] = [];
-    const visit = async (directory: string): Promise<void> => {
-      const children = await fs.readdir(directory, { withFileTypes: true }).catch(
-        () => []
+    const visit = async (directory: string): Promise<OutputEntry[]> => {
+      const children = await fs
+        .readdir(directory, { withFileTypes: true })
+        .catch(() => []);
+      const nested = await Promise.all(
+        children.map(async (child): Promise<OutputEntry[]> => {
+          const path = resolve(directory, child.name);
+          if (child.isSymbolicLink()) {
+            return [];
+          }
+          if (child.isDirectory()) {
+            return visit(path);
+          }
+          if (!child.isFile()) {
+            return [];
+          }
+          const stat = await fs.lstat(path);
+          return [{ path, size: stat.size, mtimeMs: stat.mtimeMs }];
+        })
       );
-      for (const child of children) {
-        const path = resolve(directory, child.name);
-        if (child.isSymbolicLink()) {
-          continue;
-        }
-        if (child.isDirectory()) {
-          await visit(path);
-          continue;
-        }
-        if (!child.isFile()) {
-          continue;
-        }
-        const stat = await fs.lstat(path);
-        entries.push({ path, size: stat.size, mtimeMs: stat.mtimeMs });
-      }
+      return nested.flat();
     };
-    await visit(this.outputDir);
+    const entries = await visit(this.outputDir);
     return entries.sort(
       (left, right) =>
         left.mtimeMs - right.mtimeMs || left.path.localeCompare(right.path)

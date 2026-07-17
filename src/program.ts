@@ -1,7 +1,9 @@
 import { Option, program } from 'commander';
 
-// @ts-expect-error - playwright-core internal module without proper types
-import { startTraceViewerServer } from 'playwright-core/lib/server';
+// @ts-expect-error - playwright-core does not publish types for its exported coreBundle entry.
+import coreBundle from 'playwright-core/lib/coreBundle';
+
+const { startTraceViewerServer } = coreBundle.server;
 
 import { contextFactory } from './browser-context-factory.js';
 import {
@@ -97,7 +99,11 @@ program
     'maximum output directory size in bytes; zero disables eviction',
     positiveNumber
   )
-  .option('--port <port>', 'port to listen on for HTTP transport', positiveNumber)
+  .option(
+    '--port <port>',
+    'port to listen on for HTTP transport',
+    positiveNumber
+  )
   .option(
     '--proxy-bypass <bypass>',
     'comma-separated domains to bypass the proxy'
@@ -110,7 +116,10 @@ program
     '--storage-state <path>',
     'path to storage state for isolated sessions'
   )
-  .option('--test-id-attribute <attribute>', 'attribute used by test-id selectors')
+  .option(
+    '--test-id-attribute <attribute>',
+    'attribute used by test-id selectors'
+  )
   .option(
     '--timeout-action <timeout>',
     'default action timeout in milliseconds',

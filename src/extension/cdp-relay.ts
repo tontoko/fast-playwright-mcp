@@ -9,6 +9,8 @@ import { spawn } from 'node:child_process';
 import type http from 'node:http';
 import { platform } from 'node:os';
 import { isAbsolute } from 'node:path';
+// @ts-expect-error - playwright-core does not publish types for its exported coreBundle entry.
+import coreBundle from 'playwright-core/lib/coreBundle';
 import type websocket from 'ws';
 import { WebSocket, WebSocketServer } from 'ws';
 import type { ClientInfo } from '../browser-context-factory.js';
@@ -20,8 +22,7 @@ import {
   DEFAULT_EXTENSION_ID,
 } from './connect-url.js';
 
-// @ts-expect-error - playwright internal module
-const { registry } = await import('playwright-core/lib/server/registry/index');
+const { registry } = coreBundle.registry;
 
 const HTTP_TO_WS_REGEX = /^http/;
 const MAX_MESSAGE_SIZE = 1024 * 1024;
@@ -183,7 +184,10 @@ export class CDPRelayServer {
     return executablePath;
   }
 
-  private _sanitizeClientInfo(clientInfo: ClientInfo): ClientInfo {
+  private _sanitizeClientInfo(clientInfo: ClientInfo): {
+    name: string;
+    version: string;
+  } {
     const sanitize = (value: unknown, fallback: string, maxLength: number) => {
       const text = typeof value === 'string' ? value : fallback;
       return text

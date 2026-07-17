@@ -101,14 +101,14 @@ export function createServer(
     }
 
     const errorResult = (...messages: string[]): ToolResponse => ({
-      content: [
-        { type: 'text', text: `### Result\n${messages.join('\n')}` },
-      ],
+      content: [{ type: 'text', text: `### Result\n${messages.join('\n')}` }],
       isError: true,
     });
     const tool =
       backend.resolveTool?.(request.params.name) ??
-      backend.tools().find((candidate) => candidate.name === request.params.name);
+      backend
+        .tools()
+        .find((candidate) => candidate.name === request.params.name);
     if (!tool) {
       return errorResult(`Error: Tool "${request.params.name}" not found`);
     }
@@ -140,9 +140,7 @@ export function resolveHeartbeatTimeout(value: string | undefined): number {
     return DEFAULT_PING_TIMEOUT;
   }
   const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed >= 0
-    ? parsed
-    : DEFAULT_PING_TIMEOUT;
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_PING_TIMEOUT;
 }
 
 function startHeartbeat(server: Server) {
