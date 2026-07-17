@@ -1,0 +1,116 @@
+name: Apply verified source-only CI and SonarQube fixes
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-ci-sonar-fixes-v8.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-verified-source-only-fixes-pr31
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/adaptive-tool-discovery
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Apply reviewed source fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/apply-ci-sonar-fixes-v6.yml').read_text(encoding='utf-8')
+          step = workflow.index('      - name: Apply reviewed source fixes\n')
+          marker = '        run: |\n'
+          start = workflow.index(marker, step) + len(marker)
+          end = workflow.index('\n      - name: Install dependencies and browsers', start)
+          Path('/tmp/apply-v6.sh').write_text(
+              textwrap.dedent(workflow[start:end]),
+              encoding='utf-8',
+          )
+          PY
+          bash /tmp/apply-v6.sh
+
+      - name: Install dependencies and browsers
+        run: |
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+          npm ci --prefix extension
+
+      - name: Verify source fixes
+        shell: bash
+        run: |
+          set -o pipefail
+          {
+            bun run lint-fix
+            bun run check:encoding
+            bun run typecheck
+            bun run build:publish
+            bun run lint
+            bun run benchmark:tools -- --check
+            bunx playwright test \
+              tests/batch-execute.spec.ts \
+              tests/cdp.spec.ts \
+              tests/dialogs.spec.ts \
+              tests/encoding-policy.spec.ts \
+              tests/evaluate.spec.ts \
+              tests/files.spec.ts \
+              tests/iframes.spec.ts \
+              tests/navigation-context.spec.ts \
+              tests/response-filtering.spec.ts \
+              tests/roots.spec.ts \
+              tests/screenshot.spec.ts \
+              tests/tab-custom-ref.spec.ts \
+              tests/tabs.spec.ts \
+              tests/trace.spec.ts \
+              tests/webdriver.spec.ts \
+              --project=chromium
+            npm run build --prefix extension
+            xvfb-run --auto-servernum bunx playwright test \
+              --config=extension/playwright.config.ts
+          } 2>&1 | tee verification.log
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-only-ci-sonar-fixes-failure
+          path: |
+            verification.log
+            test-results
+            extension/test-results
+          if-no-files-found: warn
+          retention-days: 2
+
+      - name: Commit verified source fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -- .github/workflows
+          rm -rf lib test-results playwright-report extension/test-results
+          rm -f -- *.tgz tsconfig.tsbuildinfo verification.log
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: restore browser compatibility and SonarQube scope'
+          git push origin HEAD:agent/adaptive-tool-discovery
