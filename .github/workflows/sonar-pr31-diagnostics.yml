@@ -8,29 +8,36 @@ on:
       - .github/workflows/sonar-pr31-diagnostics.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   collect:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Checkout diagnostics branch
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/sonar-pr31-diagnostics
+          fetch-depth: 0
+
       - name: Collect public SonarQube Cloud API responses
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p sonar-diagnostics
+          rm -rf .github/sonar-pr31-diagnostics
+          mkdir -p .github/sonar-pr31-diagnostics
 
           query() {
             local name="$1"
             shift
             local url="$1"
             shift
-            echo "GET ${url}" > "sonar-diagnostics/${name}.request.txt"
+            echo "GET ${url}" > ".github/sonar-pr31-diagnostics/${name}.request.txt"
             curl --location --silent --show-error \
               --connect-timeout 20 --max-time 60 \
-              --dump-header "sonar-diagnostics/${name}.headers.txt" \
-              --output "sonar-diagnostics/${name}.json" \
+              --dump-header ".github/sonar-pr31-diagnostics/${name}.headers.txt" \
+              --output ".github/sonar-pr31-diagnostics/${name}.json" \
               --get "$url" "$@" || true
             python3 - "$name" <<'PY'
           import json
@@ -38,7 +45,7 @@ jobs:
           import sys
 
           name = sys.argv[1]
-          path = pathlib.Path('sonar-diagnostics') / f'{name}.json'
+          path = pathlib.Path('.github/sonar-pr31-diagnostics') / f'{name}.json'
           try:
               payload = json.loads(path.read_text(encoding='utf-8'))
           except Exception:
@@ -74,10 +81,24 @@ jobs:
           query pull-requests https://sonarcloud.io/api/project_pull_requests/list \
             --data-urlencode project=tontoko_fast-playwright-mcp
 
+      - name: Commit diagnostics to the isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/sonar-pr31-diagnostics
+          if git diff --cached --quiet; then
+            echo 'Diagnostics are unchanged.'
+          else
+            git commit -m 'chore: record SonarQube PR diagnostics'
+            git push origin HEAD:agent/sonar-pr31-diagnostics
+          fi
+
       - name: Upload diagnostics
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: sonar-pr31-diagnostics
-          path: sonar-diagnostics
+          path: .github/sonar-pr31-diagnostics
           if-no-files-found: error
           retention-days: 1
