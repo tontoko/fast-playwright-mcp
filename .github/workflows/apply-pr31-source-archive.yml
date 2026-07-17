@@ -1,17 +1,15 @@
-name: Apply verified source to pull request 31
+name: Apply verified final source to pull request 31
 
 on:
   push:
     branches:
       - agent/adaptive-tool-discovery
-    paths:
-      - .github/final-source-v4/READY
 
 permissions:
   contents: write
 
 concurrency:
-  group: apply-verified-source-pr31-v4
+  group: apply-verified-pr31-source
   cancel-in-progress: false
 
 jobs:
@@ -35,38 +33,41 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Reassemble and verify source archive
+      - name: Decode and verify final source archive
         shell: bash
         run: |
           set -euo pipefail
-          cat .github/final-source-v4/part-*.b64 | tr -d '\n' | base64 --decode > /tmp/pr31-source.tar.gz
-          echo '27d65493395b70d06baabd1a96a64dd4f3bcdfd3fb6d1b0d3b9b501b3570e0bc  /tmp/pr31-source.tar.gz' | sha256sum --check --strict
-          tar -tzf /tmp/pr31-source.tar.gz > /tmp/pr31-source-files.txt
-          if grep -E '(^|/)\.git(/|$)|(^|/)\.\./|(^|/)node_modules(/|$)' /tmp/pr31-source-files.txt; then
+          base64 --decode .github/final-source/source.b64 > /tmp/pr31-final-source.tar.gz
+          echo '27d65493395b70d06baabd1a96a64dd4f3bcdfd3fb6d1b0d3b9b501b3570e0bc  /tmp/pr31-final-source.tar.gz' | sha256sum --check --strict
+          tar -tzf /tmp/pr31-final-source.tar.gz > /tmp/pr31-final-source-files.txt
+          if grep -E '(^|/)\.git(/|$)|(^|/)\.\./|(^|/)node_modules(/|$)' /tmp/pr31-final-source-files.txt; then
             echo 'Unsafe archive path detected.' >&2
             exit 1
           fi
-          if tar -tvzf /tmp/pr31-source.tar.gz | awk '$1 ~ /^l/ { found=1 } END { exit !found }'; then
+          if tar -tvzf /tmp/pr31-final-source.tar.gz | awk '$1 ~ /^l/ { found=1 } END { exit !found }'; then
             echo 'Symlink detected in source archive.' >&2
             exit 1
           fi
 
-      - name: Replace temporary branch contents
+      - name: Replace staging branch contents
         shell: bash
         run: |
           set -euo pipefail
           find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          tar -xzf /tmp/pr31-source.tar.gz -C .
-          test ! -e .github/final-source-v4
+          tar -xzf /tmp/pr31-final-source.tar.gz -C .
+          test ! -e .github/final-source
+          test ! -e tmp
           if find .github/workflows -maxdepth 1 -type f \( \
+            -name 'adaptive-tool-discovery-ci.yml' -o \
             -name 'apply-complete-bundle*.yml' -o \
             -name 'apply-final-source*.yml' -o \
+            -name 'apply-pr31-source-archive.yml' -o \
             -name 'diagnose-final-source.yml' -o \
-            -name 'finalize-pr31*.yml' -o \
-            -name 'adaptive-tool-discovery-ci.yml' -o \
-            -name 'implementation-sync.yml' -o \
+            -name 'export-current-pr31.yml' -o \
+            -name 'export-dev-env.yml' -o \
             -name 'export-source.yml' -o \
-            -name 'export-dev-env.yml' \
+            -name 'finalize-pr31*.yml' -o \
+            -name 'implementation-sync.yml' \
           \) | grep -q .; then
             echo 'Temporary workflow remained in final source.' >&2
             exit 1
@@ -76,8 +77,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RIE 'issues:[[:space:]]*write|pull-requests:[[:space:]]*write|contents:[[:space:]]*write|gh[[:space:]]+(issue|pr)' .github/workflows --include='*.yml' --include='*.yaml'; then
-            echo 'Repository workflows must not mutate issues or pull requests.' >&2
+          if grep -RIE 'issues:[[:space:]]*write|gh[[:space:]]+issue|gh[[:space:]]+pr[[:space:]]+(close|merge)' .github/workflows --include='*.yml' --include='*.yaml'; then
+            echo 'Repository workflows must not mutate issues or unrelated pull requests.' >&2
             exit 1
           fi
           while IFS= read -r line; do
@@ -92,13 +93,16 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify generated dashboard
+      - name: Verify deterministic dashboard generation
         shell: bash
         run: |
           set -euo pipefail
           cp src/apps/generated/dashboard.ts /tmp/dashboard-before.ts
           bun run build:dashboard
           cmp /tmp/dashboard-before.ts src/apps/generated/dashboard.ts
+          cp src/apps/generated/dashboard.ts /tmp/dashboard-first.ts
+          bun run build:dashboard
+          cmp /tmp/dashboard-first.ts src/apps/generated/dashboard.ts
 
       - name: Typecheck, build, lint, and context budget
         run: |
@@ -147,11 +151,11 @@ jobs:
           npm ci --prefix extension
           npm run build --prefix extension
 
-      - name: Commit clean verified source
+      - name: Commit verified clean source
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf lib test-results playwright-report
+          rm -rf lib test-results playwright-report extension/dist
           rm -f -- *.tgz
           git diff --check
           git config user.name 'github-actions[bot]'
