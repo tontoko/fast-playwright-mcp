@@ -1,7 +1,7 @@
 HTTP/2 200 
 content-type: application/json
-date: Fri, 17 Jul 2026 06:45:20 GMT
-x-sonar-server-time: 1784270720811
+date: Fri, 17 Jul 2026 06:47:39 GMT
+x-sonar-server-time: 1784270859447
 vary: accept-encoding
 x-frame-options: DENY
 x-xss-protection: 1; mode=block
@@ -11,9 +11,9 @@ strict-transport-security: max-age=31536000; includeSubDomains
 cache-control: no-cache, no-store, must-revalidate
 sonar-version: 13.7.0.4381
 x-cache: Miss from cloudfront
-via: 1.1 2bff6c0c3a0a59a70938b32e4d7a601c.cloudfront.net (CloudFront)
-x-amz-cf-pop: CDG50-P5
-x-amz-cf-id: nXLHUxKVlfiGPfjPh2_YMX0KPy6SAWihLZmkDvN-pGLEtM8qO0kdBw==
+via: 1.1 ba6fa23dc994dedca3d59c0358b6f2b6.cloudfront.net (CloudFront)
+x-amz-cf-pop: MCI50-P4
+x-amz-cf-id: DnzJsYBUb1sG8BQ7iP7PKvDzWxjX-mUhBh4boKbjxF236cjv13sajg==
 referrer-policy: strict-origin-when-cross-origin
 vary: Origin
 

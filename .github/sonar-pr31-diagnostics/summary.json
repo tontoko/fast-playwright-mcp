@@ -1,0 +1,427 @@
+{
+  "bySeverity": {
+    "CRITICAL": 9,
+    "MAJOR": 8,
+    "MINOR": 8
+  },
+  "byType": {
+    "BUG": 6,
+    "CODE_SMELL": 9,
+    "VULNERABILITY": 10
+  },
+  "issues": [
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9uxoWSudde5MzmmSSX",
+      "line": 463,
+      "message": "The empty object is useless.",
+      "path": "src/config.ts",
+      "rule": "typescript:S7744",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9uxoWSudde5MzmmSSY",
+      "line": 464,
+      "message": "The empty object is useless.",
+      "path": "src/config.ts",
+      "rule": "typescript:S7744",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9uxoWSudde5MzmmSSZ",
+      "line": 570,
+      "message": "Remove this redundant jump.",
+      "path": "src/config.ts",
+      "rule": "typescript:S3626",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9uxoUFudde5MzmmSST",
+      "line": 94,
+      "message": "Prefer `.findLast(\u2026)` over `.filter(\u2026).at(-1)`.",
+      "path": "src/tools/batch-execute.ts",
+      "rule": "typescript:S7750",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9uxoSHudde5MzmmSSR",
+      "line": 27,
+      "message": "Use `.includes()` instead of `.some()` when checking value existence.",
+      "path": "src/tools/catalog/search.ts",
+      "rule": "typescript:S7765",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9uxoSHudde5MzmmSSS",
+      "line": 39,
+      "message": "Use `.includes()` instead of `.some()` when checking value existence.",
+      "path": "src/tools/catalog/search.ts",
+      "rule": "typescript:S7765",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoW_udde5MzmmSSa",
+      "line": 18,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "path": "scripts/check-review-threads.ts",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSb",
+      "line": 6,
+      "message": "Group parts of the regex together to make the intended operator precedence explicit.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "typescript:S5850",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "BUG"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSh",
+      "line": 40,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSe",
+      "line": 164,
+      "message": "Make sure that sending this confidential data in a GET parameter is safe here.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "tssecurity:S8690",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSf",
+      "line": 164,
+      "message": "Ensure that tainted data is validated before being used to construct a client-side request URL.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "tssecurity:S8476",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSg",
+      "line": 164,
+      "message": "Change this code to not construct the URL's path from user-controlled data.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "tssecurity:S7044",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSc",
+      "line": 184,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoXKudde5MzmmSSd",
+      "line": 209,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "path": "scripts/upstream-check.ts",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoUPudde5MzmmSSU",
+      "line": 73,
+      "message": "Make sure that this dynamic injection or execution of code is safe.",
+      "path": "src/tools/evaluate.ts",
+      "rule": "typescript:S1523",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoUPudde5MzmmSSV",
+      "line": 75,
+      "message": "Make sure that this dynamic injection or execution of code is safe.",
+      "path": "src/tools/evaluate.ts",
+      "rule": "typescript:S1523",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "key": "AZ9uxoUPudde5MzmmSSW",
+      "line": 80,
+      "message": "Make sure that this dynamic injection or execution of code is safe.",
+      "path": "src/tools/evaluate.ts",
+      "rule": "typescript:S1523",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "VULNERABILITY"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9Vi1PHb3Yg5Wvlu52T",
+      "line": 13,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "path": "src/apps/dashboard/render.ts",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9VbHfHfI86R02PzCSo",
+      "line": 46,
+      "message": "`String.raw` should be used to avoid escaping `\\`.",
+      "path": "scripts/build-dashboard.ts",
+      "rule": "typescript:S7780",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "key": "AZ9Va-OB1sKQ6MLEYt-f",
+      "line": 15,
+      "message": "Use <output> instead of the status role to ensure accessibility across all devices.",
+      "path": "src/apps/dashboard/template.html",
+      "rule": "Web:S6819",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "type": "CODE_SMELL"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9VW7u8OFmXP_NXQl6y",
+      "line": 80,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "path": "src/tools/catalog/gateways.ts",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "BUG"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9VW7u8OFmXP_NXQl6z",
+      "line": 124,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "path": "src/tools/catalog/gateways.ts",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "BUG"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9VW7u8OFmXP_NXQl60",
+      "line": 139,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "path": "src/tools/catalog/gateways.ts",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "BUG"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9VW7u8OFmXP_NXQl61",
+      "line": 149,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "path": "src/tools/catalog/gateways.ts",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "BUG"
+    },
+    {
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "key": "AZ9VW7u8OFmXP_NXQl62",
+      "line": 155,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "path": "src/tools/catalog/gateways.ts",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "type": "BUG"
+    }
+  ],
+  "total": 25
+}

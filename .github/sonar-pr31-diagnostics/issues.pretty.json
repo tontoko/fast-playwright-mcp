@@ -1253,12 +1253,12 @@
       "hash": "2114240cbd84bcb52714b73b8558d2cc",
       "impacts": [
         {
-          "severity": "HIGH",
-          "softwareQuality": "SECURITY"
-        },
-        {
           "severity": "LOW",
           "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
         }
       ],
       "internalTags": [],
@@ -1302,12 +1302,12 @@
       "hash": "055d126414603d2320b1190ee56fa3d2",
       "impacts": [
         {
-          "severity": "HIGH",
-          "softwareQuality": "SECURITY"
-        },
-        {
           "severity": "LOW",
           "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
         }
       ],
       "internalTags": [],
@@ -1351,12 +1351,12 @@
       "hash": "2114240cbd84bcb52714b73b8558d2cc",
       "impacts": [
         {
-          "severity": "HIGH",
-          "softwareQuality": "SECURITY"
-        },
-        {
           "severity": "LOW",
           "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
         }
       ],
       "internalTags": [],

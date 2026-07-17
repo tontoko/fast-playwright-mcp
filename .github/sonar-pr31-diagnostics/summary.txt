@@ -1,0 +1,28 @@
+total=25
+byType={'BUG': 6, 'CODE_SMELL': 9, 'VULNERABILITY': 10}
+bySeverity={'CRITICAL': 9, 'MAJOR': 8, 'MINOR': 8}
+CODE_SMELL	MINOR	src/config.ts:463	typescript:S7744	MAINTAINABILITY:LOW	The empty object is useless.
+CODE_SMELL	MINOR	src/config.ts:464	typescript:S7744	MAINTAINABILITY:LOW	The empty object is useless.
+CODE_SMELL	MINOR	src/config.ts:570	typescript:S3626	MAINTAINABILITY:LOW	Remove this redundant jump.
+CODE_SMELL	MINOR	src/tools/batch-execute.ts:94	typescript:S7750	MAINTAINABILITY:MEDIUM	Prefer `.findLast(…)` over `.filter(…).at(-1)`.
+CODE_SMELL	MINOR	src/tools/catalog/search.ts:27	typescript:S7765	MAINTAINABILITY:LOW	Use `.includes()` instead of `.some()` when checking value existence.
+CODE_SMELL	MINOR	src/tools/catalog/search.ts:39	typescript:S7765	MAINTAINABILITY:LOW	Use `.includes()` instead of `.some()` when checking value existence.
+VULNERABILITY	MAJOR	scripts/check-review-threads.ts:18	tssecurity:S8707	SECURITY:HIGH	LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.
+BUG	MAJOR	scripts/upstream-check.ts:6	typescript:S5850	RELIABILITY:MEDIUM	Group parts of the regex together to make the intended operator precedence explicit.
+VULNERABILITY	MAJOR	scripts/upstream-check.ts:40	tssecurity:S8707	SECURITY:HIGH	LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.
+VULNERABILITY	CRITICAL	scripts/upstream-check.ts:164	tssecurity:S8690	SECURITY:HIGH	Make sure that sending this confidential data in a GET parameter is safe here.
+VULNERABILITY	MINOR	scripts/upstream-check.ts:164	tssecurity:S8476	SECURITY:HIGH	Ensure that tainted data is validated before being used to construct a client-side request URL.
+VULNERABILITY	MAJOR	scripts/upstream-check.ts:164	tssecurity:S7044	SECURITY:MEDIUM	Change this code to not construct the URL's path from user-controlled data.
+VULNERABILITY	MAJOR	scripts/upstream-check.ts:184	tssecurity:S8707	SECURITY:HIGH	LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.
+VULNERABILITY	MAJOR	scripts/upstream-check.ts:209	tssecurity:S8707	SECURITY:HIGH	LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.
+VULNERABILITY	CRITICAL	src/tools/evaluate.ts:73	typescript:S1523	MAINTAINABILITY:LOW,SECURITY:HIGH	Make sure that this dynamic injection or execution of code is safe.
+VULNERABILITY	CRITICAL	src/tools/evaluate.ts:75	typescript:S1523	MAINTAINABILITY:LOW,SECURITY:HIGH	Make sure that this dynamic injection or execution of code is safe.
+VULNERABILITY	CRITICAL	src/tools/evaluate.ts:80	typescript:S1523	MAINTAINABILITY:LOW,SECURITY:HIGH	Make sure that this dynamic injection or execution of code is safe.
+CODE_SMELL	MAJOR	src/apps/dashboard/render.ts:13	typescript:S8786	RELIABILITY:MEDIUM	Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.
+CODE_SMELL	MINOR	scripts/build-dashboard.ts:46	typescript:S7780	MAINTAINABILITY:LOW	`String.raw` should be used to avoid escaping `\`.
+CODE_SMELL	MAJOR	src/apps/dashboard/template.html:15	Web:S6819	MAINTAINABILITY:MEDIUM	Use <output> instead of the status role to ensure accessibility across all devices.
+BUG	CRITICAL	src/tools/catalog/gateways.ts:80	typescript:S2871	RELIABILITY:HIGH	Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.
+BUG	CRITICAL	src/tools/catalog/gateways.ts:124	typescript:S2871	RELIABILITY:HIGH	Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.
+BUG	CRITICAL	src/tools/catalog/gateways.ts:139	typescript:S2871	RELIABILITY:HIGH	Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.
+BUG	CRITICAL	src/tools/catalog/gateways.ts:149	typescript:S2871	RELIABILITY:HIGH	Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.
+BUG	CRITICAL	src/tools/catalog/gateways.ts:155	typescript:S2871	RELIABILITY:HIGH	Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.
