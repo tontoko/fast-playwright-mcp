@@ -31,7 +31,6 @@ const BINARY_EXTENSIONS = new Set([
   '.zip',
 ]);
 const UTF8_BOM = Buffer.from([0xef, 0xbb, 0xbf]);
-const decoder = new TextDecoder('utf-8', { fatal: true });
 
 function collectEntry(
   directory: string,
@@ -65,26 +64,35 @@ function validateText(data: Buffer): string | undefined {
     return 'contains NUL bytes but is not declared as a binary file';
   }
   try {
-    decoder.decode(data);
+    new TextDecoder('utf-8', { fatal: true }).decode(data);
     return;
   } catch (error) {
-    return `is not valid UTF-8: ${error instanceof Error ? error.message : String(error)}`;
+    return `is not valid UTF-8: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
   }
 }
 
-const textFiles = (await collectFiles(ROOT)).filter(
-  (path) => !BINARY_EXTENSIONS.has(extname(path).toLowerCase())
-);
-const failures = (
-  await Promise.all(
-    textFiles.map(async (path) => {
-      const problem = validateText(await readFile(path));
-      return problem ? `${relative(ROOT, path)}: ${problem}` : undefined;
-    })
-  )
-).filter((failure): failure is string => Boolean(failure));
-
-if (failures.length) {
-  throw new Error(`Source encoding check failed:\n${failures.join('\n')}`);
+export async function validateRepositoryEncoding(
+  root = ROOT
+): Promise<string[]> {
+  const textFiles = (await collectFiles(root)).filter(
+    (path) => !BINARY_EXTENSIONS.has(extname(path).toLowerCase())
+  );
+  return (
+    await Promise.all(
+      textFiles.map(async (path) => {
+        const problem = validateText(await readFile(path));
+        return problem ? `${relative(root, path)}: ${problem}` : undefined;
+      })
+    )
+  ).filter((failure): failure is string => Boolean(failure));
 }
-process.stdout.write('Source encoding check passed.\n');
+
+if (import.meta.main) {
+  const failures = await validateRepositoryEncoding();
+  if (failures.length) {
+    throw new Error(`Source encoding check failed:\n${failures.join('\n')}`);
+  }
+  process.stdout.write('Source encoding check passed.\n');
+}

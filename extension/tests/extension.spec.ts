@@ -174,7 +174,7 @@ test('snapshot of an existing page', async ({
   });
   const selectorPage = await confirmationPagePromise;
   await selectorPage
-    .locator('.tab-item', { hasText: 'Hello world' })
+    .locator('.tab-item', { hasText: 'Title' })
     .getByRole('button', { name: 'Connect' })
     .click();
 

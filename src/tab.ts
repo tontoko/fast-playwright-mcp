@@ -116,8 +116,9 @@ export class Tab extends EventEmitter<TabEventsInterface> {
       this._navigationState.isNavigating = true;
     });
 
-    page.setDefaultNavigationTimeout(context.config.timeouts.navigation);
-    page.setDefaultTimeout(context.config.timeouts.action);
+    const configuredTimeouts = context.config?.timeouts;
+    page.setDefaultNavigationTimeout(configuredTimeouts?.navigation ?? 60_000);
+    page.setDefaultTimeout(configuredTimeouts?.action ?? 5000);
     (page as { [tabSymbol]?: Tab })[tabSymbol] = this;
   }
   static forPage(page: playwright.Page): Tab | undefined {

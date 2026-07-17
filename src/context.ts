@@ -83,7 +83,7 @@ export class Context {
   currentTabOrDie(): Tab {
     if (!this._currentTab) {
       throw new Error(
-        'No open pages available. Use the "browser_navigate" tool first.'
+        'No open pages available. Use the "browser_navigate" tool to navigate to a page first.'
       );
     }
     return this._currentTab;

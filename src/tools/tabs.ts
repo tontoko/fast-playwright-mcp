@@ -13,9 +13,9 @@ const listTabs = defineTool({
     }),
     type: 'readOnly',
   },
-  handle: (_context, _params, response) => {
+  handle: async (context, _params, response) => {
+    await context.ensureTab();
     response.setIncludeTabs();
-    return Promise.resolve();
   },
 });
 const selectTab = defineTool({

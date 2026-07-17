@@ -453,7 +453,6 @@ function createMergedBrowserConfig(
     launchOptions: {
       ...pickDefined(base.browser.launchOptions),
       ...pickDefined(overrides.browser?.launchOptions),
-      assistantMode: true,
     } as FullConfig['browser']['launchOptions'],
     contextOptions: {
       ...pickDefined(base.browser.contextOptions),
@@ -470,6 +469,14 @@ function createMergedBrowserConfig(
   };
   if (browser.browserName !== 'chromium') {
     browser.launchOptions.channel = undefined;
+  } else {
+    const automationControlledArg =
+      '--disable-blink-features=AutomationControlled';
+    const args = [...(browser.launchOptions.args ?? [])];
+    if (!args.includes(automationControlledArg)) {
+      args.push(automationControlledArg);
+    }
+    browser.launchOptions.args = args;
   }
   return browser;
 }

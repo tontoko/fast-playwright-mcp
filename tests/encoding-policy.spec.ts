@@ -1,23 +1,18 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 
-const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true });
-const TEXT_FILES = [
-  '.gitattributes',
-  '.sonarcloud.properties',
-  'sonar-project.properties',
-  'src/apps/generated/dashboard.ts',
-  'src/config.ts',
-  'src/mcp/server.ts',
-] as const;
+function property(text: string, name: string): string | undefined {
+  return text
+    .split('\n')
+    .find((line) => line.startsWith(`${name}=`))
+    ?.slice(name.length + 1);
+}
 
 test('scanner-facing source files are valid UTF-8', async () => {
-  const files = await Promise.all(
-    TEXT_FILES.map(async (path) => ({ path, bytes: await readFile(path) }))
+  const { validateRepositoryEncoding } = await import(
+    '../scripts/check-encoding.js'
   );
-  for (const { path, bytes } of files) {
-    expect(() => UTF8_DECODER.decode(bytes), path).not.toThrow();
-  }
+  await expect(validateRepositoryEncoding()).resolves.toEqual([]);
 });
 
 test('SonarQube encoding and generated-file exclusions are explicit', async () => {
@@ -25,11 +20,19 @@ test('SonarQube encoding and generated-file exclusions are explicit', async () =
     readFile('sonar-project.properties', 'utf8'),
     readFile('.sonarcloud.properties', 'utf8'),
   ]);
-  expect(scannerProperties).toContain('sonar.sourceEncoding=UTF-8');
-  expect(scannerProperties).toContain('src/apps/generated/**');
-  expect(scannerProperties).toContain('**/*.b64');
-  expect(automaticProperties).toContain('sonar.sourceEncoding=UTF-8');
-  expect(automaticProperties).toContain(
-    'sonar.exclusions=src/apps/generated/dashboard.ts'
+  expect(property(scannerProperties, 'sonar.sourceEncoding')).toBe('UTF-8');
+  expect(property(scannerProperties, 'sonar.exclusions')?.split(',')).toEqual(
+    expect.arrayContaining([
+      'src/apps/generated/**',
+      '**/*.b64',
+      '**/*.tsbuildinfo',
+    ])
   );
+  expect(property(automaticProperties, 'sonar.sourceEncoding')).toBe('UTF-8');
+  expect(property(automaticProperties, 'sonar.sources')?.split(',')).toEqual(
+    expect.arrayContaining(['src', 'extension/src', 'scripts', 'benchmark'])
+  );
+  expect(
+    property(automaticProperties, 'sonar.exclusions')?.split(',')
+  ).toContain('src/apps/generated/dashboard.ts');
 });

@@ -1,10 +1,5 @@
 import { Option, program } from 'commander';
 
-// @ts-expect-error - playwright-core does not publish types for its exported coreBundle entry.
-import coreBundle from 'playwright-core/lib/coreBundle';
-
-const { startTraceViewerServer } = coreBundle.server;
-
 import { contextFactory } from './browser-context-factory.js';
 import {
   BrowserServerBackend,
@@ -27,7 +22,6 @@ import {
 import { runLoopTools } from './loopTools/main.js';
 import type { ServerBackendFactory } from './mcp/server.js';
 import { start } from './mcp/transport.js';
-import { programDebug } from './utils/log.js';
 import { packageJSON } from './utils/package.js';
 import { logServerStart } from './utils/request-logger.js';
 
@@ -195,14 +189,6 @@ program
 
       logServerStart();
       await start(serverBackendFactory, config.server);
-      if (config.saveTrace) {
-        const server = await startTraceViewerServer();
-        const urlPrefix = server.urlPrefix('human-readable');
-        const url =
-          `${urlPrefix}/trace/index.html?trace=` +
-          `${config.browser.launchOptions.tracesDir}/trace.json`;
-        programDebug(`Trace viewer available at: ${url}`);
-      }
     } catch (error) {
       process.stderr.write(
         `${error instanceof Error ? error.message : String(error)}\n`

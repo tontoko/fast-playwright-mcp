@@ -22,3 +22,6 @@ benchmark/lib/
 # Request logs
 logs/
 *.log
+
+# TypeScript incremental build metadata
+*.tsbuildinfo

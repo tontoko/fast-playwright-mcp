@@ -123,7 +123,7 @@ export class BatchExecutor {
           error: getErrorMessage(error),
           executionTimeMs: Date.now() - stepStartTime,
         });
-        if (!step.continueOnError || options.stopOnFirstError) {
+        if (!step.continueOnError) {
           stopReason = 'error';
           return;
         }

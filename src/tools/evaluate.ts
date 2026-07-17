@@ -1,12 +1,53 @@
 import type * as playwright from 'playwright';
 import { z } from 'zod';
 import { expectationSchema } from '../schemas/expectation.js';
-import { elementSelectorSchema } from '../types/selectors.js';
+import {
+  type ElementSelector,
+  elementSelectorSchema,
+  isCSSSelector,
+  isRefSelector,
+  isRoleSelector,
+  isTextSelector,
+} from '../types/selectors.js';
 import { quote } from '../utils/codegen.js';
 import { defineTabTool } from './tool.js';
 import { generateLocator } from './utils.js';
 
-// Enhanced selector schema for browser tools
+function selectorCode(selector: ElementSelector): string | undefined {
+  if (isCSSSelector(selector)) {
+    return `locator(${quote(selector.css)})`;
+  }
+  if (isRoleSelector(selector)) {
+    const options = selector.text ? `, { name: ${quote(selector.text)} }` : '';
+    return `getByRole(${quote(selector.role)}${options})`;
+  }
+  if (isTextSelector(selector)) {
+    const textLocator = `getByText(${quote(selector.text)})`;
+    return selector.tag
+      ? `locator(${quote(selector.tag)}).${textLocator}`
+      : textLocator;
+  }
+  if (isRefSelector(selector)) {
+    return;
+  }
+  return;
+}
+
+async function refSelectorCode(
+  tab: Parameters<Parameters<typeof defineTabTool>[0]['handle']>[0],
+  locator: playwright.Locator
+): Promise<string | undefined> {
+  const text = (await locator.textContent().catch(() => null))
+    ?.replace(/\s+/gu, ' ')
+    .trim();
+  if (!(text && text.length <= 200)) {
+    return;
+  }
+  return (await tab.page.getByText(text).count()) === 1
+    ? `getByText(${quote(text)})`
+    : undefined;
+}
+
 const selectorsSchema = z
   .array(elementSelectorSchema)
   .min(1)
@@ -14,7 +55,6 @@ const selectorsSchema = z
   .describe(
     'Array of element selectors (max 5) supporting ref, role, CSS, or text-based selection'
   );
-
 const evaluateSchema = z.object({
   function: z
     .string()
@@ -40,30 +80,27 @@ const evaluate = defineTabTool({
   },
   handle: async (tab, params, response) => {
     let locator: playwright.Locator | undefined;
-
+    let generatedLocator: string | undefined;
     if (params.selectors && params.selectors.length > 0) {
       const resolutionResults = await tab.resolveElementLocators(
         params.selectors
       );
       const successfulResults = resolutionResults.filter(
-        (r) => r.locator && !r.error
+        (result) => result.locator && !result.error
       );
-
       if (successfulResults.length === 0) {
         const errors = resolutionResults
-          .map((r) => r.error || 'Unknown error')
+          .map((result) => result.error || 'Unknown error')
           .join(', ');
         throw new Error(`Failed to resolve element selectors: ${errors}`);
       }
-
-      locator = successfulResults[0].locator;
-      response.addCode(
-        `await page.${await generateLocator(locator)}.evaluate(${quote(params.function)});`
-      );
-    } else {
-      response.addCode(`await page.evaluate(${quote(params.function)});`);
+      const selected = successfulResults[0];
+      locator = selected.locator;
+      generatedLocator =
+        selectorCode(selected.selector) ??
+        (await refSelectorCode(tab, locator)) ??
+        (await generateLocator(locator));
     }
-
     await tab.waitForCompletion(async () => {
       try {
         const expression = params.function;
@@ -82,17 +119,14 @@ const evaluate = defineTabTool({
               const result = await (isFunction ? value() : value);
               return { result, isFunction };
             }, expression);
-
         const codeExpression = evalResult.isFunction
           ? expression
           : `() => (${expression})`;
-        if (locator) {
-          response.addCode(
-            `await page.${await generateLocator(locator)}.evaluate(${quote(codeExpression)});`
-          );
-        } else {
-          response.addCode(`await page.evaluate(${quote(codeExpression)});`);
-        }
+        response.addCode(
+          locator
+            ? `await page.${generatedLocator}.evaluate(${quote(codeExpression)});`
+            : `await page.evaluate(${quote(codeExpression)});`
+        );
         response.addResult(
           JSON.stringify(evalResult.result, null, 2) ?? 'undefined'
         );

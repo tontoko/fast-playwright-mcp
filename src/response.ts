@@ -6,7 +6,7 @@ import { TIMEOUTS } from './config/constants.js';
 import type { Context } from './context.js';
 import type { ExpectationOptions } from './schemas/expectation.js';
 import { mergeExpectations } from './schemas/expectation.js';
-import type { Tab, TabSnapshot } from './tab.js';
+import { renderModalStates, type Tab, type TabSnapshot } from './tab.js';
 import type { DiffResult } from './types/diff.js';
 import { filterConsoleMessages } from './utils/console-filter.js';
 import { processImage } from './utils/image-processor.js';
@@ -175,10 +175,10 @@ export class Response {
         });
       }
     }
-    return this._context.redactToolResponse({
-      content,
-      isError: this._isError,
-    });
+    const result = { content, isError: this._isError };
+    return typeof this._context.redactToolResponse === 'function'
+      ? this._context.redactToolResponse(result)
+      : result;
   }
   private renderFilteredTabSnapshot(tabSnapshot: TabSnapshot): string {
     const sections = [
@@ -317,12 +317,19 @@ export class Response {
     if (!this._tabSnapshot) {
       return;
     }
+    if (this._tabSnapshot.modalStates.length > 0) {
+      response.push(
+        ...renderModalStates(this._context, this._tabSnapshot.modalStates),
+        ''
+      );
+      return;
+    }
     const filteredSnapshot = this.renderFilteredTabSnapshot(this._tabSnapshot);
     if (
       shouldIncludeSnapshot ||
       filteredSnapshot !== this._tabSnapshot.ariaSnapshot
     ) {
-      response.push(filteredSnapshot);
+      response.push(filteredSnapshot, '');
     }
   }
 
