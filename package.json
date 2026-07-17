@@ -37,6 +37,7 @@
     "wtest": "playwright test --project=webkit",
     "run-server": "bun lib/browserServer.js",
     "clean": "rm -rf lib benchmark/lib",
+    "check:encoding": "bun scripts/check-encoding.ts",
     "npm-publish": "npm run clean && npm run build:publish && npm run test && npm publish",
     "typecheck": "tsgo --noEmit -p tsconfig.json",
     "test:package": "playwright test tests/package-smoke.spec.ts --project=chromium",

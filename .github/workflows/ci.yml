@@ -31,6 +31,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: bun install --frozen-lockfile
+      - name: Verify source encoding
+        run: bun run check:encoding
       - name: Verify dashboard generation is deterministic
         shell: bash
         run: |
