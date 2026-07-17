@@ -1,0 +1,83 @@
+name: SonarQube PR 31 diagnostics
+
+on:
+  push:
+    branches:
+      - agent/sonar-pr31-diagnostics
+    paths:
+      - .github/workflows/sonar-pr31-diagnostics.yml
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Collect public SonarQube Cloud API responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p sonar-diagnostics
+
+          query() {
+            local name="$1"
+            shift
+            local url="$1"
+            shift
+            echo "GET ${url}" > "sonar-diagnostics/${name}.request.txt"
+            curl --location --silent --show-error \
+              --connect-timeout 20 --max-time 60 \
+              --dump-header "sonar-diagnostics/${name}.headers.txt" \
+              --output "sonar-diagnostics/${name}.json" \
+              --get "$url" "$@" || true
+            python3 - "$name" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          name = sys.argv[1]
+          path = pathlib.Path('sonar-diagnostics') / f'{name}.json'
+          try:
+              payload = json.loads(path.read_text(encoding='utf-8'))
+          except Exception:
+              raise SystemExit(0)
+          path.with_suffix('.pretty.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          }
+
+          query quality-gate https://sonarcloud.io/api/qualitygates/project_status \
+            --data-urlencode projectKey=tontoko_fast-playwright-mcp \
+            --data-urlencode pullRequest=31
+
+          query issues https://sonarcloud.io/api/issues/search \
+            --data-urlencode componentKeys=tontoko_fast-playwright-mcp \
+            --data-urlencode pullRequest=31 \
+            --data-urlencode resolved=false \
+            --data-urlencode ps=500 \
+            --data-urlencode additionalFields=_all
+
+          query measures https://sonarcloud.io/api/measures/component \
+            --data-urlencode component=tontoko_fast-playwright-mcp \
+            --data-urlencode pullRequest=31 \
+            --data-urlencode metricKeys=new_reliability_rating,new_security_rating,new_maintainability_rating,new_bugs,new_vulnerabilities,new_code_smells,new_security_hotspots
+
+          query hotspots https://sonarcloud.io/api/hotspots/search \
+            --data-urlencode projectKey=tontoko_fast-playwright-mcp \
+            --data-urlencode pullRequest=31 \
+            --data-urlencode ps=500
+
+          query pull-requests https://sonarcloud.io/api/project_pull_requests/list \
+            --data-urlencode project=tontoko_fast-playwright-mcp
+
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sonar-pr31-diagnostics
+          path: sonar-diagnostics
+          if-no-files-found: error
+          retention-days: 1
