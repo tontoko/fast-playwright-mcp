@@ -7,7 +7,6 @@ import type { Context } from './context.js';
 import type { ExpectationOptions } from './schemas/expectation.js';
 import { mergeExpectations } from './schemas/expectation.js';
 import type { Tab, TabSnapshot } from './tab.js';
-import { renderModalStates } from './tab.js';
 import type { DiffResult } from './types/diff.js';
 import { filterConsoleMessages } from './utils/console-filter.js';
 import { processImage } from './utils/image-processor.js';
