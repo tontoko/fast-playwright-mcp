@@ -81,6 +81,61 @@ jobs:
           query pull-requests https://sonarcloud.io/api/project_pull_requests/list \
             --data-urlencode project=tontoko_fast-playwright-mcp
 
+      - name: Build compact issue summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          root = Path('.github/sonar-pr31-diagnostics')
+          issues_payload = json.loads((root / 'issues.json').read_text(encoding='utf-8'))
+          issues = issues_payload.get('issues', [])
+          compact = []
+          for issue in issues:
+              component = issue.get('component', '')
+              prefix = 'tontoko_fast-playwright-mcp:'
+              path = component[len(prefix):] if component.startswith(prefix) else component
+              compact.append({
+                  'key': issue.get('key'),
+                  'path': path,
+                  'line': issue.get('line'),
+                  'rule': issue.get('rule'),
+                  'type': issue.get('type'),
+                  'severity': issue.get('severity'),
+                  'message': issue.get('message'),
+                  'impacts': issue.get('impacts', []),
+                  'status': issue.get('status'),
+              })
+          summary = {
+              'total': len(compact),
+              'byType': dict(sorted(Counter(item['type'] for item in compact).items())),
+              'bySeverity': dict(sorted(Counter(item['severity'] for item in compact).items())),
+              'issues': compact,
+          }
+          (root / 'summary.json').write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          lines = [
+              f"total={summary['total']}",
+              f"byType={summary['byType']}",
+              f"bySeverity={summary['bySeverity']}",
+          ]
+          for item in compact:
+              impacts = ','.join(
+                  f"{impact.get('softwareQuality')}:{impact.get('severity')}"
+                  for impact in item['impacts']
+              )
+              lines.append(
+                  f"{item['type']}\t{item['severity']}\t{item['path']}:{item['line']}\t"
+                  f"{item['rule']}\t{impacts}\t{item['message']}"
+              )
+          (root / 'summary.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+
       - name: Commit diagnostics to the isolated branch
         shell: bash
         run: |
