@@ -1,0 +1,48 @@
+name: Collect browser diagnostics
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/collect-browser-diagnostics.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  collect:
+    if: github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/adaptive-tool-discovery
+          fetch-depth: 0
+      - name: Download concise browser diagnostics
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .github/diagnostics
+          mkdir -p .github/diagnostics
+          for project in chrome chromium msedge firefox webkit; do
+            directory="/tmp/${project}"
+            gh run download 29562703535 \
+              --repo "$GITHUB_REPOSITORY" \
+              --name "browser-${project}-first-failure" \
+              --dir "$directory"
+            cp "$directory/browser-${project}-tail.log" ".github/diagnostics/${project}.log"
+            cp "$directory/browser-${project}.status" ".github/diagnostics/${project}.status"
+          done
+      - name: Commit diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/diagnostics
+          git commit -m 'chore: record browser failure diagnostics'
+          git push origin HEAD:agent/adaptive-tool-discovery
