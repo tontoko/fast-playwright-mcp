@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/adaptive-tool-discovery
+  pull_request:
+    branches:
+      - agent/pr31-staging-base
 
 permissions:
   contents: write
@@ -14,6 +17,7 @@ concurrency:
 
 jobs:
   apply:
+    if: github.event_name == 'push' || (github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery')
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
