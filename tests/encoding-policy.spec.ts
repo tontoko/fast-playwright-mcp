@@ -11,8 +11,10 @@ const TEXT_FILES = [
 ] as const;
 
 test('scanner-facing source files are valid UTF-8', async () => {
-  for (const path of TEXT_FILES) {
-    const bytes = await readFile(path);
+  const files = await Promise.all(
+    TEXT_FILES.map(async (path) => ({ path, bytes: await readFile(path) }))
+  );
+  for (const { path, bytes } of files) {
     expect(() => UTF8_DECODER.decode(bytes), path).not.toThrow();
   }
 });
