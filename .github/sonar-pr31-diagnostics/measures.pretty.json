@@ -1,0 +1,81 @@
+{
+  "component": {
+    "id": "AZ9VHzEyGdnUtZ7w4N8b",
+    "key": "tontoko_fast-playwright-mcp",
+    "measures": [
+      {
+        "metric": "new_security_hotspots",
+        "periods": [
+          {
+            "bestValue": true,
+            "index": 1,
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "metric": "new_vulnerabilities",
+        "periods": [
+          {
+            "bestValue": false,
+            "index": 1,
+            "value": "10"
+          }
+        ]
+      },
+      {
+        "metric": "new_reliability_rating",
+        "periods": [
+          {
+            "bestValue": false,
+            "index": 1,
+            "value": "4.0"
+          }
+        ]
+      },
+      {
+        "metric": "new_security_rating",
+        "periods": [
+          {
+            "bestValue": false,
+            "index": 1,
+            "value": "4.0"
+          }
+        ]
+      },
+      {
+        "metric": "new_maintainability_rating",
+        "periods": [
+          {
+            "bestValue": true,
+            "index": 1,
+            "value": "1.0"
+          }
+        ]
+      },
+      {
+        "metric": "new_bugs",
+        "periods": [
+          {
+            "bestValue": false,
+            "index": 1,
+            "value": "6"
+          }
+        ]
+      },
+      {
+        "metric": "new_code_smells",
+        "periods": [
+          {
+            "bestValue": false,
+            "index": 1,
+            "value": "9"
+          }
+        ]
+      }
+    ],
+    "name": "fast-playwright-mcp",
+    "pullRequest": "31",
+    "qualifier": "TRK"
+  }
+}

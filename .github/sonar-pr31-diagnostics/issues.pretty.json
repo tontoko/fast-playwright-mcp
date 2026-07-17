@@ -1,0 +1,2064 @@
+{
+  "components": [
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/apps/dashboard/template.html",
+      "longName": "src/apps/dashboard/template.html",
+      "name": "template.html",
+      "organization": "tontoko",
+      "path": "src/apps/dashboard/template.html",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9Va9zM1sKQ6MLEYt8f"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:scripts/build-dashboard.ts",
+      "longName": "scripts/build-dashboard.ts",
+      "name": "build-dashboard.ts",
+      "organization": "tontoko",
+      "path": "scripts/build-dashboard.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9VbHHefI86R02PzCSi"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/apps/dashboard/render.ts",
+      "longName": "src/apps/dashboard/render.ts",
+      "name": "render.ts",
+      "organization": "tontoko",
+      "path": "src/apps/dashboard/render.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9VacRh522HQpBMfDCV"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/tools/batch-execute.ts",
+      "longName": "src/tools/batch-execute.ts",
+      "name": "batch-execute.ts",
+      "organization": "tontoko",
+      "path": "src/tools/batch-execute.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9VZIJ00_vsReWVVUiU"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/config.ts",
+      "longName": "src/config.ts",
+      "name": "config.ts",
+      "organization": "tontoko",
+      "path": "src/config.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9VT-j11sKQ6MLEYCvH"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/tools/catalog/gateways.ts",
+      "longName": "src/tools/catalog/gateways.ts",
+      "name": "gateways.ts",
+      "organization": "tontoko",
+      "path": "src/tools/catalog/gateways.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9VW7WIOFmXP_NXQl3d"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/tools/evaluate.ts",
+      "longName": "src/tools/evaluate.ts",
+      "name": "evaluate.ts",
+      "organization": "tontoko",
+      "path": "src/tools/evaluate.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9uxn5iudde5MzmmSPJ"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "longName": "scripts/upstream-check.ts",
+      "name": "upstream-check.ts",
+      "organization": "tontoko",
+      "path": "scripts/upstream-check.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9uxn5judde5MzmmSSN"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp",
+      "longName": "fast-playwright-mcp",
+      "name": "fast-playwright-mcp",
+      "organization": "tontoko",
+      "pullRequest": "31",
+      "qualifier": "TRK",
+      "uuid": "AZ9VHzEyGdnUtZ7w4N8b"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:scripts/check-review-threads.ts",
+      "longName": "scripts/check-review-threads.ts",
+      "name": "check-review-threads.ts",
+      "organization": "tontoko",
+      "path": "scripts/check-review-threads.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9uxn5judde5MzmmSSK"
+    },
+    {
+      "enabled": true,
+      "key": "tontoko_fast-playwright-mcp:src/tools/catalog/search.ts",
+      "longName": "src/tools/catalog/search.ts",
+      "name": "search.ts",
+      "organization": "tontoko",
+      "path": "src/tools/catalog/search.ts",
+      "pullRequest": "31",
+      "qualifier": "FIL",
+      "uuid": "AZ9VKOYgJgY_rLCyr_jS"
+    }
+  ],
+  "debtTotal": 396,
+  "effortTotal": 396,
+  "facets": [],
+  "issues": [
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/config.ts",
+      "creationDate": "2026-07-17T06:31:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "87dbf05ac4ddeb3c16b51fd3faa3fbd4",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoWSudde5MzmmSSX",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 463,
+      "message": "The empty object is useless.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S7744",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "editable-source",
+        "spread-operator",
+        "unnecessary"
+      ],
+      "textRange": {
+        "endLine": 463,
+        "endOffset": 39,
+        "startLine": 463,
+        "startOffset": 37
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/config.ts",
+      "creationDate": "2026-07-17T06:31:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "42ce0f7d306dcf4d11b32be562123154",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoWSudde5MzmmSSY",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 464,
+      "message": "The empty object is useless.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S7744",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "editable-source",
+        "spread-operator",
+        "unnecessary"
+      ],
+      "textRange": {
+        "endLine": 464,
+        "endOffset": 45,
+        "startLine": 464,
+        "startOffset": 43
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/config.ts",
+      "creationDate": "2026-07-17T06:31:17+0000",
+      "debt": "1min",
+      "effort": "1min",
+      "flows": [],
+      "hash": "505b97969baa28c3f607a38ee02f4f2d",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoWSudde5MzmmSSZ",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 570,
+      "message": "Remove this redundant jump.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S3626",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "clumsy",
+        "editable-source",
+        "redundant"
+      ],
+      "textRange": {
+        "endLine": 570,
+        "endOffset": 9,
+        "startLine": 570,
+        "startOffset": 2
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/batch-execute.ts",
+      "creationDate": "2026-07-17T06:31:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "388556a1848ec3233e5577bd509acdb2",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoUFudde5MzmmSST",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 94,
+      "message": "Prefer `.findLast(\u2026)` over `.filter(\u2026).at(-1)`.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S7750",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "editable-source",
+        "es2015",
+        "performance",
+        "readability"
+      ],
+      "textRange": {
+        "endLine": 94,
+        "endOffset": 11,
+        "startLine": 94,
+        "startOffset": 5
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/search.ts",
+      "creationDate": "2026-07-17T06:31:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "e18ca7563d2764bdff03a04238db7f12",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoSHudde5MzmmSSR",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 27,
+      "message": "Use `.includes()` instead of `.some()` when checking value existence.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S7765",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "editable-source",
+        "es2016",
+        "readability"
+      ],
+      "textRange": {
+        "endLine": 27,
+        "endOffset": 31,
+        "startLine": 27,
+        "startOffset": 27
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/search.ts",
+      "creationDate": "2026-07-17T06:31:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "c55afd9f204f7a367ab2cdef4394311b",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoSHudde5MzmmSSS",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 39,
+      "message": "Use `.includes()` instead of `.some()` when checking value existence.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S7765",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "editable-source",
+        "es2016",
+        "readability"
+      ],
+      "textRange": {
+        "endLine": 39,
+        "endOffset": 32,
+        "startLine": 39,
+        "startOffset": 28
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/check-review-threads.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/check-review-threads.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 18,
+                "endOffset": 34,
+                "startLine": 18,
+                "startOffset": 26
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/check-review-threads.ts",
+              "msg": "A malicious value was previously assigned to field \u2018fixture\u2019",
+              "textRange": {
+                "endLine": 18,
+                "endOffset": 49,
+                "startLine": 18,
+                "startOffset": 42
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/check-review-threads.ts",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 9,
+                "endOffset": 28,
+                "startLine": 9,
+                "startOffset": 19
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "6d916c1650dc5107f56f1fbc3b6323de",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoW_udde5MzmmSSa",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 18,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 18,
+        "endOffset": 34,
+        "startLine": 18,
+        "startOffset": 26
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "fe77b51f034ac21cb3948ba90cc91c74",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSb",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 6,
+      "message": "Group parts of the regex together to make the intended operator precedence explicit.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S5850",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 6,
+        "endOffset": 61,
+        "startLine": 6,
+        "startOffset": 25
+      },
+      "transitions": [],
+      "type": "BUG",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 44,
+                "startLine": 40,
+                "startOffset": 36
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018path\u2019",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 49,
+                "startLine": 40,
+                "startOffset": 45
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value can be assigned to field \u2018path\u2019",
+              "textRange": {
+                "endLine": 38,
+                "endOffset": 6,
+                "startLine": 38,
+                "startOffset": 2
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 203,
+                "endOffset": 45,
+                "startLine": 203,
+                "startOffset": 25
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018manifest\u2019",
+              "textRange": {
+                "endLine": 203,
+                "endOffset": 61,
+                "startLine": 203,
+                "startOffset": 53
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 196,
+                "endOffset": 30,
+                "startLine": 196,
+                "startOffset": 21
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "1e3a193d1e41eaabd6119364f4fe720b",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSh",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 40,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 40,
+        "endOffset": 44,
+        "startLine": 40,
+        "startOffset": 36
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 30,
+                "startLine": 164,
+                "startOffset": 25
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018url\u2019",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 34,
+                "startLine": 164,
+                "startOffset": 31
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value can be assigned to field \u2018url\u2019",
+              "textRange": {
+                "endLine": 163,
+                "endOffset": 40,
+                "startLine": 163,
+                "startOffset": 29
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 186,
+                "endOffset": 33,
+                "startLine": 186,
+                "startOffset": 23
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 187,
+                "endOffset": 70,
+                "startLine": 187,
+                "startOffset": 4
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018repository\u2019",
+              "textRange": {
+                "endLine": 187,
+                "endOffset": 55,
+                "startLine": 187,
+                "startOffset": 45
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 206,
+                "endOffset": 21,
+                "startLine": 206,
+                "startOffset": 10
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018value\u2019",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 58,
+                "startLine": 40,
+                "startOffset": 30
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Source: this is confidential credential data (password, API key, secret, or token)",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 44,
+                "startLine": 40,
+                "startOffset": 36
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "9afd14a4535f3ecc7b6aae90bd6abc83",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSe",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 164,
+      "message": "Make sure that sending this confidential data in a GET parameter is safe here.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S8690",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 164,
+        "endOffset": 30,
+        "startLine": 164,
+        "startOffset": 25
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 30,
+                "startLine": 164,
+                "startOffset": 25
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018url\u2019",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 34,
+                "startLine": 164,
+                "startOffset": 31
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value can be assigned to field \u2018url\u2019",
+              "textRange": {
+                "endLine": 163,
+                "endOffset": 40,
+                "startLine": 163,
+                "startOffset": 29
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 189,
+                "endOffset": 34,
+                "startLine": 189,
+                "startOffset": 24
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 190,
+                "endOffset": 108,
+                "startLine": 190,
+                "startOffset": 4
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018repository\u2019",
+              "textRange": {
+                "endLine": 190,
+                "endOffset": 55,
+                "startLine": 190,
+                "startOffset": 45
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 206,
+                "endOffset": 21,
+                "startLine": 206,
+                "startOffset": 10
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018value\u2019",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 58,
+                "startLine": 40,
+                "startOffset": 30
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Source: this is confidential credential data (password, API key, secret, or token)",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 44,
+                "startLine": 40,
+                "startOffset": 36
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "9afd14a4535f3ecc7b6aae90bd6abc83",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSf",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 164,
+      "message": "Ensure that tainted data is validated before being used to construct a client-side request URL.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S8476",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 164,
+        "endOffset": 30,
+        "startLine": 164,
+        "startOffset": 25
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 30,
+                "startLine": 164,
+                "startOffset": 25
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018url\u2019",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 34,
+                "startLine": 164,
+                "startOffset": 31
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value can be assigned to field \u2018url\u2019",
+              "textRange": {
+                "endLine": 163,
+                "endOffset": 40,
+                "startLine": 163,
+                "startOffset": 29
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 189,
+                "endOffset": 34,
+                "startLine": 189,
+                "startOffset": 24
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 190,
+                "endOffset": 108,
+                "startLine": 190,
+                "startOffset": 4
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018repository\u2019",
+              "textRange": {
+                "endLine": 190,
+                "endOffset": 55,
+                "startLine": 190,
+                "startOffset": 45
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 206,
+                "endOffset": 21,
+                "startLine": 206,
+                "startOffset": 10
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018value\u2019",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 58,
+                "startLine": 40,
+                "startOffset": 30
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Source: this is confidential credential data (password, API key, secret, or token)",
+              "textRange": {
+                "endLine": 40,
+                "endOffset": 44,
+                "startLine": 40,
+                "startOffset": 36
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "9afd14a4535f3ecc7b6aae90bd6abc83",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSg",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 164,
+      "message": "Change this code to not construct the URL's path from user-controlled data.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S7044",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 164,
+        "endOffset": 30,
+        "startLine": 164,
+        "startOffset": 25
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 184,
+                "endOffset": 36,
+                "startLine": 184,
+                "startOffset": 28
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018fixture\u2019",
+              "textRange": {
+                "endLine": 184,
+                "endOffset": 44,
+                "startLine": 184,
+                "startOffset": 37
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value can be assigned to field \u2018fixture\u2019",
+              "textRange": {
+                "endLine": 181,
+                "endOffset": 18,
+                "startLine": 181,
+                "startOffset": 2
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink",
+              "textRange": {
+                "endLine": 206,
+                "endOffset": 21,
+                "startLine": 206,
+                "startOffset": 10
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018fixture\u2019",
+              "textRange": {
+                "endLine": 206,
+                "endOffset": 46,
+                "startLine": 206,
+                "startOffset": 39
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 196,
+                "endOffset": 30,
+                "startLine": 196,
+                "startOffset": 21
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "d0a42ad3e4cd2ddb70e2f070d5e1c7d6",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSc",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 184,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 184,
+        "endOffset": 36,
+        "startLine": 184,
+        "startOffset": 28
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 209,
+                "endOffset": 19,
+                "startLine": 209,
+                "startOffset": 10
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "A malicious value was previously assigned to field \u2018output\u2019",
+              "textRange": {
+                "endLine": 209,
+                "endOffset": 33,
+                "startLine": 209,
+                "startOffset": 27
+              }
+            },
+            {
+              "component": "tontoko_fast-playwright-mcp:scripts/upstream-check.ts",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 196,
+                "endOffset": 30,
+                "startLine": 196,
+                "startOffset": 21
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "febda9d995f4ca59d88edd6c67bbf18b",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoXKudde5MzmmSSd",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 209,
+      "message": "LLMs running this code with faulty CLI arguments can escape file system restrictions. Refactor this code to validate the constructed path before accessing the file system.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 209,
+        "endOffset": 19,
+        "startLine": 209,
+        "startOffset": 10
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/evaluate.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "2114240cbd84bcb52714b73b8558d2cc",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        },
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoUPudde5MzmmSSU",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 73,
+      "message": "Make sure that this dynamic injection or execution of code is safe.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S1523",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 73,
+        "endOffset": 32,
+        "startLine": 73,
+        "startOffset": 28
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/evaluate.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "055d126414603d2320b1190ee56fa3d2",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        },
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoUPudde5MzmmSSV",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 75,
+      "message": "Make sure that this dynamic injection or execution of code is safe.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S1523",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 75,
+        "endOffset": 54,
+        "startLine": 75,
+        "startOffset": 49
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/evaluate.ts",
+      "creationDate": "2026-07-17T05:48:44+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "2114240cbd84bcb52714b73b8558d2cc",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        },
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9uxoUPudde5MzmmSSW",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 80,
+      "message": "Make sure that this dynamic injection or execution of code is safe.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S1523",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 80,
+        "endOffset": 32,
+        "startLine": 80,
+        "startOffset": 28
+      },
+      "transitions": [],
+      "type": "VULNERABILITY",
+      "updateDate": "2026-07-17T06:31:17+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/apps/dashboard/render.ts",
+      "creationDate": "2026-07-12T08:56:36+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "a5de56168b71b626610ab11dd348228c",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9Vi1PHb3Yg5Wvlu52T",
+      "lastChangeAnalysisUuid": "078d58cc-9d67-4bfc-97e3-70d43f37722a",
+      "lastChangeSource": "ANALYSIS",
+      "line": 13,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 13,
+        "endOffset": 47,
+        "startLine": 13,
+        "startOffset": 25
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-12T08:56:36+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:scripts/build-dashboard.ts",
+      "creationDate": "2026-07-12T08:22:38+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "155fd02d3f6d9ee4d1b0fbbe9e860cc4",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9VbHfHfI86R02PzCSo",
+      "lastChangeAnalysisUuid": "49abebc7-0db1-48f5-8ff1-031ee7963bd5",
+      "lastChangeSource": "ANALYSIS",
+      "line": 46,
+      "message": "`String.raw` should be used to avoid escaping `\\`.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S7780",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "editable-source",
+        "es2015",
+        "readability"
+      ],
+      "textRange": {
+        "endLine": 46,
+        "endOffset": 38,
+        "startLine": 46,
+        "startOffset": 26
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-12T08:22:48+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/apps/dashboard/template.html",
+      "creationDate": "2026-07-12T08:21:52+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "ef8d54f85dc5c8c347eee07044af0012",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9Va-OB1sKQ6MLEYt-f",
+      "lastChangeAnalysisUuid": "ce03dfe0-781a-4906-8b69-5f16f4afcc63",
+      "lastChangeSource": "ANALYSIS",
+      "line": 15,
+      "message": "Use <output> instead of the status role to ensure accessibility across all devices.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "Web:S6819",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "accessibility"
+      ],
+      "textRange": {
+        "endLine": 15,
+        "endOffset": 39,
+        "startLine": 15,
+        "startOffset": 10
+      },
+      "transitions": [],
+      "type": "CODE_SMELL",
+      "updateDate": "2026-07-12T08:22:02+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/gateways.ts",
+      "creationDate": "2026-07-12T08:04:13+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "ed41fe0d275f58982b98103783d6fbf4",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9VW7u8OFmXP_NXQl6y",
+      "lastChangeAnalysisUuid": "2848be72-efea-41cd-99bf-10855ef79bf5",
+      "lastChangeSource": "ANALYSIS",
+      "line": 80,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "bad-practice",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 80,
+        "endOffset": 24,
+        "startLine": 80,
+        "startOffset": 20
+      },
+      "transitions": [],
+      "type": "BUG",
+      "updateDate": "2026-07-12T08:04:23+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/gateways.ts",
+      "creationDate": "2026-07-12T08:04:13+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "9f9502d0e17446df8c34e2ae6949976d",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9VW7u8OFmXP_NXQl6z",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 124,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "bad-practice",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 124,
+        "endOffset": 72,
+        "startLine": 124,
+        "startOffset": 68
+      },
+      "transitions": [],
+      "type": "BUG",
+      "updateDate": "2026-07-12T08:04:23+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/gateways.ts",
+      "creationDate": "2026-07-12T08:04:13+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "9f9502d0e17446df8c34e2ae6949976d",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9VW7u8OFmXP_NXQl60",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 139,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "bad-practice",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 139,
+        "endOffset": 72,
+        "startLine": 139,
+        "startOffset": 68
+      },
+      "transitions": [],
+      "type": "BUG",
+      "updateDate": "2026-07-12T08:04:23+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/gateways.ts",
+      "creationDate": "2026-07-12T08:04:13+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "9f9502d0e17446df8c34e2ae6949976d",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9VW7u8OFmXP_NXQl61",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 149,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "bad-practice",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 149,
+        "endOffset": 72,
+        "startLine": 149,
+        "startOffset": 68
+      },
+      "transitions": [],
+      "type": "BUG",
+      "updateDate": "2026-07-12T08:04:23+0000"
+    },
+    {
+      "actions": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "comments": [],
+      "component": "tontoko_fast-playwright-mcp:src/tools/catalog/gateways.ts",
+      "creationDate": "2026-07-12T08:04:13+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "9f9502d0e17446df8c34e2ae6949976d",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AZ9VW7u8OFmXP_NXQl62",
+      "lastChangeAnalysisUuid": "bd4608d7-1489-4a75-aa29-5706a8c7e9b6",
+      "lastChangeSource": "ANALYSIS",
+      "line": 155,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "organization": "tontoko",
+      "project": "tontoko_fast-playwright-mcp",
+      "projectName": "fast-playwright-mcp",
+      "pullRequest": "31",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "bad-practice",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 155,
+        "endOffset": 72,
+        "startLine": 155,
+        "startOffset": 68
+      },
+      "transitions": [],
+      "type": "BUG",
+      "updateDate": "2026-07-12T08:04:23+0000"
+    }
+  ],
+  "languages": [
+    {
+      "key": "abap",
+      "name": "ABAP"
+    },
+    {
+      "key": "cobol",
+      "name": "COBOL"
+    },
+    {
+      "key": "c",
+      "name": "C"
+    },
+    {
+      "key": "cpp",
+      "name": "C++"
+    },
+    {
+      "key": "objc",
+      "name": "Objective-C"
+    },
+    {
+      "key": "cs",
+      "name": "C#"
+    },
+    {
+      "key": "dart",
+      "name": "Dart"
+    },
+    {
+      "key": "gosu",
+      "name": "Gosu"
+    },
+    {
+      "key": "groovy",
+      "name": "Groovy"
+    },
+    {
+      "key": "powershell",
+      "name": "PowerShell"
+    },
+    {
+      "key": "postgres",
+      "name": "PostgreSQL"
+    },
+    {
+      "key": "flex",
+      "name": "Flex"
+    },
+    {
+      "key": "go",
+      "name": "Go"
+    },
+    {
+      "key": "terraform",
+      "name": "Terraform"
+    },
+    {
+      "key": "cloudformation",
+      "name": "CloudFormation"
+    },
+    {
+      "key": "kubernetes",
+      "name": "Kubernetes"
+    },
+    {
+      "key": "docker",
+      "name": "Docker"
+    },
+    {
+      "key": "azureresourcemanager",
+      "name": "Azure Resource Manager"
+    },
+    {
+      "key": "yaml",
+      "name": "YAML"
+    },
+    {
+      "key": "json",
+      "name": "JSON"
+    },
+    {
+      "key": "ansible",
+      "name": "Ansible"
+    },
+    {
+      "key": "githubactions",
+      "name": "GitHub Actions"
+    },
+    {
+      "key": "azurepipelines",
+      "name": "Azure Pipelines"
+    },
+    {
+      "key": "shell",
+      "name": "Shell"
+    },
+    {
+      "key": "java",
+      "name": "Java"
+    },
+    {
+      "key": "js",
+      "name": "JavaScript"
+    },
+    {
+      "key": "ts",
+      "name": "TypeScript"
+    },
+    {
+      "key": "css",
+      "name": "CSS"
+    },
+    {
+      "key": "jcl",
+      "name": "JCL"
+    },
+    {
+      "key": "kotlin",
+      "name": "Kotlin"
+    },
+    {
+      "key": "php",
+      "name": "PHP"
+    },
+    {
+      "key": "pli",
+      "name": "PL/I"
+    },
+    {
+      "key": "plsql",
+      "name": "PL/SQL"
+    },
+    {
+      "key": "py",
+      "name": "Python"
+    },
+    {
+      "key": "ipynb",
+      "name": "IPython Notebooks"
+    },
+    {
+      "key": "rpg",
+      "name": "RPG"
+    },
+    {
+      "key": "ruby",
+      "name": "Ruby"
+    },
+    {
+      "key": "rust",
+      "name": "Rust"
+    },
+    {
+      "key": "apex",
+      "name": "Apex"
+    },
+    {
+      "key": "scala",
+      "name": "Scala"
+    },
+    {
+      "key": "swift",
+      "name": "Swift"
+    },
+    {
+      "key": "secrets",
+      "name": "Secrets"
+    },
+    {
+      "key": "text",
+      "name": "Text"
+    },
+    {
+      "key": "tsql",
+      "name": "T-SQL"
+    },
+    {
+      "key": "vb",
+      "name": "Vb"
+    },
+    {
+      "key": "vbnet",
+      "name": "VB.NET"
+    },
+    {
+      "key": "web",
+      "name": "HTML"
+    },
+    {
+      "key": "jsp",
+      "name": "JSP"
+    },
+    {
+      "key": "xml",
+      "name": "XML"
+    }
+  ],
+  "organizations": [
+    {
+      "key": "tontoko",
+      "name": "Tomohiko Hiraki"
+    }
+  ],
+  "p": 1,
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 500,
+    "total": 25
+  },
+  "ps": 500,
+  "rules": [
+    {
+      "key": "typescript:S7765",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Existence checks should use \".includes()\" instead of \".indexOf()\" or \".lastIndexOf()\"",
+      "status": "READY"
+    },
+    {
+      "key": "tssecurity:S8707",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Agentic workflows should not be vulnerable to path injection attacks",
+      "status": "READY"
+    },
+    {
+      "key": "Web:S6819",
+      "lang": "web",
+      "langName": "HTML",
+      "name": "Prefer tag over ARIA role",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S5850",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Alternatives in regular expressions should be grouped when used with anchors",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S7750",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Array methods \".find()\" and \".findLast()\" should be preferred over \".filter()\" for single element retrieval",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S7744",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Unnecessary fallback objects should not be used when spreading in object literals",
+      "status": "READY"
+    },
+    {
+      "key": "tssecurity:S8690",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Confidential data should not be sent in HTTP GET parameters",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S2871",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "\"Array.prototype.sort()\" and \"Array.prototype.toSorted()\" should use a compare function",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S1523",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Dynamic code execution should not use user-controlled data",
+      "status": "READY"
+    },
+    {
+      "key": "tssecurity:S8476",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Client-side requests should not be vulnerable to forging attacks",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S3626",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Jump statements should not be redundant",
+      "status": "READY"
+    },
+    {
+      "key": "tssecurity:S7044",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Server-side requests should not be vulnerable to traversing attacks",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S7780",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "String literals with escaped backslashes should use `String.raw` template literals",
+      "status": "READY"
+    },
+    {
+      "key": "typescript:S8786",
+      "lang": "ts",
+      "langName": "TypeScript",
+      "name": "Regular expressions should not cause non-linear backtracking",
+      "status": "READY"
+    }
+  ],
+  "total": 25,
+  "users": []
+}

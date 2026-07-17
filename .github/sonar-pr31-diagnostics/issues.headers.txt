@@ -1,0 +1,19 @@
+HTTP/2 200 
+content-type: application/json
+date: Fri, 17 Jul 2026 06:45:19 GMT
+x-sonar-server-time: 1784270719762
+vary: accept-encoding
+x-frame-options: DENY
+x-xss-protection: 1; mode=block
+x-content-type-options: nosniff
+content-security-policy-report-only: default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com https://tagmanager.google.com https://static.cdn.prismic.io https://bitbucket.org/atlassian-connect/all.js https://dev.azure.com js.braintreegateway.com assets.braintreegateway.com www.paypalobjects.com c.paypal.com https://static.userback.io;style-src 'self' 'unsafe-inline' https://tagmanager.google.com https://fonts.googleapis.com https://static.cdn.prismic.io https://static.userback.io;img-src 'self' https: assets.braintreegateway.com checkout.paypal.com data:;connect-src 'self' https://sonarcloud.io *.sc-dev.io https://*.google-analytics.com https://static.cdn.prismic.io https://*.sentry.io https://*.ingest.sentry.io https://sonarsource.cdn.prismic.io https://static.sonarcloud.io wss://notifications.sonarcloud.io https://d301sr5gafysq2.cloudfront.net api.sandbox.braintreegateway.com api.braintreegateway.com client-analytics.sandbox.braintreegateway.com client-analytics.braintreegateway.com *.braintree-api.com https://api.userback.io https://secure.gravatar.com https://api.bitbucket.org;object-src 'none';media-src 'none';child-src 'self' assets.braintreegateway.com c.paypal.com;frame-src 'self' assets.braintreegateway.com c.paypal.com *.cardinalcommerce.com https://eu.3ds.acssecure.com https://*.americanexpress.com https://acs.capitalone.com;font-src 'self' https://fonts.gstatic.com https://static.userback.io/fonts;
+strict-transport-security: max-age=31536000; includeSubDomains
+cache-control: no-cache, no-store, must-revalidate
+sonar-version: 13.7.0.4381
+x-cache: Miss from cloudfront
+via: 1.1 fb63aaec4d35ef0edeba558f182577fa.cloudfront.net (CloudFront)
+x-amz-cf-pop: CDG50-P5
+x-amz-cf-id: Rg3yxUTGFFV06mVkWtbI4MFCufrPrwoO6vdxy96EeXmcN2ybPZTnFg==
+referrer-policy: strict-origin-when-cross-origin
+vary: Origin
+

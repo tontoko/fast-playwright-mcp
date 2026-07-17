@@ -1,0 +1,1 @@
+GET https://sonarcloud.io/api/issues/search

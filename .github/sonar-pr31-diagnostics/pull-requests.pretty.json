@@ -1,0 +1,92 @@
+{
+  "pullRequests": [
+    {
+      "analysisDate": "2026-07-17T06:39:56+0000",
+      "base": "main",
+      "branch": "agent/adaptive-tool-discovery",
+      "commit": {
+        "author": {
+          "avatar": "32324d00f8e503df7cc5ab44b079f175",
+          "login": "tontoko-i9jW8@github",
+          "name": "Tomohiko Hiraki"
+        },
+        "date": "2026-07-17T06:39:47+0000",
+        "message": "test: accept frame-qualified extension snapshot refs",
+        "sha": "ad936405b7951c66bc614f286832017a1b863182"
+      },
+      "contributors": [
+        {
+          "avatar": "",
+          "login": "",
+          "name": "Anonymous User"
+        },
+        {
+          "avatar": "32324d00f8e503df7cc5ab44b079f175",
+          "login": "tontoko-i9jW8@github",
+          "name": "Tomohiko Hiraki"
+        },
+        {
+          "avatar": "",
+          "login": "",
+          "name": "Anonymous User"
+        }
+      ],
+      "key": "31",
+      "pullRequestId": "32867246-55aa-4fe3-b561-3943d600a161",
+      "pullRequestUuidV1": "AZ9VHzEyGdnUtZ7w4N8b",
+      "status": {
+        "bugs": 6,
+        "codeSmells": 9,
+        "qualityGateStatus": "ERROR",
+        "vulnerabilities": 10
+      },
+      "target": "main",
+      "title": "feat: improve tool discovery, upstream compatibility, and MCP Apps support",
+      "url": "https://github.com/tontoko/fast-playwright-mcp/pull/31"
+    },
+    {
+      "analysisDate": "2026-07-12T04:09:39+0000",
+      "base": "main",
+      "branch": "fix/all-open-issues",
+      "commit": {
+        "author": {
+          "avatar": "32324d00f8e503df7cc5ab44b079f175",
+          "login": "tontoko-i9jW8@github",
+          "name": "Tomohiko Hiraki"
+        },
+        "date": "2026-07-12T04:09:31+0000",
+        "message": "ci: remove temporary SonarQube cleanup job",
+        "sha": "a111cbe4ed8e28100d3f0ee98c4e4ffc63f895ce"
+      },
+      "contributors": [
+        {
+          "avatar": "",
+          "login": "",
+          "name": "Anonymous User"
+        },
+        {
+          "avatar": "32324d00f8e503df7cc5ab44b079f175",
+          "login": "tontoko-i9jW8@github",
+          "name": "Tomohiko Hiraki"
+        },
+        {
+          "avatar": "",
+          "login": "",
+          "name": "Anonymous User"
+        }
+      ],
+      "key": "30",
+      "pullRequestId": "ec1ac5f1-7343-4529-acbf-814c87925174",
+      "pullRequestUuidV1": "AZ9TcNK3n99QDwf0KMkQ",
+      "status": {
+        "bugs": 0,
+        "codeSmells": 0,
+        "qualityGateStatus": "OK",
+        "vulnerabilities": 0
+      },
+      "target": "main",
+      "title": "fix: resolve all open issues and restore CI coverage",
+      "url": "https://github.com/tontoko/fast-playwright-mcp/pull/30"
+    }
+  ]
+}
