@@ -101,7 +101,7 @@ jobs:
             quality-lint.log
             focused-tests.log
             package-smoke.log
-            test-results
+            test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 7
 
@@ -148,7 +148,7 @@ jobs:
           name: browser-${{ matrix.project }}-failure-diagnostics
           path: |
             browser-${{ matrix.project }}.log
-            test-results
+            test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 7
 
@@ -197,7 +197,7 @@ jobs:
           path: |
             extension-build.log
             extension-e2e.log
-            test-results
+            test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 7
       - name: Upload extension artifact
