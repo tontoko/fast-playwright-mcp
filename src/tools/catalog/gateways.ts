@@ -66,6 +66,10 @@ function resultText(payload: unknown): ToolResponse {
   };
 }
 
+function compareToolNames(left: string, right: string): number {
+  return left.localeCompare(right);
+}
+
 function collectNames(
   registry: ToolRegistry,
   tools: readonly string[] | undefined,
@@ -77,7 +81,7 @@ function collectNames(
       names.add(registration.tool.schema.name);
     }
   }
-  return [...names].sort();
+  return [...names].sort(compareToolNames);
 }
 
 export function createCatalogTools(options: CatalogGatewayOptions): AnyTool[] {
@@ -121,7 +125,9 @@ export function createCatalogTools(options: CatalogGatewayOptions): AnyTool[] {
           }
           return resultText({
             changed,
-            visibleTools: options.visibility.visibleNames(registry).sort(),
+            visibleTools: options.visibility
+              .visibleNames(registry)
+              .sort(compareToolNames),
           });
         }
         case 'disable': {
@@ -136,7 +142,9 @@ export function createCatalogTools(options: CatalogGatewayOptions): AnyTool[] {
           }
           return resultText({
             changed,
-            visibleTools: options.visibility.visibleNames(registry).sort(),
+            visibleTools: options.visibility
+              .visibleNames(registry)
+              .sort(compareToolNames),
           });
         }
         case 'reset': {
@@ -146,13 +154,17 @@ export function createCatalogTools(options: CatalogGatewayOptions): AnyTool[] {
           }
           return resultText({
             changed,
-            visibleTools: options.visibility.visibleNames(registry).sort(),
+            visibleTools: options.visibility
+              .visibleNames(registry)
+              .sort(compareToolNames),
           });
         }
         case 'status':
           return resultText({
             profile: options.visibility.profile,
-            visibleTools: options.visibility.visibleNames(registry).sort(),
+            visibleTools: options.visibility
+              .visibleNames(registry)
+              .sort(compareToolNames),
             registeredToolCount: registry.registrations.length,
           });
         default:
