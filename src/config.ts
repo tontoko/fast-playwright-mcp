@@ -461,8 +461,8 @@ function createMergedBrowserConfig(
       ...pickDefined(overrides.browser?.contextOptions),
     },
     cdpHeaders: {
-      ...(base.browser.cdpHeaders ?? {}),
-      ...(overrides.browser?.cdpHeaders ?? {}),
+      ...pickDefined(base.browser.cdpHeaders),
+      ...pickDefined(overrides.browser?.cdpHeaders),
     },
     cdpTimeout:
       overrides.browser?.cdpTimeout ??
@@ -574,7 +574,6 @@ function envToBoolean(value: string | undefined): boolean | undefined {
   if (value === 'false' || value === '0') {
     return false;
   }
-  return;
 }
 
 function envToString(value: string | undefined): string | undefined {
