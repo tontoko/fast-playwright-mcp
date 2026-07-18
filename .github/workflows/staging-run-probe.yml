@@ -21,28 +21,32 @@ jobs:
         with:
           ref: agent/sonar-status-probe
           fetch-depth: 0
-      - name: Query staging workflow runs
+      - name: Query staging workflow runs and latest failure log
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .github/staging-run-probe
-          curl --silent --show-error --location \
-            --max-time 30 \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H 'Accept: application/vnd.github+json' \
-            -H 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=agent%2Fsonar-quality-gate-fixes&per_page=30" \
-            > .github/staging-run-probe/runs.json
+          root='.github/staging-run-probe'
+          mkdir -p "$root"
+          api() {
+            curl --silent --show-error --location \
+              --max-time 30 \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "$1"
+          }
+          api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=agent%2Fsonar-quality-gate-fixes&per_page=30" \
+            > "$root/runs.json"
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          payload = json.loads(
-              Path('.github/staging-run-probe/runs.json').read_text(encoding='utf-8')
-          )
+          root = Path('.github/staging-run-probe')
+          payload = json.loads((root / 'runs.json').read_text(encoding='utf-8'))
           lines = ['# Staging workflow runs', '']
+          latest_failed_run = None
           for run in payload.get('workflow_runs', []):
               lines.extend([
                   f"## {run.get('name')} #{run.get('run_number')}",
@@ -56,10 +60,44 @@ jobs:
                   f"- html_url: {run.get('html_url')}",
                   '',
               ])
-          Path('.github/staging-run-probe/RESULTS.md').write_text(
-              '\n'.join(lines), encoding='utf-8'
+              if latest_failed_run is None and run.get('conclusion') == 'failure':
+                  latest_failed_run = run.get('id')
+          (root / 'RESULTS.md').write_text('\n'.join(lines), encoding='utf-8')
+          (root / 'LATEST_FAILED_RUN').write_text(
+              str(latest_failed_run or ''), encoding='utf-8'
           )
           PY
+
+          failed_run="$(cat "$root/LATEST_FAILED_RUN")"
+          if [ -n "$failed_run" ]; then
+            api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${failed_run}/jobs?filter=latest&per_page=100" \
+              > "$root/latest-failed-jobs.json"
+            job_id="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(
+              Path('.github/staging-run-probe/latest-failed-jobs.json').read_text(
+                  encoding='utf-8'
+              )
+          )
+          jobs = payload.get('jobs', [])
+          failed = next((job for job in jobs if job.get('conclusion') == 'failure'), None)
+          print((failed or (jobs[0] if jobs else {})).get('id', ''))
+          PY
+            )"
+            if [ -n "$job_id" ]; then
+              curl --silent --show-error --location \
+                --max-time 60 \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/jobs/${job_id}/logs" \
+                > "$root/latest-failed-job-full.txt"
+              tail -n 240 "$root/latest-failed-job-full.txt" \
+                > "$root/latest-failed-job-tail.txt"
+              rm "$root/latest-failed-job-full.txt"
+            fi
+          fi
       - name: Commit result
         shell: bash
         run: |
