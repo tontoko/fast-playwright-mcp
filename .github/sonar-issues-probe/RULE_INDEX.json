@@ -1,0 +1,66 @@
+[
+  {
+    "index": 1,
+    "rule": "typescript:S3626"
+  },
+  {
+    "index": 2,
+    "rule": "typescript:S7744"
+  },
+  {
+    "index": 3,
+    "rule": "typescript:S7750"
+  },
+  {
+    "index": 4,
+    "rule": "typescript:S7765"
+  },
+  {
+    "index": 5,
+    "rule": "tssecurity:S8707"
+  },
+  {
+    "index": 6,
+    "rule": "typescript:S5850"
+  },
+  {
+    "index": 7,
+    "rule": "tssecurity:S8690"
+  },
+  {
+    "index": 8,
+    "rule": "tssecurity:S8476"
+  },
+  {
+    "index": 9,
+    "rule": "tssecurity:S7044"
+  },
+  {
+    "index": 10,
+    "rule": "typescript:S1523"
+  },
+  {
+    "index": 11,
+    "rule": "typescript:S8786"
+  },
+  {
+    "index": 12,
+    "rule": "typescript:S7780"
+  },
+  {
+    "index": 13,
+    "rule": "Web:S6819"
+  },
+  {
+    "index": 14,
+    "rule": "typescript:S2871"
+  },
+  {
+    "index": 15,
+    "rule": "typescript:S5914"
+  },
+  {
+    "index": 16,
+    "rule": "typescript:S5906"
+  }
+]
