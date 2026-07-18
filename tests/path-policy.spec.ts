@@ -6,8 +6,8 @@ import {
   resolveWorkspaceOutputPath,
 } from '../scripts/path-policy.js';
 
-test('workspace path policy preserves repository-contained files', async ({}, testInfo) => {
-  const root = testInfo.outputPath('workspace');
+test('workspace path policy preserves repository-contained files', async () => {
+  const root = test.info().outputPath('workspace');
   const fixtures = resolve(root, 'fixtures');
   await mkdir(fixtures, { recursive: true });
   const input = resolve(fixtures, 'input.json');
@@ -28,10 +28,10 @@ test('workspace path policy preserves repository-contained files', async ({}, te
   ).resolves.toBe(resolve(root, 'report.md'));
 });
 
-test('workspace path policy rejects traversal and unexpected extensions', async ({}, testInfo) => {
-  const root = testInfo.outputPath('workspace');
+test('workspace path policy rejects traversal and unexpected extensions', async () => {
+  const root = test.info().outputPath('workspace');
   await mkdir(root, { recursive: true });
-  await writeFile(testInfo.outputPath('outside.json'), '{}', 'utf8');
+  await writeFile(test.info().outputPath('outside.json'), '{}', 'utf8');
   await writeFile(resolve(root, 'fixture.txt'), '{}', 'utf8');
 
   await expect(
@@ -50,10 +50,10 @@ test('workspace path policy rejects traversal and unexpected extensions', async 
   ).rejects.toThrow('must use the .json extension');
 });
 
-test('workspace path policy rejects symlinks that escape the workspace', async ({}, testInfo) => {
-  const root = testInfo.outputPath('workspace');
+test('workspace path policy rejects symlinks that escape the workspace', async () => {
+  const root = test.info().outputPath('workspace');
   await mkdir(root, { recursive: true });
-  const outside = testInfo.outputPath('outside.json');
+  const outside = test.info().outputPath('outside.json');
   await writeFile(outside, '{}', 'utf8');
   await symlink(outside, resolve(root, 'linked.json'));
 
