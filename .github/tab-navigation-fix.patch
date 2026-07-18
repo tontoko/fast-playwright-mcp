@@ -1,5 +1,5 @@
 diff --git a/src/tab.ts b/src/tab.ts
-index a80a165..5eb6314 100644
+index a80a165..4b88ddf 100644
 --- a/src/tab.ts
 +++ b/src/tab.ts
 @@ -5,7 +5,7 @@ import type { Context } from './context.js';
@@ -97,7 +97,19 @@ index a80a165..5eb6314 100644
        if (!download) {
          throw e;
        }
-@@ -602,12 +624,10 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+@@ -287,10 +309,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+       await new Promise((resolve) => setTimeout(resolve, TIMEOUTS.SHORT_DELAY));
+       return;
+     }
+-    // Cap load event to 5 seconds, the page is operational at this point.
+-    await this.waitForLoadState('load', {
+-      timeout: TIMEOUTS.LOAD_STATE_TIMEOUT,
+-    });
++    // DOMContentLoaded is the cross-browser operational boundary.
+   }
+   consoleMessages(): ConsoleMessage[] {
+     return this._consoleMessages;
+@@ -602,12 +621,10 @@ export class Tab extends EventEmitter<TabEventsInterface> {
        await new Promise((f) => setTimeout(f, time));
        return;
      }
