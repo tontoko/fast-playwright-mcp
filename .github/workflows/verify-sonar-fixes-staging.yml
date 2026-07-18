@@ -11,12 +11,18 @@ on:
       - 'scripts/path-policy.ts'
       - 'scripts/check-review-threads.ts'
       - 'scripts/upstream-check.ts'
+      - 'scripts/build-dashboard.ts'
+      - 'src/config.ts'
       - 'src/tools/evaluate.ts'
+      - 'src/tools/batch-execute.ts'
+      - 'src/tools/catalog/search.ts'
       - 'src/apps/dashboard/render.ts'
+      - 'src/apps/dashboard/template.html'
       - 'src/tools/catalog/gateways.ts'
       - 'tests/path-policy.spec.ts'
       - 'tests/upstream-check.spec.ts'
       - 'tests/dashboard-render.spec.ts'
+      - 'tests/tabs.spec.ts'
 
 permissions:
   contents: write
@@ -29,7 +35,7 @@ jobs:
   verify:
     if: ${{ !contains(github.event.head_commit.message, '[sonar-fix-verification]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -56,7 +62,7 @@ jobs:
           set -o pipefail
           {
             echo '## Sonar configuration'
-            python3 -c "from pathlib import Path; automatic=Path('.sonarcloud.properties').read_text(encoding='utf-8', errors='strict'); scanner=Path('sonar-project.properties').read_text(encoding='utf-8', errors='strict'); evaluate=Path('src/tools/evaluate.ts').read_text(encoding='utf-8'); upstream=Path('scripts/upstream-check.ts').read_text(encoding='utf-8'); assert 'sonar.sourceEncoding=UTF-8' in automatic; assert 'sonar.issue.ignore.multicriteria' not in automatic; assert 'sonar.sourceEncoding=UTF-8' in scanner; assert evaluate.count('//NOSONAR') >= 4; assert 'fetch(url, { // NOSONAR' in upstream"
+            python3 -c "from pathlib import Path; automatic=Path('.sonarcloud.properties').read_text(encoding='utf-8', errors='strict'); scanner=Path('sonar-project.properties').read_text(encoding='utf-8', errors='strict'); assert 'sonar.sourceEncoding=UTF-8' in automatic; assert 'sonar.issue.ignore.multicriteria' not in automatic; assert 'sonar.sourceEncoding=UTF-8' in scanner"
             echo '## Format'
             bun run lint-fix
             echo '## Encoding'
@@ -71,19 +77,43 @@ jobs:
             bunx playwright test \
               tests/path-policy.spec.ts \
               tests/upstream-check.spec.ts \
+              tests/upstream-config.spec.ts \
               tests/dashboard-render.spec.ts \
+              tests/dashboard-build.spec.ts \
+              tests/dashboard-e2e.spec.ts \
+              tests/tool-search.spec.ts \
               tests/tool-gateways.spec.ts \
               tests/evaluate.spec.ts \
               tests/evaluate-expectation.spec.ts \
+              tests/batch-execute-basic.spec.ts \
+              tests/tabs.spec.ts \
               --project=chromium \
               --workers=1
-            echo '## Fixture command'
+            echo '## Fixture commands'
             bun run upstream:check:fixture > /tmp/upstream-report.md
             grep -q '<!-- upstream-audit -->' /tmp/upstream-report.md
-            echo '## Suppression placement after formatting'
-            grep -q 'locator.evaluate(async (element, source) => { //NOSONAR' src/tools/evaluate.ts
-            grep -q 'tab.page.evaluate(async (source) => { //NOSONAR' src/tools/evaluate.ts
-            grep -q 'fetch(url, { // NOSONAR' scripts/upstream-check.ts
+            bun scripts/check-review-threads.ts \
+              --fixture tests/review-threads/fixtures/resolved.json
+            echo '## Sonar sink suppressions after formatting'
+            grep -Fq 'const value = eval(`(${source})`); // NOSONAR' src/tools/evaluate.ts
+            grep -Fq 'const result = await (isFunction ? value(element) : value); // NOSONAR' src/tools/evaluate.ts
+            grep -Fq 'const result = await (isFunction ? value() : value); // NOSONAR' src/tools/evaluate.ts
+            grep -Fq 'const response = await fetch(url, { headers }); // NOSONAR' scripts/upstream-check.ts
+            grep -Fq "const manifestText = await readFile(manifestPath, 'utf8'); // NOSONAR" scripts/upstream-check.ts
+            grep -Fq "const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR" scripts/upstream-check.ts
+            grep -Fq "const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR" scripts/check-review-threads.ts
+            grep -Fq "await writeFile(outputPath, report, 'utf8'); // NOSONAR" scripts/upstream-check.ts
+            echo '## Resolved Sonar source patterns'
+            grep -Fq '...pickDefined(base.browser.cdpHeaders),' src/config.ts
+            grep -Fq '...pickDefined(overrides.browser?.cdpHeaders),' src/config.ts
+            if grep -Fq 'cdpHeaders ?? {}' src/config.ts; then
+              echo 'Redundant empty cdpHeaders fallback remains.' >&2
+              exit 1
+            fi
+            if grep -Eq 'expect\(true\)|expect\(pages\.length\)' tests/tabs.spec.ts; then
+              echo 'Tautological or generic tab assertion remains.' >&2
+              exit 1
+            fi
             echo '## Diff check'
             git diff --check
           } 2>&1 | tee sonar-fix-verification.log
