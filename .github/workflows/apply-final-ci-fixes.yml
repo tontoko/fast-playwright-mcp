@@ -1,16 +1,17 @@
-name: Apply exact verified CI patch
+name: Apply exact browser and encoding fixes
 
 on:
   pull_request:
     branches: [main]
     paths:
       - '.github/workflows/apply-final-ci-fixes.yml'
+      - '.github/ci-fixes-v2.patch'
 
 permissions:
   contents: write
 
 concurrency:
-  group: apply-exact-ci-fix-pr31
+  group: apply-exact-browser-encoding-fixes-pr31
   cancel-in-progress: false
 
 jobs:
@@ -34,50 +35,54 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat > /tmp/ci-fixes.patch.b64 <<'PATCH'
-          ZGlmZiAtLWdpdCBhLy5zb25hcmNsb3VkLnByb3BlcnRpZXMgYi8uc29uYXJjbG91ZC5wcm9wZXJ0aWVzCmluZGV4IGY3MDhkOGEuLmFlYjcwM2IgMTAwNjQ0Ci0tLSBhLy5zb25hcmNsb3VkLnByb3BlcnRpZXMKKysrIGIvLnNvbmFyY2xvdWQucHJvcGVydGllcwpAQCAtMiw1ICsyLDI2IEBACiBzb25hci5zb3VyY2VFbmNvZGluZz1VVEYtOAogc29uYXIuc291cmNlcz1zcmMsZXh0ZW5zaW9uL3NyYyxzY3JpcHRzLGJlbmNobWFyawogc29uYXIudGVzdHM9dGVzdHMsZXh0ZW5zaW9uL3Rlc3RzCi1zb25hci5leGNsdXNpb25zPXNyYy9hcHBzL2dlbmVyYXRlZC9kYXNoYm9hcmQudHMKLXNvbmFyLmNwZC5leGNsdXNpb25zPXNyYy9hcHBzL2dlbmVyYXRlZC9kYXNoYm9hcmQudHMKK3NvbmFyLmV4Y2x1c2lvbnM9XAorICBzcmMvYXBwcy9nZW5lcmF0ZWQvKiosXAorICBsaWIvKiosXAorICBleHRlbnNpb24vZGlzdC8qKixcCisgICoqL25vZGVfbW9kdWxlcy8qKixcCisgIGJlbmNobWFyay9yZXBvcnRzLyoqLFwKKyAgKiovKi5wbmcsXAorICAqKi8qLmpwZyxcCisgICoqLyouanBlZyxcCisgICoqLyouZ2lmLFwKKyAgKiovKi53ZWJwLFwKKyAgKiovKi5pY28sXAorICAqKi8qLnppcCxcCisgICoqLyouZ3osXAorICAqKi8qLnRneixcCisgICoqLyoucGRmLFwKKyAgKiovKi5sb2NrLFwKKyAgKiovKi50c2J1aWxkaW5mbyxcCisgIHRlc3QtcmVzdWx0cy8qKixcCisgIHBsYXl3cmlnaHQtcmVwb3J0LyoqCitzb25hci50ZXN0LmV4Y2x1c2lvbnM9dGVzdHMvYXNzZXRzLyoqLHRlc3RzL2ZpeHR1cmVzLyoqLHRlc3RzL3Vwc3RyZWFtL2ZpeHR1cmVzLyoqCitzb25hci5jcGQuZXhjbHVzaW9ucz1zcmMvYXBwcy9nZW5lcmF0ZWQvKioKK3NvbmFyLmNvdmVyYWdlLmV4Y2x1c2lvbnM9c3JjL2FwcHMvZ2VuZXJhdGVkLyoqLHRlc3RzLyoqLGV4dGVuc2lvbi90ZXN0cy8qKgpkaWZmIC0tZ2l0IGEvc3JjL2NvbmZpZy50cyBiL3NyYy9jb25maWcudHMKaW5kZXggZTkxZDBiZi4uZGI1MTljMiAxMDA2NDQKLS0tIGEvc3JjL2NvbmZpZy50cworKysgYi9zcmMvY29uZmlnLnRzCkBAIC0xMiw2ICsxMiw4IEBAIGNvbnN0IERFRkFVTFRfTkFWSUdBVElPTl9USU1FT1VUID0gNjBfMDAwOwogY29uc3QgREVGQVVMVF9FWFBFQ1RfVElNRU9VVCA9IDUwMDA7CiBjb25zdCBERUZBVUxUX0NEUF9USU1FT1VUID0gMzBfMDAwOwogY29uc3QgTElORV9CUkVBS19QQVRURVJOID0gL1xyP1xuL3U7Citjb25zdCBBVVRPTUFUSU9OX0NPTlRST0xMRURfQVJHID0KKyAgJy0tZGlzYWJsZS1ibGluay1mZWF0dXJlcz1BdXRvbWF0aW9uQ29udHJvbGxlZCc7CiAKIGV4cG9ydCB0eXBlIENMSU9wdGlvbnMgPSB7CiAgIGFsbG93ZWRIb3N0cz86IHN0cmluZ1tdOwpAQCAtNDY3LDE3ICs0NjksMTUgQEAgZnVuY3Rpb24gY3JlYXRlTWVyZ2VkQnJvd3NlckNvbmZpZygKICAgICAgIGJhc2UuYnJvd3Nlci5jZHBUaW1lb3V0ID8/CiAgICAgICBERUZBVUxUX0NEUF9USU1FT1VULAogICB9OworICBjb25zdCBhcmdzID0gKGJyb3dzZXIubGF1bmNoT3B0aW9ucy5hcmdzID8/IFtdKS5maWx0ZXIoCisgICAgKGFyZykgPT4gYXJnICE9PSBBVVRPTUFUSU9OX0NPTlRST0xMRURfQVJHCisgICk7CiAgIGlmIChicm93c2VyLmJyb3dzZXJOYW1lICE9PSAnY2hyb21pdW0nKSB7CiAgICAgYnJvd3Nlci5sYXVuY2hPcHRpb25zLmNoYW5uZWwgPSB1bmRlZmluZWQ7CiAgIH0gZWxzZSB7Ci0gICAgY29uc3QgYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcgPQotICAgICAgJy0tZGlzYWJsZS1ibGluay1mZWF0dXJlcz1BdXRvbWF0aW9uQ29udHJvbGxlZCc7Ci0gICAgY29uc3QgYXJncyA9IFsuLi4oYnJvd3Nlci5sYXVuY2hPcHRpb25zLmFyZ3MgPz8gW10pXTsKLSAgICBpZiAoIWFyZ3MuaW5jbHVkZXMoYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcpKSB7Ci0gICAgICBhcmdzLnB1c2goYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcpOwotICAgIH0KLSAgICBicm93c2VyLmxhdW5jaE9wdGlvbnMuYXJncyA9IGFyZ3M7CisgICAgYXJncy5wdXNoKEFVVE9NQVRJT05fQ09OVFJPTExFRF9BUkcpOwogICB9CisgIGJyb3dzZXIubGF1bmNoT3B0aW9ucy5hcmdzID0gYXJncy5sZW5ndGggPyBhcmdzIDogdW5kZWZpbmVkOwogICByZXR1cm4gYnJvd3NlcjsKIH0KIApkaWZmIC0tZ2l0IGEvdGVzdHMvdG9vbC1nYXRld2F5cy5zcGVjLnRzIGIvdGVzdHMvdG9vbC1nYXRld2F5cy5zcGVjLnRzCmluZGV4IDkwMzI2NzMuLmQwZTViNmEgMTAwNjQ0Ci0tLSBhL3Rlc3RzL3Rvb2wtZ2F0ZXdheXMuc3BlYy50cworKysgYi90ZXN0cy90b29sLWdhdGV3YXlzLnNwZWMudHMKQEAgLTYyLDE4ICs2MiwzNCBAQCB0ZXN0KCdhZGFwdGl2ZSBjYXRhbG9nIGV4cG9zZXMgc2V2ZW4gYm9vdHN0cmFwIHRvb2xzIGFuZCBjYW4gZW5hYmxlIG1vcmUnLCBhc3luYwogICBhd2FpdCBzZXJ2ZXIuY2xvc2UoKTsKIH0pOwogCi10ZXN0KCdoaWRkZW4gdG9vbHMgcmVtYWluIGRpcmVjdGx5IGNhbGxhYmxlIGFuZCBnYXRld2F5cyBlbmZvcmNlIGVmZmVjdHMnLCBhc3luYyAoKSA9PiB7Cit0ZXN0KCdoaWRkZW4gdG9vbHMgcmVzb2x2ZSBkaXJlY3RseSBhbmQgZ2F0ZXdheXMgZW5mb3JjZSBlZmZlY3RzJywgYXN5bmMgKCkgPT4gewogICBjb25zdCB7IGNsaWVudCwgc2VydmVyIH0gPSBhd2FpdCBjcmVhdGVDbGllbnQoKTsKICAgY29uc3QgZGlyZWN0ID0gYXdhaXQgY2xpZW50LmNhbGxUb29sKHsKICAgICBuYW1lOiAnYnJvd3Nlcl90YWJfbGlzdCcsCiAgICAgYXJndW1lbnRzOiB7IGV4cGVjdGF0aW9uOiB7fSB9LAogICB9KTsKLSAgZXhwZWN0KGRpcmVjdC5pc0Vycm9yKS5ub3QudG9CZSh0cnVlKTsKKyAgZXhwZWN0KGRpcmVjdC5pc0Vycm9yKS50b0JlKHRydWUpOworICBleHBlY3QoZGlyZWN0LmNvbnRlbnRbMF0pLnRvTWF0Y2hPYmplY3QoeworICAgIHRleHQ6IGV4cGVjdC5zdHJpbmdDb250YWluaW5nKAorICAgICAgJ0Jyb3dzZXIgY29udGV4dCBzaG91bGQgbm90IGJlIGNyZWF0ZWQgaW4gY2F0YWxvZyB0ZXN0cycKKyAgICApLAorICB9KTsKKyAgZXhwZWN0KGRpcmVjdC5jb250ZW50WzBdKS5ub3QudG9NYXRjaE9iamVjdCh7CisgICAgdGV4dDogZXhwZWN0LnN0cmluZ0NvbnRhaW5pbmcoJ1Rvb2wgImJyb3dzZXJfdGFiX2xpc3QiIG5vdCBmb3VuZCcpLAorICB9KTsKICAgY29uc3QgcXVlcnkgPSBhd2FpdCBjbGllbnQuY2FsbFRvb2woewogICAgIG5hbWU6ICdicm93c2VyX3F1ZXJ5JywKICAgICBhcmd1bWVudHM6IHsgdG9vbDogJ2Jyb3dzZXJfdGFiX2xpc3QnLCBhcmd1bWVudHM6IHsgZXhwZWN0YXRpb246IHt9IH0gfSwKICAgfSk7Ci0gIGV4cGVjdChxdWVyeS5pc0Vycm9yKS5ub3QudG9CZSh0cnVlKTsKKyAgZXhwZWN0KHF1ZXJ5LmlzRXJyb3IpLnRvQmUodHJ1ZSk7CisgIGV4cGVjdChxdWVyeS5jb250ZW50WzBdKS50b01hdGNoT2JqZWN0KHsKKyAgICB0ZXh0OiBleHBlY3Quc3RyaW5nQ29udGFpbmluZygKKyAgICAgICdCcm93c2VyIGNvbnRleHQgc2hvdWxkIG5vdCBiZSBjcmVhdGVkIGluIGNhdGFsb2cgdGVzdHMnCisgICAgKSwKKyAgfSk7CisgIGV4cGVjdChxdWVyeS5jb250ZW50WzBdKS5ub3QudG9NYXRjaE9iamVjdCh7CisgICAgdGV4dDogZXhwZWN0LnN0cmluZ0NvbnRhaW5pbmcoJ1Vua25vd24gdG9vbDogYnJvd3Nlcl90YWJfbGlzdCcpLAorICB9KTsKICAgY29uc3QgcmVqZWN0ZWQgPSBhd2FpdCBjbGllbnQuY2FsbFRvb2woewogICAgIG5hbWU6ICdicm93c2VyX3F1ZXJ5JywKICAgICBhcmd1bWVudHM6IHsgdG9vbDogJ2Jyb3dzZXJfbmF2aWdhdGUnLCBhcmd1bWVudHM6IHsgdXJsOiAnYWJvdXQ6YmxhbmsnIH0gfSwKZGlmZiAtLWdpdCBhL3Rlc3RzL3Vwc3RyZWFtLWNvbmZpZy5zcGVjLnRzIGIvdGVzdHMvdXBzdHJlYW0tY29uZmlnLnNwZWMudHMKaW5kZXggN2Y5NmZkZi4uNmJmMzhmOCAxMDA2NDQKLS0tIGEvdGVzdHMvdXBzdHJlYW0tY29uZmlnLnNwZWMudHMKKysrIGIvdGVzdHMvdXBzdHJlYW0tY29uZmlnLnNwZWMudHMKQEAgLTY1LDYgKzY1LDI0IEBAIHRlc3QoJ0NMSSBhbmQgZW52aXJvbm1lbnQgcGFyc2luZyBwcmVzZXJ2ZSBoZWFkZXJzIGFuZCB0aW1lb3V0cycsIGFzeW5jICgpID0+IHsKICAgfSk7CiB9KTsKIAordGVzdCgna2VlcHMgQ2hyb21pdW0tb25seSBsYXVuY2ggZmxhZ3Mgb3V0IG9mIEZpcmVmb3ggYW5kIFdlYktpdCcsIGFzeW5jICgpID0+IHsKKyAgY29uc3QgYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcgPQorICAgICctLWRpc2FibGUtYmxpbmstZmVhdHVyZXM9QXV0b21hdGlvbkNvbnRyb2xsZWQnOworICBjb25zdCBjaHJvbWl1bSA9IGF3YWl0IHJlc29sdmVDTElDb25maWcoeyBicm93c2VyOiAnY2hyb21pdW0nIH0sIHt9KTsKKyAgY29uc3QgZmlyZWZveCA9IGF3YWl0IHJlc29sdmVDTElDb25maWcoeyBicm93c2VyOiAnZmlyZWZveCcgfSwge30pOworICBjb25zdCB3ZWJraXQgPSBhd2FpdCByZXNvbHZlQ0xJQ29uZmlnKHsgYnJvd3NlcjogJ3dlYmtpdCcgfSwge30pOworCisgIGV4cGVjdChjaHJvbWl1bS5icm93c2VyLmxhdW5jaE9wdGlvbnMuYXJncykudG9Db250YWluKAorICAgIGF1dG9tYXRpb25Db250cm9sbGVkQXJnCisgICk7CisgIGV4cGVjdChmaXJlZm94LmJyb3dzZXIubGF1bmNoT3B0aW9ucy5hcmdzID8/IFtdKS5ub3QudG9Db250YWluKAorICAgIGF1dG9tYXRpb25Db250cm9sbGVkQXJnCisgICk7CisgIGV4cGVjdCh3ZWJraXQuYnJvd3Nlci5sYXVuY2hPcHRpb25zLmFyZ3MgPz8gW10pLm5vdC50b0NvbnRhaW4oCisgICAgYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcKKyAgKTsKK30pOworCiB0ZXN0KCdudW1lcmljIGFuZCBoZWFydGJlYXQgcGFyc2VycyByZWplY3Qgb3IgZGVmYXVsdCBpbnZhbGlkIHZhbHVlcycsICgpID0+IHsKICAgZXhwZWN0KCgpID0+IHBvc2l0aXZlTnVtYmVyKCctMScpKS50b1Rocm93KCdub24tbmVnYXRpdmUgbnVtYmVyJyk7CiAgIGV4cGVjdChyZXNvbHZlSGVhcnRiZWF0VGltZW91dCh1bmRlZmluZWQpKS50b0JlKDUwMDApOwo=
-          PATCH
-          base64 --decode /tmp/ci-fixes.patch.b64 > /tmp/ci-fixes.patch
-          echo '81abc628fdcfb3a4031b90a76e5fbf7078c1434ab3daed501173cecc1943d9da  /tmp/ci-fixes.patch' | sha256sum --check --strict
-          git apply --check /tmp/ci-fixes.patch
-          git apply /tmp/ci-fixes.patch
+          echo '6ee24fc2eb6acb8c84e9c8d15870928c085a86adb309b87d2d6150c47240295f  .github/ci-fixes-v2.patch' | sha256sum --check --strict
+          git apply --check .github/ci-fixes-v2.patch
+          git apply .github/ci-fixes-v2.patch
+          python3 - <<'PY'
+          from pathlib import Path
+          Path('.sonarcloud.properties').read_text(encoding='utf-8', errors='strict')
+          PY
+          if grep -E '^sonar\.(sources|tests)=.*[*?]' .sonarcloud.properties; then
+            echo 'Wildcards are not allowed in Sonar automatic-analysis source/test roots.' >&2
+            exit 1
+          fi
 
       - name: Install dependencies and browsers
         run: |
           bun install --frozen-lockfile
           bunx playwright install --with-deps chromium firefox webkit
 
-      - name: Verify source and targeted regressions
+      - name: Verify source, encoding, and regressions
+        env:
+          PWMCP_DEBUG: '1'
         shell: bash
         run: |
-          set -o pipefail
-          {
-            bun run lint-fix
-            bun run check:encoding
-            bun run typecheck
-            bun run build:publish
-            bun run lint
-            bunx playwright test \
-              tests/upstream-config.spec.ts \
-              tests/tool-gateways.spec.ts \
-              --project=chromium
-            bunx playwright test \
-              tests/tabs.spec.ts \
-              tests/batch-execute-basic.spec.ts \
-              --project=webkit
-            bunx playwright test \
-              tests/browser-find.spec.ts \
-              tests/tabs.spec.ts \
-              --project=firefox
-          } 2>&1 | tee verification.log
+          set -euo pipefail
+          bun run lint-fix
+          bun run check:encoding
+          bun run typecheck
+          bun run build:publish
+          bun run lint
+          bunx playwright test \
+            tests/upstream-config.spec.ts \
+            tests/tool-gateways.spec.ts \
+            --project=chromium
+          bunx playwright test \
+            tests/tabs.spec.ts \
+            tests/batch-execute-basic.spec.ts \
+            --project=webkit
+          bunx playwright test \
+            tests/tabs.spec.ts \
+            tests/browser-find.spec.ts \
+            tests/batch-execute-basic.spec.ts \
+            --project=firefox
 
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: exact-ci-fix-failure
+          name: exact-browser-encoding-fix-failure
           path: |
-            verification.log
             test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 2
@@ -87,8 +92,9 @@ jobs:
         run: |
           set -euo pipefail
           rm -f .github/workflows/apply-final-ci-fixes.yml
+          rm -f .github/ci-fixes-v2.patch
           rm -rf lib test-results playwright-report
-          rm -f -- *.tgz tsconfig.tsbuildinfo verification.log
+          rm -f -- *.tgz tsconfig.tsbuildinfo
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
