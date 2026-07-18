@@ -1,0 +1,5 @@
+URL: https://sonarcloud.io/api/components/show?component=tontoko_fast-playwright-mcp
+
+{"component":{"organization":"tontoko","key":"tontoko_fast-playwright-mcp","name":"fast-playwright-mcp","qualifier":"TRK","analysisDate":"2025-12-23T03:13:08+0000","tags":[],"visibility":"public","leakPeriodDate":"2025-08-08T02:10:47+0000","version":"not provided"},"ancestors":[]}
+
+HTTP_STATUS:200
