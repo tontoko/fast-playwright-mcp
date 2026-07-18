@@ -8,6 +8,7 @@ import {
 const FULL_SHA = /^[0-9a-f]{40}$/u;
 const OWNER_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/u;
 const REPOSITORY_NAME_PATTERN = /^[A-Za-z0-9._-]{1,100}$/u;
+const RESERVED_REPOSITORY_NAMES = new Set(['.', '..']);
 const GITHUB_API_ORIGIN = 'https://api.github.com';
 const SECURITY_PATH = /(host|origin|secret|sandbox|cdp|network|fileaccess)/u;
 const FORMATTING_PREFIXES = ['eslint', 'prettier', 'biome'] as const;
@@ -52,7 +53,8 @@ export function parseRepositorySlug(
     !owner ||
     !name ||
     !OWNER_PATTERN.test(owner) ||
-    !REPOSITORY_NAME_PATTERN.test(name)
+    !REPOSITORY_NAME_PATTERN.test(name) ||
+    RESERVED_REPOSITORY_NAMES.has(name)
   ) {
     throw new Error(`${label} must use a valid owner/name GitHub slug`);
   }
@@ -216,8 +218,7 @@ async function githubJson<T>(
   ...segments: readonly string[]
 ): Promise<T> {
   const url = githubApiUrl(repository, ...segments);
-  const response = await fetch(url, {
-    // NOSONAR -- githubApiUrl fixes the origin and encodes validated path segments before the token header is attached.
+  const response = await fetch(url, { // NOSONAR -- the URL origin is fixed and every path segment is validated and encoded.
     headers: {
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
