@@ -1,4 +1,4 @@
-name: Apply exact browser and encoding fixes
+name: Diagnose WebKit tab failure
 
 on:
   pull_request:
@@ -8,22 +8,21 @@ on:
       - '.github/ci-fixes-v2.patch'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: apply-exact-browser-encoding-fixes-pr31
+  group: diagnose-webkit-tab-pr31
   cancel-in-progress: false
 
 jobs:
-  apply:
+  diagnose:
     if: github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: agent/adaptive-tool-discovery
-          fetch-depth: 0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.5
@@ -31,7 +30,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Apply exact source patch
+      - name: Apply exact source patch and enable verbose child diagnostics
         shell: bash
         run: |
           set -euo pipefail
@@ -40,64 +39,40 @@ jobs:
           git apply .github/ci-fixes-v2.patch
           python3 - <<'PY'
           from pathlib import Path
-          Path('.sonarcloud.properties').read_text(encoding='utf-8', errors='strict')
+          fixture = Path('tests/fixtures.ts')
+          text = fixture.read_text(encoding='utf-8')
+          marker = "DEBUG: 'pw:mcp:test',"
+          replacement = "DEBUG: process.env.DEBUG ?? 'pw:mcp:test',"
+          if marker not in text:
+              raise SystemExit('tests/fixtures.ts: DEBUG marker not found')
+          fixture.write_text(text.replace(marker, replacement, 1), encoding='utf-8')
           PY
-          if grep -E '^sonar\.(sources|tests)=.*[*?]' .sonarcloud.properties; then
-            echo 'Wildcards are not allowed in Sonar automatic-analysis source/test roots.' >&2
-            exit 1
-          fi
 
-      - name: Install dependencies and browsers
+      - name: Install dependencies and WebKit
         run: |
           bun install --frozen-lockfile
-          bunx playwright install --with-deps chromium firefox webkit
+          bunx playwright install --with-deps webkit
 
-      - name: Verify source, encoding, and regressions
+      - name: Reproduce one failing tab operation
         env:
+          DEBUG: 'pw:mcp:*,pw:browser*,pw:api'
           PWMCP_DEBUG: '1'
         shell: bash
         run: |
-          set -euo pipefail
-          bun run lint-fix
-          bun run check:encoding
-          bun run typecheck
-          bun run build:publish
-          bun run lint
-          bunx playwright test \
-            tests/upstream-config.spec.ts \
-            tests/tool-gateways.spec.ts \
-            --project=chromium
-          bunx playwright test \
-            tests/tabs.spec.ts \
-            tests/batch-execute-basic.spec.ts \
-            --project=webkit
-          bunx playwright test \
-            tests/tabs.spec.ts \
-            tests/browser-find.spec.ts \
-            tests/batch-execute-basic.spec.ts \
-            --project=firefox
+          set -o pipefail
+          bun run build:publish 2>&1 | tee webkit-debug.log
+          bunx playwright test tests/tabs.spec.ts \
+            --project=webkit \
+            --workers=1 \
+            --grep='list first tab' 2>&1 | tee -a webkit-debug.log
 
-      - name: Upload failure diagnostics
-        if: failure()
+      - name: Upload WebKit diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: exact-browser-encoding-fix-failure
+          name: webkit-tab-debug-log
           path: |
+            webkit-debug.log
             test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 2
-
-      - name: Commit clean verified fixes
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -f .github/workflows/apply-final-ci-fixes.yml
-          rm -f .github/ci-fixes-v2.patch
-          rm -rf lib test-results playwright-report
-          rm -f -- *.tgz tsconfig.tsbuildinfo
-          git diff --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'fix: stabilize browser matrix and Sonar analysis'
-          git push origin HEAD:agent/adaptive-tool-discovery
