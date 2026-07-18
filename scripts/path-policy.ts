@@ -46,7 +46,7 @@ function assertExtension(
   }
 }
 
-async function resolveRoot(root: string): Promise<string> {
+function resolveRoot(root: string): Promise<string> {
   return realpath(resolve(root));
 }
 
