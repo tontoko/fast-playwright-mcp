@@ -77,7 +77,7 @@ index 46752fe..ab597f4 100644
 +  body: string
 +): Promise<CreatedTab> {
 +  const pathname = `/tabs/${encodeURIComponent(title)}.html`;
-+  const url = `${server.PREFIX}${pathname}`;
++  const url = `${server.PREFIX}${pathname.slice(1)}`;
 +  server.setContent(
 +    pathname,
 +    `<title>${title}</title><body>${body}</body>`,
