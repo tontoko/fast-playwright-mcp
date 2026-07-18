@@ -62,18 +62,34 @@ test('adaptive catalog exposes seven bootstrap tools and can enable more', async
   await server.close();
 });
 
-test('hidden tools remain directly callable and gateways enforce effects', async () => {
+test('hidden tools resolve directly and gateways enforce effects', async () => {
   const { client, server } = await createClient();
   const direct = await client.callTool({
     name: 'browser_tab_list',
     arguments: { expectation: {} },
   });
-  expect(direct.isError).not.toBe(true);
+  expect(direct.isError).toBe(true);
+  expect(direct.content[0]).toMatchObject({
+    text: expect.stringContaining(
+      'Browser context should not be created in catalog tests'
+    ),
+  });
+  expect(direct.content[0]).not.toMatchObject({
+    text: expect.stringContaining('Tool "browser_tab_list" not found'),
+  });
   const query = await client.callTool({
     name: 'browser_query',
     arguments: { tool: 'browser_tab_list', arguments: { expectation: {} } },
   });
-  expect(query.isError).not.toBe(true);
+  expect(query.isError).toBe(true);
+  expect(query.content[0]).toMatchObject({
+    text: expect.stringContaining(
+      'Browser context should not be created in catalog tests'
+    ),
+  });
+  expect(query.content[0]).not.toMatchObject({
+    text: expect.stringContaining('Unknown tool: browser_tab_list'),
+  });
   const rejected = await client.callTool({
     name: 'browser_query',
     arguments: { tool: 'browser_navigate', arguments: { url: 'about:blank' } },

@@ -115,22 +115,6 @@ export async function generateLocator(
     );
   }
 }
-export async function callOnPageNoTrace<T>(
-  page: playwright.Page,
-  callback: (p: playwright.Page) => Promise<T>
-): Promise<T> {
-  return await (
-    page as unknown as {
-      _wrapApiCall: <U>(
-        fn: () => Promise<U>,
-        opts: { internal: boolean }
-      ) => Promise<U>;
-    }
-  )._wrapApiCall(() => callback(page), {
-    internal: true,
-  });
-}
-
 function getNavigationConfig() {
   return {
     networkIdleTimeout: TIMEOUTS.NETWORK_IDLE_TIMEOUT,

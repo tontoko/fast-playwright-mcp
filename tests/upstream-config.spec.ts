@@ -65,6 +65,24 @@ test('CLI and environment parsing preserve headers and timeouts', async () => {
   });
 });
 
+test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
+  const automationControlledArg =
+    '--disable-blink-features=AutomationControlled';
+  const chromium = await resolveCLIConfig({ browser: 'chromium' }, {});
+  const firefox = await resolveCLIConfig({ browser: 'firefox' }, {});
+  const webkit = await resolveCLIConfig({ browser: 'webkit' }, {});
+
+  expect(chromium.browser.launchOptions.args).toContain(
+    automationControlledArg
+  );
+  expect(firefox.browser.launchOptions.args ?? []).not.toContain(
+    automationControlledArg
+  );
+  expect(webkit.browser.launchOptions.args ?? []).not.toContain(
+    automationControlledArg
+  );
+});
+
 test('numeric and heartbeat parsers reject or default invalid values', () => {
   expect(() => positiveNumber('-1')).toThrow('non-negative number');
   expect(resolveHeartbeatTimeout(undefined)).toBe(5000);

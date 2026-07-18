@@ -12,6 +12,8 @@ const DEFAULT_NAVIGATION_TIMEOUT = 60_000;
 const DEFAULT_EXPECT_TIMEOUT = 5000;
 const DEFAULT_CDP_TIMEOUT = 30_000;
 const LINE_BREAK_PATTERN = /\r?\n/u;
+const AUTOMATION_CONTROLLED_ARG =
+  '--disable-blink-features=AutomationControlled';
 
 export type CLIOptions = {
   allowedHosts?: string[];
@@ -467,17 +469,15 @@ function createMergedBrowserConfig(
       base.browser.cdpTimeout ??
       DEFAULT_CDP_TIMEOUT,
   };
+  const args = (browser.launchOptions.args ?? []).filter(
+    (arg) => arg !== AUTOMATION_CONTROLLED_ARG
+  );
   if (browser.browserName !== 'chromium') {
     browser.launchOptions.channel = undefined;
   } else {
-    const automationControlledArg =
-      '--disable-blink-features=AutomationControlled';
-    const args = [...(browser.launchOptions.args ?? [])];
-    if (!args.includes(automationControlledArg)) {
-      args.push(automationControlledArg);
-    }
-    browser.launchOptions.args = args;
+    args.push(AUTOMATION_CONTROLLED_ARG);
   }
+  browser.launchOptions.args = args.length ? args : undefined;
   return browser;
 }
 

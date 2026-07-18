@@ -16,14 +16,33 @@
 
 import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { expect, test } from './fixtures.js';
+import type { TestServer } from './testserver/index.js';
 
-async function createTab(client: Client, title: string, body: string) {
-  return await client.callTool({
-    name: 'browser_tab_new',
-    arguments: {
-      url: `data:text/html,<title>${title}</title><body>${body}</body>`,
-    },
-  });
+type CreatedTab = {
+  result: Awaited<ReturnType<Client['callTool']>>;
+  url: string;
+};
+
+async function createTab(
+  client: Client,
+  server: TestServer,
+  title: string,
+  body: string
+): Promise<CreatedTab> {
+  const pathname = `/tabs/${encodeURIComponent(title)}.html`;
+  const url = `${server.PREFIX}${pathname.slice(1)}`;
+  server.setContent(
+    pathname,
+    `<title>${title}</title><body>${body}</body>`,
+    'text/html'
+  );
+  return {
+    result: await client.callTool({
+      name: 'browser_tab_new',
+      arguments: { url },
+    }),
+    url,
+  };
 }
 
 test('list initial tabs', async ({ client }) => {
@@ -36,24 +55,24 @@ test('list initial tabs', async ({ client }) => {
   });
 });
 
-test('list first tab', async ({ client }) => {
-  await createTab(client, 'Tab one', 'Body one');
+test('list first tab', async ({ client, server }) => {
+  const tabOne = await createTab(client, server, 'Tab one', 'Body one');
   expect(
     await client.callTool({
       name: 'browser_tab_list',
     })
   ).toHaveResponse({
     tabs: `- 0: [] (about:blank)
-- 1: (current) [Tab one] (data:text/html,<title>Tab one</title><body>Body one</body>)`,
+- 1: (current) [Tab one] (${tabOne.url})`,
   });
 });
 
-test('create new tab', async ({ client }) => {
-  expect(await createTab(client, 'Tab one', 'Body one')).toHaveResponse({
+test('create new tab', async ({ client, server }) => {
+  const tabOne = await createTab(client, server, 'Tab one', 'Body one');
+  expect(tabOne.result).toHaveResponse({
     tabs: `- 0: [] (about:blank)
-- 1: (current) [Tab one] (data:text/html,<title>Tab one</title><body>Body one</body>)`,
-    pageState:
-      expect.stringContaining(`- **Page URL:** data:text/html,<title>Tab one</title><body>Body one</body>
+- 1: (current) [Tab one] (${tabOne.url})`,
+    pageState: expect.stringContaining(`- **Page URL:** ${tabOne.url}
 - **Page Title:** Tab one
 - Page Snapshot:
 \`\`\`yaml
@@ -61,12 +80,12 @@ test('create new tab', async ({ client }) => {
 \`\`\``),
   });
 
-  expect(await createTab(client, 'Tab two', 'Body two')).toHaveResponse({
+  const tabTwo = await createTab(client, server, 'Tab two', 'Body two');
+  expect(tabTwo.result).toHaveResponse({
     tabs: `- 0: [] (about:blank)
-- 1: [Tab one] (data:text/html,<title>Tab one</title><body>Body one</body>)
-- 2: (current) [Tab two] (data:text/html,<title>Tab two</title><body>Body two</body>)`,
-    pageState:
-      expect.stringContaining(`- **Page URL:** data:text/html,<title>Tab two</title><body>Body two</body>
+- 1: [Tab one] (${tabOne.url})
+- 2: (current) [Tab two] (${tabTwo.url})`,
+    pageState: expect.stringContaining(`- **Page URL:** ${tabTwo.url}
 - **Page Title:** Tab two
 - Page Snapshot:
 \`\`\`yaml
@@ -75,9 +94,9 @@ test('create new tab', async ({ client }) => {
   });
 });
 
-test('select tab', async ({ client }) => {
-  await createTab(client, 'Tab one', 'Body one');
-  await createTab(client, 'Tab two', 'Body two');
+test('select tab', async ({ client, server }) => {
+  const tabOne = await createTab(client, server, 'Tab one', 'Body one');
+  const tabTwo = await createTab(client, server, 'Tab two', 'Body two');
 
   expect(
     await client.callTool({
@@ -88,10 +107,9 @@ test('select tab', async ({ client }) => {
     })
   ).toHaveResponse({
     tabs: `- 0: [] (about:blank)
-- 1: (current) [Tab one] (data:text/html,<title>Tab one</title><body>Body one</body>)
-- 2: [Tab two] (data:text/html,<title>Tab two</title><body>Body two</body>)`,
-    pageState:
-      expect.stringContaining(`- **Page URL:** data:text/html,<title>Tab one</title><body>Body one</body>
+- 1: (current) [Tab one] (${tabOne.url})
+- 2: [Tab two] (${tabTwo.url})`,
+    pageState: expect.stringContaining(`- **Page URL:** ${tabOne.url}
 - **Page Title:** Tab one
 - Page Snapshot:
 \`\`\`yaml
@@ -100,9 +118,9 @@ test('select tab', async ({ client }) => {
   });
 });
 
-test('close tab', async ({ client }) => {
-  await createTab(client, 'Tab one', 'Body one');
-  await createTab(client, 'Tab two', 'Body two');
+test('close tab', async ({ client, server }) => {
+  const tabOne = await createTab(client, server, 'Tab one', 'Body one');
+  await createTab(client, server, 'Tab two', 'Body two');
 
   expect(
     await client.callTool({
@@ -113,9 +131,8 @@ test('close tab', async ({ client }) => {
     })
   ).toHaveResponse({
     tabs: `- 0: [] (about:blank)
-- 1: (current) [Tab one] (data:text/html,<title>Tab one</title><body>Body one</body>)`,
-    pageState:
-      expect.stringContaining(`- **Page URL:** data:text/html,<title>Tab one</title><body>Body one</body>
+- 1: (current) [Tab one] (${tabOne.url})`,
+    pageState: expect.stringContaining(`- **Page URL:** ${tabOne.url}
 - **Page Title:** Tab one
 - Page Snapshot:
 \`\`\`yaml
@@ -144,18 +161,22 @@ test('reuse first tab when navigating', async ({
   expect(await pages[0].title()).toBe('Title');
 });
 
-test('Tab.capturePartialSnapshot method exists', async ({ client }) => {
+test('Tab.capturePartialSnapshot method exists', async ({ client, server }) => {
   // Create a simple tab to test method existence
-  await createTab(client, 'Method Test', '<div>Test content</div>');
+  await createTab(client, server, 'Method Test', '<div>Test content</div>');
 
   // Verify that the method exists by checking it doesn't throw immediately
   expect(true).toBe(true);
 });
 
-test('Tab partial snapshot functionality through utils', async ({ client }) => {
+test('Tab partial snapshot functionality through utils', async ({
+  client,
+  server,
+}) => {
   // Create a tab with complex HTML structure for testing
   await createTab(
     client,
+    server,
     'Snapshot Test',
     '<div id="header">Header content</div>' +
       '<div id="main">Main content for testing</div>' +
