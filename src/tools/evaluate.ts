@@ -5,7 +5,6 @@ import {
   type ElementSelector,
   elementSelectorSchema,
   isCSSSelector,
-  isRefSelector,
   isRoleSelector,
   isTextSelector,
 } from '../types/selectors.js';
@@ -26,9 +25,6 @@ function selectorCode(selector: ElementSelector): string | undefined {
     return selector.tag
       ? `locator(${quote(selector.tag)}).${textLocator}`
       : textLocator;
-  }
-  if (isRefSelector(selector)) {
-    return;
   }
   return;
 }
@@ -105,20 +101,26 @@ const evaluate = defineTabTool({
       try {
         const expression = params.function;
         const evalResult = locator
-          ? await locator.evaluate(async (element, source) => {
-              // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
-              const value = eval(`(${source})`);
-              const isFunction = typeof value === 'function';
-              const result = await (isFunction ? value(element) : value);
-              return { result, isFunction };
-            }, expression)
-          : await tab.page.evaluate(async (source) => {
-              // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
-              const value = eval(`(${source})`);
-              const isFunction = typeof value === 'function';
-              const result = await (isFunction ? value() : value);
-              return { result, isFunction };
-            }, expression);
+          ? await locator.evaluate( // NOSONAR -- this explicit browser tool intentionally evaluates user code inside the isolated page realm.
+              async (element, source) => {
+                // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
+                const value = eval(`(${source})`); // NOSONAR -- execution is confined to the browser page, not the MCP server process.
+                const isFunction = typeof value === 'function';
+                const result = await (isFunction ? value(element) : value);
+                return { result, isFunction };
+              },
+              expression
+            )
+          : await tab.page.evaluate( // NOSONAR -- this explicit browser tool intentionally evaluates user code inside the isolated page realm.
+              async (source) => {
+                // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
+                const value = eval(`(${source})`); // NOSONAR -- execution is confined to the browser page, not the MCP server process.
+                const isFunction = typeof value === 'function';
+                const result = await (isFunction ? value() : value);
+                return { result, isFunction };
+              },
+              expression
+            );
         const codeExpression = evalResult.isFunction
           ? expression
           : `() => (${expression})`;
