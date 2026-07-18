@@ -1,0 +1,96 @@
+name: Probe latest Sonar state for PR 31
+
+on:
+  push:
+    branches:
+      - agent/sonar-status-probe
+    paths:
+      - '.github/workflows/sonar-latest-probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    if: ${{ !contains(github.event.head_commit.message, '[sonar-latest-result]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/sonar-status-probe
+          fetch-depth: 0
+      - name: Query public Sonar APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='.github/sonar-latest-probe'
+          mkdir -p "$root"
+          get() {
+            curl --silent --show-error --location --max-time 40 \
+              --user-agent 'fast-playwright-mcp-sonar-latest-probe/1.0' \
+              "$1" > "$2"
+          }
+          get 'https://sonarcloud.io/api/project_pull_requests/list?project=tontoko_fast-playwright-mcp' "$root/pull-requests.json"
+          get 'https://sonarcloud.io/api/qualitygates/project_status?projectKey=tontoko_fast-playwright-mcp&pullRequest=31' "$root/quality-gate.json"
+          get 'https://sonarcloud.io/api/issues/search?componentKeys=tontoko_fast-playwright-mcp&pullRequest=31&resolved=false&ps=500' "$root/issues.json"
+          get 'https://sonarcloud.io/api/measures/component?component=tontoko_fast-playwright-mcp&pullRequest=31&metricKeys=new_reliability_rating,new_security_rating,new_maintainability_rating,new_bugs,new_vulnerabilities,new_code_smells,new_blocker_violations,new_critical_violations,new_major_violations,new_minor_violations,new_info_violations' "$root/measures.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.github/sonar-latest-probe')
+          pull_requests = json.loads((root / 'pull-requests.json').read_text(encoding='utf-8'))
+          gate = json.loads((root / 'quality-gate.json').read_text(encoding='utf-8'))
+          issues = json.loads((root / 'issues.json').read_text(encoding='utf-8'))
+          measures = json.loads((root / 'measures.json').read_text(encoding='utf-8'))
+          pr = next((item for item in pull_requests.get('pullRequests', []) if item.get('key') == '31'), {})
+          issue_rows = issues.get('issues', [])
+          by_type = {}
+          by_severity = {}
+          for issue in issue_rows:
+              by_type[issue.get('type')] = by_type.get(issue.get('type'), 0) + 1
+              by_severity[issue.get('severity')] = by_severity.get(issue.get('severity'), 0) + 1
+          metric_values = {
+              item.get('metric'): item.get('period', {}).get('value', item.get('value'))
+              for item in measures.get('component', {}).get('measures', [])
+          }
+          lines = [
+              '# Latest Sonar state for PR 31',
+              '',
+              f"- branch: {pr.get('branch')}",
+              f"- analysisDate: {pr.get('analysisDate')}",
+              f"- revision: {pr.get('revision')}",
+              f"- qualityGateStatus: {pr.get('status', {}).get('qualityGateStatus')}",
+              f"- quality gate API status: {gate.get('projectStatus', {}).get('status')}",
+              f"- unresolved issues: {issues.get('total', len(issue_rows))}",
+              f"- issue types: {json.dumps(by_type, sort_keys=True)}",
+              f"- severities: {json.dumps(by_severity, sort_keys=True)}",
+              f"- measures: {json.dumps(metric_values, sort_keys=True)}",
+              '',
+              '## Gate conditions',
+          ]
+          for condition in gate.get('projectStatus', {}).get('conditions', []):
+              lines.append(
+                  f"- {condition.get('metricKey')}: status={condition.get('status')}, "
+                  f"actual={condition.get('actualValue')}, threshold={condition.get('errorThreshold')}"
+              )
+          lines.extend(['', '## Unresolved issues'])
+          for issue in issue_rows:
+              component = issue.get('component', '')
+              path = component.split(':', 1)[-1]
+              lines.append(
+                  f"- {issue.get('type')}/{issue.get('severity')} {issue.get('rule')} "
+                  f"{path}:{issue.get('line')} — {issue.get('message')}"
+              )
+          (root / 'RESULTS.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/sonar-latest-probe
+          git commit -m 'chore: record latest Sonar state [sonar-latest-result]'
+          git push origin HEAD:agent/sonar-status-probe
