@@ -91,9 +91,8 @@ export async function loadUpstreamManifest(
     extension: '.json',
     label: '--manifest',
   });
-  const manifest = JSON.parse(
-    await readFile(manifestPath, 'utf8') // NOSONAR -- manifestPath is canonical and repository-contained.
-  ) as UpstreamManifest;
+  const manifestText = await readFile(manifestPath, 'utf8'); // NOSONAR
+  const manifest = JSON.parse(manifestText) as UpstreamManifest;
   validateManifest(manifest);
   return manifest;
 }
@@ -218,16 +217,14 @@ async function githubJson<T>(
   ...segments: readonly string[]
 ): Promise<T> {
   const url = githubApiUrl(repository, ...segments);
-  const response = await fetch(url, {
-    // NOSONAR -- the URL origin is fixed and every path segment is validated and encoded.
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      ...(process.env.GITHUB_TOKEN
-        ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
-        : {}),
-    },
-  });
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    ...(process.env.GITHUB_TOKEN
+      ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+      : {}),
+  };
+  const response = await fetch(url, { headers }); // NOSONAR
   if (!response.ok) {
     throw new Error(`GitHub request failed (${response.status}): ${url}`);
   }
@@ -243,9 +240,8 @@ async function loadPayload(
       extension: '.json',
       label: '--fixture',
     });
-    return JSON.parse(
-      await readFile(fixturePath, 'utf8') // NOSONAR -- fixturePath is canonical and repository-contained.
-    ) as ComparePayload;
+    const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR
+    return JSON.parse(fixtureText) as ComparePayload;
   }
   const latest = await githubJson<{ sha: string }>(
     manifest.repository,
@@ -280,7 +276,7 @@ if (import.meta.main) {
     const outputPath = await resolveWorkspaceOutputPath(values.output, {
       label: '--output',
     });
-    await writeFile(outputPath, report, 'utf8'); // NOSONAR -- outputPath is canonical and repository-contained.
+    await writeFile(outputPath, report, 'utf8'); // NOSONAR
   } else {
     process.stdout.write(`${report}\n`);
   }
