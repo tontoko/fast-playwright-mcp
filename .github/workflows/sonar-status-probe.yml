@@ -1,0 +1,166 @@
+name: Probe Sonar and GitHub check status
+
+on:
+  push:
+    branches:
+      - agent/sonar-status-probe
+    paths:
+      - '.github/workflows/sonar-status-probe.yml'
+
+permissions:
+  contents: write
+  checks: read
+  statuses: read
+  pull-requests: read
+
+jobs:
+  probe:
+    if: ${{ !contains(github.event.head_commit.message, '[sonar-probe-result]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TARGET_SHA: 13e9a6d403d43a89baade43f96cd5a497bed0efd
+      TARGET_PR: '31'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/sonar-status-probe
+          fetch-depth: 0
+
+      - name: Query GitHub Checks and Sonar public APIs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          mkdir -p .github/sonar-probe
+
+          gh_api() {
+            local path="$1"
+            curl --silent --show-error --location \
+              --max-time 30 \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/${path}"
+          }
+
+          gh_api "commits/${TARGET_SHA}/check-runs?per_page=100" \
+            > .github/sonar-probe/check-runs.json \
+            2> .github/sonar-probe/check-runs.stderr || true
+          gh_api "commits/${TARGET_SHA}/check-suites?per_page=100" \
+            > .github/sonar-probe/check-suites.json \
+            2> .github/sonar-probe/check-suites.stderr || true
+          gh_api "commits/${TARGET_SHA}/status" \
+            > .github/sonar-probe/legacy-status.json \
+            2> .github/sonar-probe/legacy-status.stderr || true
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.github/sonar-probe')
+          out = [
+              '# Sonar status probe',
+              '',
+              '- repository: tontoko/fast-playwright-mcp',
+              '- pull request: 31',
+              '- target SHA: 13e9a6d403d43a89baade43f96cd5a497bed0efd',
+              '',
+              '## GitHub check runs',
+          ]
+          path = root / 'check-runs.json'
+          try:
+              payload = json.loads(path.read_text(encoding='utf-8'))
+              runs = payload.get('check_runs', [])
+              out.append(f'- total: {len(runs)}')
+              for run in runs:
+                  app = run.get('app') or {}
+                  output = run.get('output') or {}
+                  out.extend([
+                      '',
+                      f"### {run.get('name')}",
+                      f"- app: {app.get('name')} ({app.get('slug')})",
+                      f"- status: {run.get('status')}",
+                      f"- conclusion: {run.get('conclusion')}",
+                      f"- started_at: {run.get('started_at')}",
+                      f"- completed_at: {run.get('completed_at')}",
+                      f"- details_url: {run.get('details_url')}",
+                      f"- output.title: {output.get('title')}",
+                      f"- output.summary: {output.get('summary')}",
+                      f"- output.text: {output.get('text')}",
+                  ])
+          except Exception as exc:
+              out.append(f'- unable to parse check-runs.json: {exc!r}')
+
+          out.extend(['', '## Check suites'])
+          path = root / 'check-suites.json'
+          try:
+              payload = json.loads(path.read_text(encoding='utf-8'))
+              suites = payload.get('check_suites', [])
+              out.append(f'- total: {len(suites)}')
+              for suite in suites:
+                  app = suite.get('app') or {}
+                  out.append(
+                      f"- {app.get('name')} ({app.get('slug')}): "
+                      f"status={suite.get('status')}, conclusion={suite.get('conclusion')}, "
+                      f"latest_check_runs_count={suite.get('latest_check_runs_count')}"
+                  )
+          except Exception as exc:
+              out.append(f'- unable to parse check-suites.json: {exc!r}')
+
+          out.extend(['', '## Legacy commit status'])
+          path = root / 'legacy-status.json'
+          try:
+              payload = json.loads(path.read_text(encoding='utf-8'))
+              out.append(f"- aggregate state: {payload.get('state')}")
+              for status in payload.get('statuses', []):
+                  out.append(
+                      f"- {status.get('context')}: state={status.get('state')}, "
+                      f"description={status.get('description')}, target_url={status.get('target_url')}"
+                  )
+          except Exception as exc:
+              out.append(f'- unable to parse legacy-status.json: {exc!r}')
+
+          (root / 'RESULTS.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+          PY
+
+          probe_url() {
+            local label="$1"
+            local url="$2"
+            local safe_label
+            safe_label="$(printf '%s' "$label" | tr -cs '[:alnum:]._-' '_')"
+            {
+              printf 'URL: %s\n\n' "$url"
+              curl --silent --show-error --location \
+                --max-time 30 \
+                --user-agent 'fast-playwright-mcp-sonar-status-probe/1.0' \
+                --write-out '\n\nHTTP_STATUS:%{http_code}\n' \
+                "$url"
+            } > ".github/sonar-probe/${safe_label}.txt" 2>&1 || true
+          }
+
+          probe_url sonarcloud_search \
+            'https://sonarcloud.io/api/components/search?qualifiers=TRK&q=fast-playwright-mcp'
+          probe_url sonarcloud_component_guessed \
+            'https://sonarcloud.io/api/components/show?component=tontoko_fast-playwright-mcp'
+          probe_url sonarcloud_prs_guessed \
+            'https://sonarcloud.io/api/project_pull_requests/list?project=tontoko_fast-playwright-mcp'
+          probe_url sonarcloud_gate_guessed \
+            'https://sonarcloud.io/api/qualitygates/project_status?projectKey=tontoko_fast-playwright-mcp&pullRequest=31'
+          probe_url sonarqube_us_search \
+            'https://sonarqube.us/api/components/search?qualifiers=TRK&q=fast-playwright-mcp'
+          probe_url sonarqube_us_component_guessed \
+            'https://sonarqube.us/api/components/show?component=tontoko_fast-playwright-mcp'
+          probe_url sonarqube_us_gate_guessed \
+            'https://sonarqube.us/api/qualitygates/project_status?projectKey=tontoko_fast-playwright-mcp&pullRequest=31'
+
+      - name: Commit probe result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/sonar-probe
+          git commit -m 'chore: record Sonar status probe [sonar-probe-result]'
+          git push origin HEAD:agent/sonar-status-probe
