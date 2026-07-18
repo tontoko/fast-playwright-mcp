@@ -1,8 +1,45 @@
 diff --git a/src/tab.ts b/src/tab.ts
-index a80a165..1a25dce 100644
+index a80a165..5eb6314 100644
 --- a/src/tab.ts
 +++ b/src/tab.ts
-@@ -262,24 +262,50 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+@@ -5,7 +5,7 @@ import type { Context } from './context.js';
+ import { ManualPromise } from './manual-promise.js';
+ import { SelectorResolver } from './services/selector-resolver.js';
+ import type { ModalState } from './tools/tool.js';
+-import { callOnPageNoTrace, waitForCompletion } from './tools/utils.js';
++import { waitForCompletion } from './tools/utils.js';
+ import type { CustomRefOptions } from './types/batch.js';
+ import type {
+   BatchResolutionOptions,
+@@ -171,9 +171,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+   }
+   async updateTitle() {
+     await this._raceAgainstModalStates(async () => {
+-      this._lastTitle = await callOnPageNoTrace(this.page, (page) =>
+-        page.title()
+-      );
++      this._lastTitle = await this.page.title();
+     });
+   }
+   lastTitle(): string {
+@@ -187,12 +185,10 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+     options?: { timeout?: number }
+   ): Promise<void> {
+     tabDebug(`Waiting for load state: ${state}`);
+-    await callOnPageNoTrace(this.page, (page) =>
+-      page.waitForLoadState(state, options).catch((error) => {
+-        tabDebug(`Failed to wait for load state ${state}:`, error);
+-        logUnhandledError(error);
+-      })
+-    );
++    await this.page.waitForLoadState(state, options).catch((error) => {
++      tabDebug(`Failed to wait for load state ${state}:`, error);
++      logUnhandledError(error);
++    });
+   }
+ 
+   /**
+@@ -262,24 +258,50 @@ export class Tab extends EventEmitter<TabEventsInterface> {
    async navigate(url: string) {
      tabDebug(`Navigating to: ${url}`);
      this._clearCollectedArtifacts();
@@ -60,3 +97,47 @@ index a80a165..1a25dce 100644
        if (!download) {
          throw e;
        }
+@@ -602,12 +624,10 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+       await new Promise((f) => setTimeout(f, time));
+       return;
+     }
+-    await callOnPageNoTrace(this.page, (page) => {
+-      return page.evaluate(
+-        (timeout) => new Promise((f) => setTimeout(f, timeout)),
+-        time
+-      );
+-    });
++    await this.page.evaluate(
++      (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)),
++      time
++    );
+   }
+ }
+ export type ConsoleMessage = {
+diff --git a/src/tools/utils.ts b/src/tools/utils.ts
+index b5b7cf3..ab7c041 100644
+--- a/src/tools/utils.ts
++++ b/src/tools/utils.ts
+@@ -115,22 +115,6 @@ export async function generateLocator(
+     );
+   }
+ }
+-export async function callOnPageNoTrace<T>(
+-  page: playwright.Page,
+-  callback: (p: playwright.Page) => Promise<T>
+-): Promise<T> {
+-  return await (
+-    page as unknown as {
+-      _wrapApiCall: <U>(
+-        fn: () => Promise<U>,
+-        opts: { internal: boolean }
+-      ) => Promise<U>;
+-    }
+-  )._wrapApiCall(() => callback(page), {
+-    internal: true,
+-  });
+-}
+-
+ function getNavigationConfig() {
+   return {
+     networkIdleTimeout: TIMEOUTS.NETWORK_IDLE_TIMEOUT,
