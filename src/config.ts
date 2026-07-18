@@ -461,8 +461,8 @@ function createMergedBrowserConfig(
       ...pickDefined(overrides.browser?.contextOptions),
     },
     cdpHeaders: {
-      ...pickDefined(base.browser.cdpHeaders),
-      ...pickDefined(overrides.browser?.cdpHeaders),
+      ...base.browser.cdpHeaders,
+      ...overrides.browser?.cdpHeaders,
     },
     cdpTimeout:
       overrides.browser?.cdpTimeout ??
