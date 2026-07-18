@@ -43,7 +43,7 @@ const [template, style] = await Promise.all([
 ]);
 const script = new TextDecoder()
   .decode(result.outputFiles[0].contents)
-  .replaceAll('</script', '<\\/script');
+  .replaceAll('</script', String.raw`<\/script`);
 const csp = [
   "default-src 'none'",
   'img-src data:',
