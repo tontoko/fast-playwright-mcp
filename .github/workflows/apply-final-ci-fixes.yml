@@ -45,192 +45,151 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str) -> None:
+          def replace_required(path: str, marker: str, replacement: str, label: str) -> None:
               target = Path(path)
               text = target.read_text(encoding='utf-8')
-              if old not in text:
-                  raise SystemExit(f'{path}: diagnostic marker not found')
-              target.write_text(text.replace(old, new, 1), encoding='utf-8')
+              count = text.count(marker)
+              print(f'[diag-setup] {label}: {count} marker(s)')
+              if count < 1:
+                  raise SystemExit(f'{path}: {label} marker not found')
+              target.write_text(text.replace(marker, replacement, 1), encoding='utf-8')
 
-          replace_once(
+          replace_required(
               'src/tools/tabs.ts',
-              """  handle: async (context, params, response) => {
+              '    const tab = await context.newTab();',
+              """    console.error('[diag] browser_tab_new:newTab:start');
               const tab = await context.newTab();
-              if (params.url) {
-                await tab.navigate(params.url);
-              }
-              response.setIncludeSnapshot();
-            },
-          });
-          """,
-              """  handle: async (context, params, response) => {
-              console.error('[diag] browser_tab_new:newTab:start');
-              const tab = await context.newTab();
-              console.error('[diag] browser_tab_new:newTab:done', tab.page.url());
-              if (params.url) {
-                console.error('[diag] browser_tab_new:navigate:start', params.url);
-                await tab.navigate(params.url);
-                console.error('[diag] browser_tab_new:navigate:done', tab.page.url());
-              }
-              response.setIncludeSnapshot();
-              console.error('[diag] browser_tab_new:handler:done');
-            },
-          });
-          """,
+              console.error('[diag] browser_tab_new:newTab:done', tab.page.url());""",
+              'new-tab creation',
+          )
+          replace_required(
+              'src/tools/tabs.ts',
+              '      await tab.navigate(params.url);',
+              """      console.error('[diag] browser_tab_new:navigate:start', params.url);
+              await tab.navigate(params.url);
+              console.error('[diag] browser_tab_new:navigate:done', tab.page.url());""",
+              'new-tab navigation',
+          )
+          replace_required(
+              'src/tools/tabs.ts',
+              '    response.setIncludeSnapshot();',
+              """    response.setIncludeSnapshot();
+              console.error('[diag] browser_tab_new:handler:done');""",
+              'new-tab handler completion',
           )
 
-          replace_once(
+          replace_required(
               'src/tab.ts',
+              "    page.on('framenavigated', (frame) => {",
               """    page.on('framenavigated', (frame) => {
-              if (frame === page.mainFrame()) {
-                this._handleNavigationStart();
-              }
-            });
-            page.on('load', () => {
-              this._handleNavigationComplete();
-            });
-            page.on('domcontentloaded', () => {
-              // DOMContentLoaded indicates navigation is progressing
-              this._navigationState.isNavigating = true;
-            });
-          """,
-              """    page.on('framenavigated', (frame) => {
-              if (frame === page.mainFrame()) {
-                console.error('[diag] tab:event:framenavigated', page.url());
-                this._handleNavigationStart();
-              }
-            });
-            page.on('load', () => {
-              console.error('[diag] tab:event:load', page.url());
-              this._handleNavigationComplete();
-            });
-            page.on('domcontentloaded', () => {
-              console.error('[diag] tab:event:domcontentloaded', page.url());
-              // DOMContentLoaded indicates navigation is progressing
-              this._navigationState.isNavigating = true;
-            });
-          """,
+              console.error('[diag] tab:event:framenavigated:any', page.url());""",
+              'frame navigation event',
           )
-
-          replace_once(
+          replace_required(
               'src/tab.ts',
-              """    try {
-              await this.page.goto(url, { waitUntil: 'domcontentloaded' });
-              abortDownloadWaiter();
-            } catch (_e: unknown) {
-          """,
-              """    try {
-              console.error('[diag] tab:navigate:goto:start', url);
-              await this.page.goto(url, { waitUntil: 'domcontentloaded' });
-              console.error('[diag] tab:navigate:goto:done', this.page.url());
-              abortDownloadWaiter();
-              console.error('[diag] tab:navigate:download-waiter:aborted');
-            } catch (_e: unknown) {
-          """,
+              "    page.on('load', () => {",
+              """    page.on('load', () => {
+              console.error('[diag] tab:event:load', page.url());""",
+              'load event',
           )
-
-          replace_once(
+          replace_required(
               'src/tab.ts',
-              """  async waitForNavigationComplete(): Promise<void> {
-              if (this._navigationState.navigationPromise) {
-                await this._navigationState.navigationPromise;
-              }
-            }
-          """,
+              "    page.on('domcontentloaded', () => {",
+              """    page.on('domcontentloaded', () => {
+              console.error('[diag] tab:event:domcontentloaded', page.url());""",
+              'domcontentloaded event',
+          )
+          replace_required(
+              'src/tab.ts',
+              "      await this.page.goto(url, { waitUntil: 'domcontentloaded' });",
+              """      console.error('[diag] tab:navigate:goto:start', url);
+              await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+              console.error('[diag] tab:navigate:goto:done', this.page.url());""",
+              'page.goto boundary',
+          )
+          replace_required(
+              'src/tab.ts',
+              '      abortDownloadWaiter();',
+              """      abortDownloadWaiter();
+              console.error('[diag] tab:navigate:download-waiter:aborted');""",
+              'download waiter cleanup',
+          )
+          replace_required(
+              'src/tab.ts',
+              '  async waitForNavigationComplete(): Promise<void> {',
               """  async waitForNavigationComplete(): Promise<void> {
               console.error(
                 '[diag] tab:waitForNavigationComplete:start',
                 this._navigationState.isNavigating,
                 Boolean(this._navigationState.navigationPromise),
                 this.page.url()
-              );
-              if (this._navigationState.navigationPromise) {
-                await this._navigationState.navigationPromise;
-              }
+              );""",
+              'navigation completion start',
+          )
+          replace_required(
+              'src/tab.ts',
+              '      await this._navigationState.navigationPromise;',
+              """      await this._navigationState.navigationPromise;
               console.error(
-                '[diag] tab:waitForNavigationComplete:done',
+                '[diag] tab:waitForNavigationComplete:promise-done',
                 this._navigationState.isNavigating,
                 this.page.url()
-              );
-            }
-          """,
+              );""",
+              'navigation completion resolution',
           )
 
-          replace_once(
+          replace_required(
               'src/response.ts',
+              '  async finish() {',
               """  async finish() {
-              // All the async snapshotting post-action is happening here.
-          """,
-              """  async finish() {
-              console.error('[diag] response:finish:start', this.toolName);
-              // All the async snapshotting post-action is happening here.
-          """,
+              console.error('[diag] response:finish:start', this.toolName);""",
+              'response finish start',
           )
-
-          replace_once(
+          replace_required(
               'src/response.ts',
-              """      // Only capture if not already set manually
-              // Enhanced navigation detection and deferred execution
+              '      await this._captureSnapshotWithNavigationHandling();',
+              """      console.error('[diag] response:snapshot:start', this.toolName);
               await this._captureSnapshotWithNavigationHandling();
-            }
-            await Promise.all(this._context.tabs().map((tab) => tab.updateTitle()));
-          """,
-              """      // Only capture if not already set manually
-              // Enhanced navigation detection and deferred execution
-              console.error('[diag] response:snapshot:start', this.toolName);
-              await this._captureSnapshotWithNavigationHandling();
-              console.error('[diag] response:snapshot:done', this.toolName);
-            }
-            console.error('[diag] response:titles:start', this._context.tabs().length);
-            await Promise.all(this._context.tabs().map((tab) => tab.updateTitle()));
-            console.error('[diag] response:titles:done');
-          """,
+              console.error('[diag] response:snapshot:done', this.toolName);""",
+              'response snapshot boundary',
           )
-
-          replace_once(
+          replace_required(
               'src/response.ts',
-              """  private async _handleNavigationIfNeeded(tab: Tab): Promise<void> {
-              if (await this._isPageNavigating(tab)) {
-                await this._waitForNavigationStability(tab);
-              }
-            }
-          """,
-              """  private async _handleNavigationIfNeeded(tab: Tab): Promise<void> {
-              const navigating = await this._isPageNavigating(tab);
+              '    await Promise.all(this._context.tabs().map((tab) => tab.updateTitle()));',
+              """    console.error('[diag] response:titles:start', this._context.tabs().length);
+              await Promise.all(this._context.tabs().map((tab) => tab.updateTitle()));
+              console.error('[diag] response:titles:done');""",
+              'response title boundary',
+          )
+          replace_required(
+              'src/response.ts',
+              '    if (await this._isPageNavigating(tab)) {',
+              """    const navigating = await this._isPageNavigating(tab);
               console.error('[diag] response:navigation-state', navigating, tab.page.url());
               if (navigating) {
-                console.error('[diag] response:navigation-wait:start');
-                await this._waitForNavigationStability(tab);
-                console.error('[diag] response:navigation-wait:done');
-              }
-            }
-          """,
+                console.error('[diag] response:navigation-wait:start');""",
+              'response navigation check',
           )
-
-          replace_once(
+          replace_required(
               'src/response.ts',
-              """  private async _attemptSnapshotCapture(tab: Tab): Promise<void> {
-              const options = this._expectation.snapshotOptions;
-          """,
-              """  private async _attemptSnapshotCapture(tab: Tab): Promise<void> {
-              console.error('[diag] response:capture:start', tab.page.url());
-              const options = this._expectation.snapshotOptions;
-          """,
+              '      await this._waitForNavigationStability(tab);',
+              """      await this._waitForNavigationStability(tab);
+              console.error('[diag] response:navigation-wait:done');""",
+              'response navigation wait',
           )
-
-          replace_once(
+          replace_required(
               'src/response.ts',
-              """    } else {
-              this._tabSnapshot = await tab.captureSnapshot();
-            }
-          }
-          """,
-              """    } else {
-              this._tabSnapshot = await tab.captureSnapshot();
-            }
-            console.error('[diag] response:capture:done', tab.page.url());
-          }
-          """,
+              '  private async _attemptSnapshotCapture(tab: Tab): Promise<void> {',
+              """  private async _attemptSnapshotCapture(tab: Tab): Promise<void> {
+              console.error('[diag] response:capture:start', tab.page.url());""",
+              'snapshot capture start',
+          )
+          replace_required(
+              'src/response.ts',
+              '      this._tabSnapshot = await tab.captureSnapshot();',
+              """      this._tabSnapshot = await tab.captureSnapshot();
+              console.error('[diag] response:capture:done', tab.page.url());""",
+              'snapshot capture completion',
           )
           PY
 
