@@ -10,15 +10,33 @@ export type McpContent = {
   mimeType?: string;
 };
 
-const TAB_LINE_PATTERN = /^-\s+(\d+):\s+(.+)$/u;
+const TAB_LINE_PREFIX = '-';
+const TAB_INDEX_PATTERN = /^\d+$/u;
 const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
+
+function parseTabLine(line: string): TabEntry | undefined {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith(TAB_LINE_PREFIX)) {
+    return;
+  }
+  const separator = trimmed.indexOf(':');
+  if (separator <= 1) {
+    return;
+  }
+  const indexText = trimmed.slice(1, separator).trim();
+  const label = trimmed.slice(separator + 1).trim();
+  if (!(TAB_INDEX_PATTERN.test(indexText) && label)) {
+    return;
+  }
+  const index = Number(indexText);
+  return Number.isSafeInteger(index) ? { index, label } : undefined;
+}
 
 export function parseTabLines(text: string): TabEntry[] {
   return text
     .split('\n')
-    .map((line) => TAB_LINE_PATTERN.exec(line.trim()))
-    .filter((match): match is RegExpExecArray => Boolean(match))
-    .map((match) => ({ index: Number(match[1]), label: match[2] }));
+    .map((line) => parseTabLine(line))
+    .filter((entry): entry is TabEntry => Boolean(entry));
 }
 
 export function renderTabs(
