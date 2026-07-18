@@ -101,7 +101,8 @@ const evaluate = defineTabTool({
       try {
         const expression = params.function;
         const evalResult = locator
-          ? await locator.evaluate( // NOSONAR -- this explicit browser tool intentionally evaluates user code inside the isolated page realm.
+          ? await locator.evaluate(
+              // NOSONAR -- this explicit browser tool intentionally evaluates user code inside the isolated page realm.
               async (element, source) => {
                 // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
                 const value = eval(`(${source})`); // NOSONAR -- execution is confined to the browser page, not the MCP server process.
@@ -111,7 +112,8 @@ const evaluate = defineTabTool({
               },
               expression
             )
-          : await tab.page.evaluate( // NOSONAR -- this explicit browser tool intentionally evaluates user code inside the isolated page realm.
+          : await tab.page.evaluate(
+              // NOSONAR -- this explicit browser tool intentionally evaluates user code inside the isolated page realm.
               async (source) => {
                 // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
                 const value = eval(`(${source})`); // NOSONAR -- execution is confined to the browser page, not the MCP server process.

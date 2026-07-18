@@ -21,7 +21,11 @@ function assertSafeCandidate(candidate: string, label: string): void {
   }
 }
 
-function assertInsideRoot(root: string, candidate: string, label: string): void {
+function assertInsideRoot(
+  root: string,
+  candidate: string,
+  label: string
+): void {
   const pathFromRoot = relative(root, candidate);
   const escapesRoot =
     pathFromRoot === '..' ||
@@ -81,11 +85,9 @@ export async function resolveWorkspaceOutputPath(
     assertInsideRoot(root, canonicalPath, label);
     return canonicalPath;
   } catch (error) {
-    if (!(
-      error instanceof Error &&
-      'code' in error &&
-      error.code === 'ENOENT'
-    )) {
+    if (
+      !(error instanceof Error && 'code' in error && error.code === 'ENOENT')
+    ) {
       throw error;
     }
   }
