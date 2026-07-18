@@ -1,4 +1,4 @@
-name: Apply remaining browser matrix fixes
+name: Apply verified browser and Sonar fixes
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: apply-remaining-browser-fixes-pr31
+  group: apply-verified-ci-fixes-pr31
   cancel-in-progress: false
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Apply regression fixes
+      - name: Apply regression and analysis fixes
         shell: bash
         run: |
           set -euo pipefail
@@ -39,16 +39,17 @@ jobs:
 
           config = Path('src/config.ts')
           text = config.read_text(encoding='utf-8')
-          constant_marker = 'const LINE_BREAK_PATTERN = /\\r?\\n/u;\n'
+          line_break = 'const LINE_BREAK_PATTERN = /\\r?\\n/u;\n'
           constant = (
-              "const LINE_BREAK_PATTERN = /\\r?\\n/u;\n"
               "const AUTOMATION_CONTROLLED_ARG =\n"
               "  '--disable-blink-features=AutomationControlled';\n"
           )
-          if constant_marker not in text:
-              raise SystemExit('src/config.ts: constant marker not found')
-          text = text.replace(constant_marker, constant, 1)
-          old = '''  if (browser.browserName !== 'chromium') {
+          if 'const AUTOMATION_CONTROLLED_ARG' not in text:
+              if line_break not in text:
+                  raise SystemExit('src/config.ts: line-break marker not found')
+              text = text.replace(line_break, line_break + constant, 1)
+
+          old_launch = '''  if (browser.browserName !== 'chromium') {
             browser.launchOptions.channel = undefined;
           } else {
             const automationControlledArg =
@@ -60,7 +61,7 @@ jobs:
             browser.launchOptions.args = args;
           }
           '''
-          new = '''  const args = (browser.launchOptions.args ?? []).filter(
+          new_launch = '''  const args = (browser.launchOptions.args ?? []).filter(
             (arg) => arg !== AUTOMATION_CONTROLLED_ARG
           );
           if (browser.browserName !== 'chromium') {
@@ -70,15 +71,17 @@ jobs:
           }
           browser.launchOptions.args = args.length ? args : undefined;
           '''
-          if old not in text:
-              raise SystemExit('src/config.ts: launch-option marker not found')
-          config.write_text(text.replace(old, new, 1), encoding='utf-8')
+          if old_launch in text:
+              text = text.replace(old_launch, new_launch, 1)
+          elif new_launch not in text:
+              raise SystemExit('src/config.ts: launch-option block not found')
+          config.write_text(text, encoding='utf-8')
 
-          test_path = Path('tests/upstream-config.spec.ts')
-          text = test_path.read_text(encoding='utf-8')
-          marker = "\ntest('numeric and heartbeat parsers reject or default invalid values', () => {"
-          addition = '''
-
+          config_test = Path('tests/upstream-config.spec.ts')
+          text = config_test.read_text(encoding='utf-8')
+          if 'keeps Chromium-only launch flags out of Firefox and WebKit' not in text:
+              marker = "\ntest('numeric and heartbeat parsers reject or default invalid values', () => {"
+              addition = '''
           test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
             const automationControlledArg =
               '--disable-blink-features=AutomationControlled';
@@ -96,13 +99,15 @@ jobs:
               automationControlledArg
             );
           });
-          '''
-          if marker not in text:
-              raise SystemExit('tests/upstream-config.spec.ts: insertion marker not found')
-          test_path.write_text(text.replace(marker, addition + marker, 1), encoding='utf-8')
 
-          test_path = Path('tests/tool-gateways.spec.ts')
-          text = test_path.read_text(encoding='utf-8')
+          '''
+              if marker not in text:
+                  raise SystemExit('tests/upstream-config.spec.ts: insertion marker not found')
+              text = text.replace(marker, '\n' + addition + marker.lstrip('\n'), 1)
+          config_test.write_text(text, encoding='utf-8')
+
+          gateway_test = Path('tests/tool-gateways.spec.ts')
+          text = gateway_test.read_text(encoding='utf-8')
           old = '''test('hidden tools remain directly callable and gateways enforce effects', async () => {
             const { client, server } = await createClient();
             const direct = await client.callTool({
@@ -145,15 +150,49 @@ jobs:
               text: expect.stringContaining('Unknown tool: browser_tab_list'),
             });
           '''
-          if old not in text:
-              raise SystemExit('tests/tool-gateways.spec.ts: assertion marker not found')
-          test_path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif "test('hidden tools resolve directly and gateways enforce effects'" not in text:
+              raise SystemExit('tests/tool-gateways.spec.ts: gateway assertion block not found')
+          gateway_test.write_text(text, encoding='utf-8')
+
+          Path('.sonarcloud.properties').write_text(
+              '''# SonarQube Cloud automatic analysis configuration.
+          sonar.sourceEncoding=UTF-8
+          sonar.sources=src,extension/src,scripts,benchmark
+          sonar.tests=tests,extension/tests
+          sonar.exclusions=\\
+            src/apps/generated/**,\\
+            lib/**,\\
+            extension/dist/**,\\
+            **/node_modules/**,\\
+            benchmark/reports/**,\\
+            **/*.png,\\
+            **/*.jpg,\\
+            **/*.jpeg,\\
+            **/*.gif,\\
+            **/*.webp,\\
+            **/*.ico,\\
+            **/*.zip,\\
+            **/*.gz,\\
+            **/*.tgz,\\
+            **/*.pdf,\\
+            **/*.lock,\\
+            **/*.tsbuildinfo,\\
+            test-results/**,\\
+            playwright-report/**
+          sonar.test.exclusions=tests/assets/**,tests/fixtures/**,tests/upstream/fixtures/**
+          sonar.cpd.exclusions=src/apps/generated/**
+          sonar.coverage.exclusions=src/apps/generated/**,tests/**,extension/tests/**
+          '''.replace('          ', ''),
+              encoding='utf-8',
+          )
           PY
 
       - name: Install dependencies and browsers
         run: |
           bun install --frozen-lockfile
-          bunx playwright install --with-deps chromium webkit
+          bunx playwright install --with-deps chromium firefox webkit
 
       - name: Verify source and targeted regressions
         shell: bash
@@ -173,29 +212,33 @@ jobs:
               tests/tabs.spec.ts \
               tests/batch-execute-basic.spec.ts \
               --project=webkit
+            bunx playwright test \
+              tests/browser-find.spec.ts \
+              tests/tabs.spec.ts \
+              --project=firefox
           } 2>&1 | tee verification.log
 
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: remaining-browser-fixes-failure
+          name: verified-ci-fixes-failure
           path: |
             verification.log
             test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 2
 
-      - name: Commit verified source fixes
+      - name: Commit clean verified fixes
         shell: bash
         run: |
           set -euo pipefail
-          git checkout -- .github/workflows
+          rm -f .github/workflows/apply-final-ci-fixes.yml
           rm -rf lib test-results playwright-report
           rm -f -- *.tgz tsconfig.tsbuildinfo verification.log
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'fix: isolate Chromium launch flags and correct gateway contract'
+          git commit -m 'fix: stabilize browser matrix and Sonar analysis'
           git push origin HEAD:agent/adaptive-tool-discovery
