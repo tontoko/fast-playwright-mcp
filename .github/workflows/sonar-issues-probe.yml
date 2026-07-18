@@ -1,0 +1,172 @@
+name: Probe Sonar issues for PR 31
+
+on:
+  push:
+    branches:
+      - agent/sonar-status-probe
+    paths:
+      - '.github/workflows/sonar-issues-probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    if: ${{ !contains(github.event.head_commit.message, '[sonar-issues-result]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/sonar-status-probe
+          fetch-depth: 0
+
+      - name: Query Sonar issue APIs
+        shell: bash
+        run: |
+          set -u
+          root='.github/sonar-issues-probe'
+          mkdir -p "$root/rules" "$root/snippets"
+
+          sonar_get() {
+            local url="$1"
+            local output="$2"
+            curl --silent --show-error --location \
+              --max-time 40 \
+              --user-agent 'fast-playwright-mcp-sonar-issues-probe/1.0' \
+              "$url" > "$output" 2> "${output}.stderr" || true
+          }
+
+          sonar_get \
+            'https://sonarcloud.io/api/issues/search?componentKeys=tontoko_fast-playwright-mcp&pullRequest=31&resolved=false&ps=500' \
+            "$root/issues.json"
+          sonar_get \
+            'https://sonarcloud.io/api/measures/component?component=tontoko_fast-playwright-mcp&pullRequest=31&metricKeys=new_reliability_rating,new_security_rating,new_maintainability_rating,new_bugs,new_vulnerabilities,new_code_smells,new_blocker_violations,new_critical_violations,new_major_violations,new_minor_violations,new_info_violations' \
+            "$root/measures.json"
+          sonar_get \
+            'https://sonarcloud.io/api/project_pull_requests/list?project=tontoko_fast-playwright-mcp' \
+            "$root/pull-requests.json"
+          sonar_get \
+            'https://sonarcloud.io/api/hotspots/search?projectKey=tontoko_fast-playwright-mcp&pullRequest=31&ps=500' \
+            "$root/hotspots.json"
+
+          python3 - <<'PY'
+          import json
+          import subprocess
+          import urllib.parse
+          from pathlib import Path
+
+          root = Path('.github/sonar-issues-probe')
+          issues_path = root / 'issues.json'
+          try:
+              payload = json.loads(issues_path.read_text(encoding='utf-8'))
+          except Exception as exc:
+              (root / 'ISSUES.md').write_text(
+                  f'# Sonar issues\n\nUnable to parse issues.json: {exc!r}\n',
+                  encoding='utf-8',
+              )
+              raise SystemExit(0)
+
+          issues = payload.get('issues', [])
+          components = {
+              component.get('key'): component
+              for component in payload.get('components', [])
+          }
+          lines = [
+              '# Sonar issues for PR 31',
+              '',
+              f'- total: {payload.get("total", len(issues))}',
+              f'- returned: {len(issues)}',
+          ]
+
+          unique_rules = []
+          seen_rules = set()
+          for index, issue in enumerate(issues, 1):
+              component_key = issue.get('component')
+              component = components.get(component_key, {})
+              path = component.get('path') or component.get('name') or component_key
+              text_range = issue.get('textRange') or {}
+              impacts = issue.get('impacts') or []
+              flows = issue.get('flows') or []
+              rule = issue.get('rule')
+              if rule and rule not in seen_rules:
+                  seen_rules.add(rule)
+                  unique_rules.append(rule)
+              lines.extend([
+                  '',
+                  f'## {index}. {issue.get("message")}',
+                  f'- key: {issue.get("key")}',
+                  f'- rule: {rule}',
+                  f'- path: {path}',
+                  f'- line: {issue.get("line")}',
+                  f'- textRange: {json.dumps(text_range, ensure_ascii=False)}',
+                  f'- type: {issue.get("type")}',
+                  f'- severity: {issue.get("severity")}',
+                  f'- status: {issue.get("status")}',
+                  f'- cleanCodeAttribute: {issue.get("cleanCodeAttribute")}',
+                  f'- impacts: {json.dumps(impacts, ensure_ascii=False)}',
+                  f'- effort: {issue.get("effort")}',
+                  f'- creationDate: {issue.get("creationDate")}',
+                  f'- updateDate: {issue.get("updateDate")}',
+                  f'- tags: {json.dumps(issue.get("tags") or [], ensure_ascii=False)}',
+                  f'- flows: {json.dumps(flows, ensure_ascii=False)}',
+              ])
+
+              key = issue.get('key')
+              if key:
+                  url = (
+                      'https://sonarcloud.io/api/sources/issue_snippets?issueKey='
+                      + urllib.parse.quote(str(key), safe='')
+                  )
+                  output = root / 'snippets' / f'{index:03d}.json'
+                  subprocess.run(
+                      [
+                          'curl', '--silent', '--show-error', '--location',
+                          '--max-time', '30',
+                          '--user-agent', 'fast-playwright-mcp-sonar-issues-probe/1.0',
+                          url,
+                      ],
+                      stdout=output.open('wb'),
+                      stderr=subprocess.DEVNULL,
+                      check=False,
+                  )
+
+          (root / 'ISSUES.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+
+          for index, rule in enumerate(unique_rules, 1):
+              url = (
+                  'https://sonarcloud.io/api/rules/show?key='
+                  + urllib.parse.quote(rule, safe='')
+              )
+              output = root / 'rules' / f'{index:03d}.json'
+              subprocess.run(
+                  [
+                      'curl', '--silent', '--show-error', '--location',
+                      '--max-time', '30',
+                      '--user-agent', 'fast-playwright-mcp-sonar-issues-probe/1.0',
+                      url,
+                  ],
+                  stdout=output.open('wb'),
+                  stderr=subprocess.DEVNULL,
+                  check=False,
+              )
+
+          (root / 'RULE_INDEX.json').write_text(
+              json.dumps(
+                  [{'index': index, 'rule': rule} for index, rule in enumerate(unique_rules, 1)],
+                  ensure_ascii=False,
+                  indent=2,
+              ) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Commit probe result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/sonar-issues-probe
+          git commit -m 'chore: record Sonar issue details [sonar-issues-result]'
+          git push origin HEAD:agent/sonar-status-probe
