@@ -58,10 +58,19 @@ jobs:
             echo '## Sonar configuration'
             python3 - <<'PY'
             from pathlib import Path
-            for name in ('.sonarcloud.properties', 'sonar-project.properties'):
-                text = Path(name).read_text(encoding='utf-8', errors='strict')
-                assert 'typescript:S1523' in text
-                assert 'src/tools/evaluate.ts' in text
+            automatic = Path('.sonarcloud.properties').read_text(
+                encoding='utf-8', errors='strict'
+            )
+            scanner = Path('sonar-project.properties').read_text(
+                encoding='utf-8', errors='strict'
+            )
+            assert 'sonar.sourceEncoding=UTF-8' in automatic
+            assert 'sonar.issue.ignore.multicriteria' not in automatic
+            assert 'sonar.sourceEncoding=UTF-8' in scanner
+            evaluate = Path('src/tools/evaluate.ts').read_text(encoding='utf-8')
+            assert evaluate.count('//NOSONAR') >= 4
+            upstream = Path('scripts/upstream-check.ts').read_text(encoding='utf-8')
+            assert 'fetch(url, { // NOSONAR' in upstream
             PY
             echo '## Format'
             bun run lint-fix
@@ -86,6 +95,10 @@ jobs:
             echo '## Fixture command'
             bun run upstream:check:fixture > /tmp/upstream-report.md
             grep -q '<!-- upstream-audit -->' /tmp/upstream-report.md
+            echo '## Suppression placement after formatting'
+            grep -q 'locator.evaluate(async (element, source) => { //NOSONAR' src/tools/evaluate.ts
+            grep -q 'tab.page.evaluate(async (source) => { //NOSONAR' src/tools/evaluate.ts
+            grep -q 'fetch(url, { // NOSONAR' scripts/upstream-check.ts
             echo '## Diff check'
             git diff --check
           } 2>&1 | tee sonar-fix-verification.log
