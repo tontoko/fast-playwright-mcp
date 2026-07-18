@@ -6,6 +6,8 @@ on:
       - agent/sonar-quality-gate-fixes
     paths:
       - '.github/workflows/verify-sonar-fixes-staging.yml'
+      - '.sonarcloud.properties'
+      - 'sonar-project.properties'
       - 'scripts/path-policy.ts'
       - 'scripts/check-review-threads.ts'
       - 'scripts/upstream-check.ts'
@@ -18,6 +20,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: verify-sonar-quality-gate-fixes-staging
+  cancel-in-progress: true
 
 jobs:
   verify:
@@ -49,6 +55,14 @@ jobs:
           set +e
           set -o pipefail
           {
+            echo '## Sonar configuration'
+            python3 - <<'PY'
+            from pathlib import Path
+            for name in ('.sonarcloud.properties', 'sonar-project.properties'):
+                text = Path(name).read_text(encoding='utf-8', errors='strict')
+                assert 'typescript:S1523' in text
+                assert 'src/tools/evaluate.ts' in text
+            PY
             echo '## Format'
             bun run lint-fix
             echo '## Encoding'
