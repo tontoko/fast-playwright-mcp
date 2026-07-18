@@ -1,5 +1,65 @@
 # Staging workflow runs
 
+## Apply remaining config Sonar cleanup #1
+- id: 29637728827
+- event: push
+- head_sha: 41082fd0a80442725118ee4432f3d6436f7d5638
+- status: completed
+- conclusion: success
+- created_at: 2026-07-18T08:35:56Z
+- updated_at: 2026-07-18T08:36:03Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637728827
+
+## Verify Sonar quality-gate fixes staging #12
+- id: 29637722927
+- event: push
+- head_sha: 561417751c8f0c2273c3ea03248abbb71c7e6850
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-18T08:35:43Z
+- updated_at: 2026-07-18T08:36:55Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637722927
+
+## Verify Sonar quality-gate fixes staging #11
+- id: 29637678909
+- event: push
+- head_sha: b3bc74e49a89258c12157eec6d97a6b3c3668d38
+- status: completed
+- conclusion: success
+- created_at: 2026-07-18T08:34:11Z
+- updated_at: 2026-07-18T08:35:27Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637678909
+
+## Verify Sonar quality-gate fixes staging #10
+- id: 29637668576
+- event: push
+- head_sha: fa477fc97d706ee3781ba00600ed422ebcc8440b
+- status: completed
+- conclusion: cancelled
+- created_at: 2026-07-18T08:33:50Z
+- updated_at: 2026-07-18T08:34:24Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637668576
+
+## Verify Sonar quality-gate fixes staging #9
+- id: 29637552541
+- event: push
+- head_sha: a7e9bb1975f716bb0c3dbcd9d4a62e651efc0033
+- status: completed
+- conclusion: success
+- created_at: 2026-07-18T08:29:55Z
+- updated_at: 2026-07-18T08:30:52Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637552541
+
+## Verify Sonar quality-gate fixes staging #8
+- id: 29628681752
+- event: push
+- head_sha: d9e2e97517f550f30a57984e37d09224f9c6bd7f
+- status: completed
+- conclusion: success
+- created_at: 2026-07-18T03:21:43Z
+- updated_at: 2026-07-18T03:22:41Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29628681752
+
 ## Verify Sonar quality-gate fixes staging #7
 - id: 29628456054
 - event: push
