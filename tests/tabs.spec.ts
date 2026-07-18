@@ -45,6 +45,12 @@ async function createTab(
   };
 }
 
+function responseText(result: CreatedTab['result']): string {
+  return result.content
+    .map((part) => (part.type === 'text' ? part.text : ''))
+    .join('\n');
+}
+
 test('list initial tabs', async ({ client }) => {
   expect(
     await client.callTool({
@@ -157,33 +163,55 @@ test('reuse first tab when navigating', async ({
     arguments: { url: server.HELLO_WORLD },
   });
 
-  expect(pages.length).toBe(1);
+  expect(pages).toHaveLength(1);
   expect(await pages[0].title()).toBe('Title');
 });
 
-test('Tab.capturePartialSnapshot method exists', async ({ client, server }) => {
-  // Create a simple tab to test method existence
-  await createTab(client, server, 'Method Test', '<div>Test content</div>');
-
-  // Verify that the method exists by checking it doesn't throw immediately
-  expect(true).toBe(true);
-});
-
-test('Tab partial snapshot functionality through utils', async ({
+test('browser_snapshot applies maxLength to a partial snapshot', async ({
   client,
   server,
 }) => {
-  // Create a tab with complex HTML structure for testing
+  await createTab(
+    client,
+    server,
+    'Length Test',
+    `<main><p>Visible prefix ${'x'.repeat(200)} sentinel-tail</p></main>`
+  );
+
+  const result = await client.callTool({
+    name: 'browser_snapshot',
+    arguments: {
+      expectation: {
+        snapshotOptions: { selector: 'main', maxLength: 80 },
+      },
+    },
+  });
+  const text = responseText(result);
+  expect(text).toContain('Visible prefix');
+  expect(text).not.toContain('sentinel-tail');
+});
+
+test('browser_snapshot limits a partial snapshot to the selected landmark', async ({
+  client,
+  server,
+}) => {
   await createTab(
     client,
     server,
     'Snapshot Test',
-    '<div id="header">Header content</div>' +
-      '<div id="main">Main content for testing</div>' +
-      '<div id="footer">Footer content</div>'
+    '<header>Header content</header>' +
+      '<main>Main content for testing</main>' +
+      '<footer>Footer content</footer>'
   );
 
-  // The capturePartialSnapshot functionality will be verified through
-  // integration testing with the actual tools
-  expect(true).toBe(true);
+  const result = await client.callTool({
+    name: 'browser_snapshot',
+    arguments: {
+      expectation: { snapshotOptions: { selector: 'main' } },
+    },
+  });
+  const text = responseText(result);
+  expect(text).toContain('Main content for testing');
+  expect(text).not.toContain('Header content');
+  expect(text).not.toContain('Footer content');
 });
