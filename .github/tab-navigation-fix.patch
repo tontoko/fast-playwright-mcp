@@ -1,8 +1,8 @@
 diff --git a/src/tab.ts b/src/tab.ts
-index a80a165..5948b8f 100644
+index a80a165..1a25dce 100644
 --- a/src/tab.ts
 +++ b/src/tab.ts
-@@ -262,24 +262,48 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+@@ -262,24 +262,50 @@ export class Tab extends EventEmitter<TabEventsInterface> {
    async navigate(url: string) {
      tabDebug(`Navigating to: ${url}`);
      this._clearCollectedArtifacts();
@@ -15,6 +15,7 @@ index a80a165..5948b8f 100644
 +    const onDownload = (download: playwright.Download) => {
 +      if (downloadTimer) {
 +        clearTimeout(downloadTimer);
++        downloadTimer = undefined;
 +      }
 +      this.page.off('download', onDownload);
 +      if (!downloadEvent.isDone()) {
@@ -24,6 +25,7 @@ index a80a165..5948b8f 100644
 +    const abortDownloadWaiter = () => {
 +      if (downloadTimer) {
 +        clearTimeout(downloadTimer);
++        downloadTimer = undefined;
 +      }
 +      this.page.off('download', onDownload);
 +      if (!downloadEvent.isDone()) {
