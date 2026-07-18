@@ -20,9 +20,8 @@ if (values.fixture) {
     extension: '.json',
     label: '--fixture',
   });
-  page = JSON.parse(
-    await readFile(fixturePath, 'utf8') // NOSONAR -- fixturePath is canonical and repository-contained.
-  ) as ReviewThreadPage;
+  const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR
+  page = JSON.parse(fixtureText) as ReviewThreadPage;
 } else {
   if (!(values.repository && values.pr && process.env.GITHUB_TOKEN)) {
     throw new Error('--repository, --pr, and GITHUB_TOKEN are required');
