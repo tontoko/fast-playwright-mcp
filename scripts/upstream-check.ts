@@ -1,9 +1,17 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
+import {
+  resolveWorkspaceInputPath,
+  resolveWorkspaceOutputPath,
+} from './path-policy.js';
 
 const FULL_SHA = /^[0-9a-f]{40}$/u;
+const OWNER_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/u;
+const REPOSITORY_NAME_PATTERN = /^[A-Za-z0-9._-]{1,100}$/u;
+const GITHUB_API_ORIGIN = 'https://api.github.com';
 const SECURITY_PATH = /(host|origin|secret|sandbox|cdp|network|fileaccess)/u;
-const FORMATTING_PATH = /^(eslint|prettier|biome)|lint|format/u;
+const FORMATTING_PREFIXES = ['eslint', 'prettier', 'biome'] as const;
+const FORMATTING_MARKERS = ['lint', 'format'] as const;
 const AUTOMATION_PATH = /release|publish|roll\.js/u;
 const DEPENDENCY_PATH = /package\.json|lock|npmrc/u;
 const EXTENSION_PATH = /extension/u;
@@ -34,21 +42,57 @@ type ComparePayload = {
   headSha?: string;
 };
 
-export async function loadUpstreamManifest(
-  path = 'upstream.json'
-): Promise<UpstreamManifest> {
-  const manifest = JSON.parse(await readFile(path, 'utf8')) as UpstreamManifest;
+export function parseRepositorySlug(
+  value: string,
+  label = 'repository'
+): readonly [string, string] {
+  const [owner, name, extra] = value.split('/');
+  if (
+    extra !== undefined ||
+    !owner ||
+    !name ||
+    !OWNER_PATTERN.test(owner) ||
+    !REPOSITORY_NAME_PATTERN.test(name)
+  ) {
+    throw new Error(`${label} must use a valid owner/name GitHub slug`);
+  }
+  return [owner, name];
+}
+
+export function githubApiUrl(
+  repository: string,
+  ...segments: readonly string[]
+): URL {
+  const [owner, name] = parseRepositorySlug(repository);
+  const encodedPath = ['repos', owner, name, ...segments]
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+  const url = new URL(`/${encodedPath}`, GITHUB_API_ORIGIN);
+  if (url.origin !== GITHUB_API_ORIGIN) {
+    throw new Error('GitHub API URL must use the configured origin');
+  }
+  return url;
+}
+
+function validateManifest(manifest: UpstreamManifest): void {
   if (!FULL_SHA.test(manifest.reviewedCommit)) {
     throw new Error('reviewedCommit must be a full 40-character SHA');
   }
-  if (
-    !(
-      manifest.repository.includes('/') &&
-      manifest.playwrightRepository.includes('/')
-    )
-  ) {
-    throw new Error('upstream repositories must use owner/name format');
-  }
+  parseRepositorySlug(manifest.repository, 'repository');
+  parseRepositorySlug(manifest.playwrightRepository, 'playwrightRepository');
+}
+
+export async function loadUpstreamManifest(
+  path = 'upstream.json'
+): Promise<UpstreamManifest> {
+  const manifestPath = await resolveWorkspaceInputPath(path, {
+    extension: '.json',
+    label: '--manifest',
+  });
+  const manifest = JSON.parse(
+    await readFile(manifestPath, 'utf8') // NOSONAR -- manifestPath is canonical and repository-contained.
+  ) as UpstreamManifest;
+  validateManifest(manifest);
   return manifest;
 }
 
@@ -64,12 +108,19 @@ export type UpstreamCategory =
   | 'excluded-automation'
   | 'other';
 
+function isFormattingPath(path: string): boolean {
+  return (
+    FORMATTING_PREFIXES.some((prefix) => path.startsWith(prefix)) ||
+    FORMATTING_MARKERS.some((marker) => path.includes(marker))
+  );
+}
+
 export function classifyPath(path: string): UpstreamCategory {
   const lower = path.toLowerCase();
   if (SECURITY_PATH.test(lower)) {
     return 'security';
   }
-  if (FORMATTING_PATH.test(lower)) {
+  if (isFormattingPath(lower)) {
     return 'excluded-formatting';
   }
   if (lower.startsWith('.github/') || AUTOMATION_PATH.test(lower)) {
@@ -160,8 +211,13 @@ export function buildUpstreamReport(
   return lines.join('\n');
 }
 
-async function githubJson<T>(url: string): Promise<T> {
+async function githubJson<T>(
+  repository: string,
+  ...segments: readonly string[]
+): Promise<T> {
+  const url = githubApiUrl(repository, ...segments);
   const response = await fetch(url, {
+    // NOSONAR -- githubApiUrl fixes the origin and encodes validated path segments before the token header is attached.
     headers: {
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
@@ -181,13 +237,26 @@ async function loadPayload(
   fixture?: string
 ): Promise<ComparePayload> {
   if (fixture) {
-    return JSON.parse(await readFile(fixture, 'utf8')) as ComparePayload;
+    const fixturePath = await resolveWorkspaceInputPath(fixture, {
+      extension: '.json',
+      label: '--fixture',
+    });
+    return JSON.parse(
+      await readFile(fixturePath, 'utf8') // NOSONAR -- fixturePath is canonical and repository-contained.
+    ) as ComparePayload;
   }
   const latest = await githubJson<{ sha: string }>(
-    `https://api.github.com/repos/${manifest.repository}/commits/main`
+    manifest.repository,
+    'commits',
+    'main'
   );
+  if (!FULL_SHA.test(latest.sha)) {
+    throw new Error('GitHub returned an invalid latest commit SHA');
+  }
   const compare = await githubJson<ComparePayload>(
-    `https://api.github.com/repos/${manifest.repository}/compare/${manifest.reviewedCommit}...${latest.sha}`
+    manifest.repository,
+    'compare',
+    `${manifest.reviewedCommit}...${latest.sha}`
   );
   return { ...compare, headSha: latest.sha };
 }
@@ -206,7 +275,10 @@ if (import.meta.main) {
     await loadPayload(manifest, values.fixture)
   );
   if (values.output) {
-    await writeFile(values.output, report, 'utf8');
+    const outputPath = await resolveWorkspaceOutputPath(values.output, {
+      label: '--output',
+    });
+    await writeFile(outputPath, report, 'utf8'); // NOSONAR -- outputPath is canonical and repository-contained.
   } else {
     process.stdout.write(`${report}\n`);
   }
