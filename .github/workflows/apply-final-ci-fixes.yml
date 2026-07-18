@@ -1,4 +1,4 @@
-name: Diagnose WebKit new-tab hang
+name: Apply verified WebKit and encoding fixes
 
 on:
   pull_request:
@@ -9,17 +9,17 @@ on:
       - '.github/tab-navigation-fix.patch'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: diagnose-webkit-new-tab-pr31
-  cancel-in-progress: true
+  group: apply-webkit-encoding-fixes-pr31
+  cancel-in-progress: false
 
 jobs:
-  diagnose:
+  apply:
     if: github.event.pull_request.number == 31 && github.head_ref == 'agent/adaptive-tool-discovery'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -32,192 +32,83 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Apply candidate fixes and diagnostic instrumentation
+      - name: Apply exact source patches
         shell: bash
         run: |
           set -euo pipefail
           echo '1cc0f851328bcf0608a37c4ebb5c63f90675f1019d00bc2d3f4691473ff4efbb  .github/ci-fixes-v2.patch' | sha256sum --check --strict
-          echo 'eccf2a6e65d8adf6c4b345a0a9a0c0d4a7b46e3806045475adfc4743d5eadc2f  .github/tab-navigation-fix.patch' | sha256sum --check --strict
+          echo '548e92eb8ff8dca7886302f0ae11d9744abdf35bc6f21ceb0aa587fb66ce6261  .github/tab-navigation-fix.patch' | sha256sum --check --strict
           git apply --check .github/ci-fixes-v2.patch
           git apply .github/ci-fixes-v2.patch
           git apply --check .github/tab-navigation-fix.patch
           git apply .github/tab-navigation-fix.patch
           python3 - <<'PY'
           from pathlib import Path
-
-          def replace_required(path: str, marker: str, replacement: str, label: str) -> None:
-              target = Path(path)
-              text = target.read_text(encoding='utf-8')
-              count = text.count(marker)
-              print(f'[diag-setup] {label}: {count} marker(s)')
-              if count < 1:
-                  raise SystemExit(f'{path}: {label} marker not found')
-              target.write_text(text.replace(marker, replacement, 1), encoding='utf-8')
-
-          replace_required(
-              'src/tools/tabs.ts',
-              '    const tab = await context.newTab();',
-              """    console.error('[diag] browser_tab_new:newTab:start');
-              const tab = await context.newTab();
-              console.error('[diag] browser_tab_new:newTab:done', tab.page.url());""",
-              'new-tab creation',
-          )
-          replace_required(
-              'src/tools/tabs.ts',
-              '      await tab.navigate(params.url);',
-              """      console.error('[diag] browser_tab_new:navigate:start', params.url);
-              await tab.navigate(params.url);
-              console.error('[diag] browser_tab_new:navigate:done', tab.page.url());""",
-              'new-tab navigation',
-          )
-          replace_required(
-              'src/tools/tabs.ts',
-              '    response.setIncludeSnapshot();',
-              """    response.setIncludeSnapshot();
-              console.error('[diag] browser_tab_new:handler:done');""",
-              'new-tab handler completion',
-          )
-
-          replace_required(
-              'src/tab.ts',
-              "    page.on('framenavigated', (frame) => {",
-              """    page.on('framenavigated', (frame) => {
-              console.error('[diag] tab:event:framenavigated:any', page.url());""",
-              'frame navigation event',
-          )
-          replace_required(
-              'src/tab.ts',
-              "    page.on('load', () => {",
-              """    page.on('load', () => {
-              console.error('[diag] tab:event:load', page.url());""",
-              'load event',
-          )
-          replace_required(
-              'src/tab.ts',
-              "    page.on('domcontentloaded', () => {",
-              """    page.on('domcontentloaded', () => {
-              console.error('[diag] tab:event:domcontentloaded', page.url());""",
-              'domcontentloaded event',
-          )
-          replace_required(
-              'src/tab.ts',
-              "      await this.page.goto(url, { waitUntil: 'domcontentloaded' });",
-              """      console.error('[diag] tab:navigate:goto:start', url);
-              await this.page.goto(url, { waitUntil: 'domcontentloaded' });
-              console.error('[diag] tab:navigate:goto:done', this.page.url());""",
-              'page.goto boundary',
-          )
-          replace_required(
-              'src/tab.ts',
-              '      abortDownloadWaiter();',
-              """      abortDownloadWaiter();
-              console.error('[diag] tab:navigate:download-waiter:aborted');""",
-              'download waiter cleanup',
-          )
-          replace_required(
-              'src/tab.ts',
-              '  async waitForNavigationComplete(): Promise<void> {',
-              """  async waitForNavigationComplete(): Promise<void> {
-              console.error(
-                '[diag] tab:waitForNavigationComplete:start',
-                this._navigationState.isNavigating,
-                Boolean(this._navigationState.navigationPromise),
-                this.page.url()
-              );""",
-              'navigation completion start',
-          )
-          replace_required(
-              'src/tab.ts',
-              '      await this._navigationState.navigationPromise;',
-              """      await this._navigationState.navigationPromise;
-              console.error(
-                '[diag] tab:waitForNavigationComplete:promise-done',
-                this._navigationState.isNavigating,
-                this.page.url()
-              );""",
-              'navigation completion resolution',
-          )
-
-          replace_required(
-              'src/response.ts',
-              '  async finish() {',
-              """  async finish() {
-              console.error('[diag] response:finish:start', this.toolName);""",
-              'response finish start',
-          )
-          replace_required(
-              'src/response.ts',
-              '      await this._captureSnapshotWithNavigationHandling();',
-              """      console.error('[diag] response:snapshot:start', this.toolName);
-              await this._captureSnapshotWithNavigationHandling();
-              console.error('[diag] response:snapshot:done', this.toolName);""",
-              'response snapshot boundary',
-          )
-          replace_required(
-              'src/response.ts',
-              '    await Promise.all(this._context.tabs().map((tab) => tab.updateTitle()));',
-              """    console.error('[diag] response:titles:start', this._context.tabs().length);
-              await Promise.all(this._context.tabs().map((tab) => tab.updateTitle()));
-              console.error('[diag] response:titles:done');""",
-              'response title boundary',
-          )
-          replace_required(
-              'src/response.ts',
-              '    if (await this._isPageNavigating(tab)) {',
-              """    const navigating = await this._isPageNavigating(tab);
-              console.error('[diag] response:navigation-state', navigating, tab.page.url());
-              if (navigating) {
-                console.error('[diag] response:navigation-wait:start');""",
-              'response navigation check',
-          )
-          replace_required(
-              'src/response.ts',
-              '      await this._waitForNavigationStability(tab);',
-              """      await this._waitForNavigationStability(tab);
-              console.error('[diag] response:navigation-wait:done');""",
-              'response navigation wait',
-          )
-          replace_required(
-              'src/response.ts',
-              '  private async _attemptSnapshotCapture(tab: Tab): Promise<void> {',
-              """  private async _attemptSnapshotCapture(tab: Tab): Promise<void> {
-              console.error('[diag] response:capture:start', tab.page.url());""",
-              'snapshot capture start',
-          )
-          replace_required(
-              'src/response.ts',
-              '      this._tabSnapshot = await tab.captureSnapshot();',
-              """      this._tabSnapshot = await tab.captureSnapshot();
-              console.error('[diag] response:capture:done', tab.page.url());""",
-              'snapshot capture completion',
-          )
+          Path('.sonarcloud.properties').read_text(encoding='utf-8', errors='strict')
           PY
+          if grep -E '^sonar\.(sources|tests)=.*[*?]' .sonarcloud.properties; then
+            echo 'Wildcards are not allowed in Sonar automatic-analysis source/test roots.' >&2
+            exit 1
+          fi
 
-      - name: Install dependencies and WebKit
+      - name: Install dependencies and browsers
         run: |
           bun install --frozen-lockfile
-          bunx playwright install --with-deps webkit
+          bunx playwright install --with-deps chromium firefox webkit
 
-      - name: Reproduce one WebKit new-tab call
+      - name: Verify source, encoding, and regressions
         env:
           PWMCP_DEBUG: '1'
         shell: bash
         run: |
           set -o pipefail
-          bun run build:publish 2>&1 | tee diagnostic.log
-          bunx playwright test tests/tabs.spec.ts \
-            --project=webkit \
-            --grep='list first tab' \
-            --workers=1 \
-            --timeout=15000 2>&1 | tee -a diagnostic.log
+          {
+            bun run lint-fix
+            bun run check:encoding
+            bun run typecheck
+            bun run build:publish
+            bun run lint
+            bunx playwright test tests/tabs.spec.ts \
+              --project=webkit \
+              --grep='list first tab' \
+              --workers=1
+            bunx playwright test \
+              tests/upstream-config.spec.ts \
+              tests/tool-gateways.spec.ts \
+              --project=chromium
+            bunx playwright test \
+              tests/tabs.spec.ts \
+              tests/batch-execute-basic.spec.ts \
+              --project=webkit
+            bunx playwright test \
+              tests/tabs.spec.ts \
+              tests/browser-find.spec.ts \
+              tests/batch-execute-basic.spec.ts \
+              --project=firefox
+          } 2>&1 | tee verification.log
 
-      - name: Upload diagnostic log
-        if: always()
+      - name: Upload failure diagnostics
+        if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: webkit-new-tab-diagnostic
+          name: webkit-encoding-fix-failure
           path: |
-            diagnostic.log
+            verification.log
             test-results/**/error-context.md
           if-no-files-found: warn
           retention-days: 2
+
+      - name: Commit clean verified fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/apply-final-ci-fixes.yml
+          rm -f .github/ci-fixes-v2.patch .github/tab-navigation-fix.patch
+          rm -rf lib test-results playwright-report
+          rm -f -- *.tgz tsconfig.tsbuildinfo verification.log
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: stabilize browser navigation and Sonar analysis'
+          git push origin HEAD:agent/adaptive-tool-discovery
