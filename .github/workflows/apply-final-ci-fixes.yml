@@ -1,4 +1,4 @@
-name: Apply verified browser and Sonar fixes
+name: Apply exact verified CI patch
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: apply-verified-ci-fixes-pr31
+  group: apply-exact-ci-fix-pr31
   cancel-in-progress: false
 
 jobs:
@@ -30,164 +30,17 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Apply regression and analysis fixes
+      - name: Apply exact source patch
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          config = Path('src/config.ts')
-          text = config.read_text(encoding='utf-8')
-          line_break = 'const LINE_BREAK_PATTERN = /\\r?\\n/u;\n'
-          constant = (
-              "const AUTOMATION_CONTROLLED_ARG =\n"
-              "  '--disable-blink-features=AutomationControlled';\n"
-          )
-          if 'const AUTOMATION_CONTROLLED_ARG' not in text:
-              if line_break not in text:
-                  raise SystemExit('src/config.ts: line-break marker not found')
-              text = text.replace(line_break, line_break + constant, 1)
-
-          old_launch = '''  if (browser.browserName !== 'chromium') {
-            browser.launchOptions.channel = undefined;
-          } else {
-            const automationControlledArg =
-              '--disable-blink-features=AutomationControlled';
-            const args = [...(browser.launchOptions.args ?? [])];
-            if (!args.includes(automationControlledArg)) {
-              args.push(automationControlledArg);
-            }
-            browser.launchOptions.args = args;
-          }
-          '''
-          new_launch = '''  const args = (browser.launchOptions.args ?? []).filter(
-            (arg) => arg !== AUTOMATION_CONTROLLED_ARG
-          );
-          if (browser.browserName !== 'chromium') {
-            browser.launchOptions.channel = undefined;
-          } else {
-            args.push(AUTOMATION_CONTROLLED_ARG);
-          }
-          browser.launchOptions.args = args.length ? args : undefined;
-          '''
-          if old_launch in text:
-              text = text.replace(old_launch, new_launch, 1)
-          elif new_launch not in text:
-              raise SystemExit('src/config.ts: launch-option block not found')
-          config.write_text(text, encoding='utf-8')
-
-          config_test = Path('tests/upstream-config.spec.ts')
-          text = config_test.read_text(encoding='utf-8')
-          if 'keeps Chromium-only launch flags out of Firefox and WebKit' not in text:
-              marker = "\ntest('numeric and heartbeat parsers reject or default invalid values', () => {"
-              addition = '''
-          test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
-            const automationControlledArg =
-              '--disable-blink-features=AutomationControlled';
-            const chromium = await resolveCLIConfig({ browser: 'chromium' }, {});
-            const firefox = await resolveCLIConfig({ browser: 'firefox' }, {});
-            const webkit = await resolveCLIConfig({ browser: 'webkit' }, {});
-
-            expect(chromium.browser.launchOptions.args).toContain(
-              automationControlledArg
-            );
-            expect(firefox.browser.launchOptions.args ?? []).not.toContain(
-              automationControlledArg
-            );
-            expect(webkit.browser.launchOptions.args ?? []).not.toContain(
-              automationControlledArg
-            );
-          });
-
-          '''
-              if marker not in text:
-                  raise SystemExit('tests/upstream-config.spec.ts: insertion marker not found')
-              text = text.replace(marker, '\n' + addition + marker.lstrip('\n'), 1)
-          config_test.write_text(text, encoding='utf-8')
-
-          gateway_test = Path('tests/tool-gateways.spec.ts')
-          text = gateway_test.read_text(encoding='utf-8')
-          old = '''test('hidden tools remain directly callable and gateways enforce effects', async () => {
-            const { client, server } = await createClient();
-            const direct = await client.callTool({
-              name: 'browser_tab_list',
-              arguments: { expectation: {} },
-            });
-            expect(direct.isError).not.toBe(true);
-            const query = await client.callTool({
-              name: 'browser_query',
-              arguments: { tool: 'browser_tab_list', arguments: { expectation: {} } },
-            });
-            expect(query.isError).not.toBe(true);
-          '''
-          new = '''test('hidden tools resolve directly and gateways enforce effects', async () => {
-            const { client, server } = await createClient();
-            const direct = await client.callTool({
-              name: 'browser_tab_list',
-              arguments: { expectation: {} },
-            });
-            expect(direct.isError).toBe(true);
-            expect(direct.content[0]).toMatchObject({
-              text: expect.stringContaining(
-                'Browser context should not be created in catalog tests'
-              ),
-            });
-            expect(direct.content[0]).not.toMatchObject({
-              text: expect.stringContaining('Tool "browser_tab_list" not found'),
-            });
-            const query = await client.callTool({
-              name: 'browser_query',
-              arguments: { tool: 'browser_tab_list', arguments: { expectation: {} } },
-            });
-            expect(query.isError).toBe(true);
-            expect(query.content[0]).toMatchObject({
-              text: expect.stringContaining(
-                'Browser context should not be created in catalog tests'
-              ),
-            });
-            expect(query.content[0]).not.toMatchObject({
-              text: expect.stringContaining('Unknown tool: browser_tab_list'),
-            });
-          '''
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif "test('hidden tools resolve directly and gateways enforce effects'" not in text:
-              raise SystemExit('tests/tool-gateways.spec.ts: gateway assertion block not found')
-          gateway_test.write_text(text, encoding='utf-8')
-
-          Path('.sonarcloud.properties').write_text(
-              '''# SonarQube Cloud automatic analysis configuration.
-          sonar.sourceEncoding=UTF-8
-          sonar.sources=src,extension/src,scripts,benchmark
-          sonar.tests=tests,extension/tests
-          sonar.exclusions=\\
-            src/apps/generated/**,\\
-            lib/**,\\
-            extension/dist/**,\\
-            **/node_modules/**,\\
-            benchmark/reports/**,\\
-            **/*.png,\\
-            **/*.jpg,\\
-            **/*.jpeg,\\
-            **/*.gif,\\
-            **/*.webp,\\
-            **/*.ico,\\
-            **/*.zip,\\
-            **/*.gz,\\
-            **/*.tgz,\\
-            **/*.pdf,\\
-            **/*.lock,\\
-            **/*.tsbuildinfo,\\
-            test-results/**,\\
-            playwright-report/**
-          sonar.test.exclusions=tests/assets/**,tests/fixtures/**,tests/upstream/fixtures/**
-          sonar.cpd.exclusions=src/apps/generated/**
-          sonar.coverage.exclusions=src/apps/generated/**,tests/**,extension/tests/**
-          '''.replace('          ', ''),
-              encoding='utf-8',
-          )
-          PY
+          cat > /tmp/ci-fixes.patch.b64 <<'PATCH'
+          ZGlmZiAtLWdpdCBhLy5zb25hcmNsb3VkLnByb3BlcnRpZXMgYi8uc29uYXJjbG91ZC5wcm9wZXJ0aWVzCmluZGV4IGY3MDhkOGEuLmFlYjcwM2IgMTAwNjQ0Ci0tLSBhLy5zb25hcmNsb3VkLnByb3BlcnRpZXMKKysrIGIvLnNvbmFyY2xvdWQucHJvcGVydGllcwpAQCAtMiw1ICsyLDI2IEBACiBzb25hci5zb3VyY2VFbmNvZGluZz1VVEYtOAogc29uYXIuc291cmNlcz1zcmMsZXh0ZW5zaW9uL3NyYyxzY3JpcHRzLGJlbmNobWFyawogc29uYXIudGVzdHM9dGVzdHMsZXh0ZW5zaW9uL3Rlc3RzCi1zb25hci5leGNsdXNpb25zPXNyYy9hcHBzL2dlbmVyYXRlZC9kYXNoYm9hcmQudHMKLXNvbmFyLmNwZC5leGNsdXNpb25zPXNyYy9hcHBzL2dlbmVyYXRlZC9kYXNoYm9hcmQudHMKK3NvbmFyLmV4Y2x1c2lvbnM9XAorICBzcmMvYXBwcy9nZW5lcmF0ZWQvKiosXAorICBsaWIvKiosXAorICBleHRlbnNpb24vZGlzdC8qKixcCisgICoqL25vZGVfbW9kdWxlcy8qKixcCisgIGJlbmNobWFyay9yZXBvcnRzLyoqLFwKKyAgKiovKi5wbmcsXAorICAqKi8qLmpwZyxcCisgICoqLyouanBlZyxcCisgICoqLyouZ2lmLFwKKyAgKiovKi53ZWJwLFwKKyAgKiovKi5pY28sXAorICAqKi8qLnppcCxcCisgICoqLyouZ3osXAorICAqKi8qLnRneixcCisgICoqLyoucGRmLFwKKyAgKiovKi5sb2NrLFwKKyAgKiovKi50c2J1aWxkaW5mbyxcCisgIHRlc3QtcmVzdWx0cy8qKixcCisgIHBsYXl3cmlnaHQtcmVwb3J0LyoqCitzb25hci50ZXN0LmV4Y2x1c2lvbnM9dGVzdHMvYXNzZXRzLyoqLHRlc3RzL2ZpeHR1cmVzLyoqLHRlc3RzL3Vwc3RyZWFtL2ZpeHR1cmVzLyoqCitzb25hci5jcGQuZXhjbHVzaW9ucz1zcmMvYXBwcy9nZW5lcmF0ZWQvKioKK3NvbmFyLmNvdmVyYWdlLmV4Y2x1c2lvbnM9c3JjL2FwcHMvZ2VuZXJhdGVkLyoqLHRlc3RzLyoqLGV4dGVuc2lvbi90ZXN0cy8qKgpkaWZmIC0tZ2l0IGEvc3JjL2NvbmZpZy50cyBiL3NyYy9jb25maWcudHMKaW5kZXggZTkxZDBiZi4uZGI1MTljMiAxMDA2NDQKLS0tIGEvc3JjL2NvbmZpZy50cworKysgYi9zcmMvY29uZmlnLnRzCkBAIC0xMiw2ICsxMiw4IEBAIGNvbnN0IERFRkFVTFRfTkFWSUdBVElPTl9USU1FT1VUID0gNjBfMDAwOwogY29uc3QgREVGQVVMVF9FWFBFQ1RfVElNRU9VVCA9IDUwMDA7CiBjb25zdCBERUZBVUxUX0NEUF9USU1FT1VUID0gMzBfMDAwOwogY29uc3QgTElORV9CUkVBS19QQVRURVJOID0gL1xyP1xuL3U7Citjb25zdCBBVVRPTUFUSU9OX0NPTlRST0xMRURfQVJHID0KKyAgJy0tZGlzYWJsZS1ibGluay1mZWF0dXJlcz1BdXRvbWF0aW9uQ29udHJvbGxlZCc7CiAKIGV4cG9ydCB0eXBlIENMSU9wdGlvbnMgPSB7CiAgIGFsbG93ZWRIb3N0cz86IHN0cmluZ1tdOwpAQCAtNDY3LDE3ICs0NjksMTUgQEAgZnVuY3Rpb24gY3JlYXRlTWVyZ2VkQnJvd3NlckNvbmZpZygKICAgICAgIGJhc2UuYnJvd3Nlci5jZHBUaW1lb3V0ID8/CiAgICAgICBERUZBVUxUX0NEUF9USU1FT1VULAogICB9OworICBjb25zdCBhcmdzID0gKGJyb3dzZXIubGF1bmNoT3B0aW9ucy5hcmdzID8/IFtdKS5maWx0ZXIoCisgICAgKGFyZykgPT4gYXJnICE9PSBBVVRPTUFUSU9OX0NPTlRST0xMRURfQVJHCisgICk7CiAgIGlmIChicm93c2VyLmJyb3dzZXJOYW1lICE9PSAnY2hyb21pdW0nKSB7CiAgICAgYnJvd3Nlci5sYXVuY2hPcHRpb25zLmNoYW5uZWwgPSB1bmRlZmluZWQ7CiAgIH0gZWxzZSB7Ci0gICAgY29uc3QgYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcgPQotICAgICAgJy0tZGlzYWJsZS1ibGluay1mZWF0dXJlcz1BdXRvbWF0aW9uQ29udHJvbGxlZCc7Ci0gICAgY29uc3QgYXJncyA9IFsuLi4oYnJvd3Nlci5sYXVuY2hPcHRpb25zLmFyZ3MgPz8gW10pXTsKLSAgICBpZiAoIWFyZ3MuaW5jbHVkZXMoYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcpKSB7Ci0gICAgICBhcmdzLnB1c2goYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcpOwotICAgIH0KLSAgICBicm93c2VyLmxhdW5jaE9wdGlvbnMuYXJncyA9IGFyZ3M7CisgICAgYXJncy5wdXNoKEFVVE9NQVRJT05fQ09OVFJPTExFRF9BUkcpOwogICB9CisgIGJyb3dzZXIubGF1bmNoT3B0aW9ucy5hcmdzID0gYXJncy5sZW5ndGggPyBhcmdzIDogdW5kZWZpbmVkOwogICByZXR1cm4gYnJvd3NlcjsKIH0KIApkaWZmIC0tZ2l0IGEvdGVzdHMvdG9vbC1nYXRld2F5cy5zcGVjLnRzIGIvdGVzdHMvdG9vbC1nYXRld2F5cy5zcGVjLnRzCmluZGV4IDkwMzI2NzMuLmQwZTViNmEgMTAwNjQ0Ci0tLSBhL3Rlc3RzL3Rvb2wtZ2F0ZXdheXMuc3BlYy50cworKysgYi90ZXN0cy90b29sLWdhdGV3YXlzLnNwZWMudHMKQEAgLTYyLDE4ICs2MiwzNCBAQCB0ZXN0KCdhZGFwdGl2ZSBjYXRhbG9nIGV4cG9zZXMgc2V2ZW4gYm9vdHN0cmFwIHRvb2xzIGFuZCBjYW4gZW5hYmxlIG1vcmUnLCBhc3luYwogICBhd2FpdCBzZXJ2ZXIuY2xvc2UoKTsKIH0pOwogCi10ZXN0KCdoaWRkZW4gdG9vbHMgcmVtYWluIGRpcmVjdGx5IGNhbGxhYmxlIGFuZCBnYXRld2F5cyBlbmZvcmNlIGVmZmVjdHMnLCBhc3luYyAoKSA9PiB7Cit0ZXN0KCdoaWRkZW4gdG9vbHMgcmVzb2x2ZSBkaXJlY3RseSBhbmQgZ2F0ZXdheXMgZW5mb3JjZSBlZmZlY3RzJywgYXN5bmMgKCkgPT4gewogICBjb25zdCB7IGNsaWVudCwgc2VydmVyIH0gPSBhd2FpdCBjcmVhdGVDbGllbnQoKTsKICAgY29uc3QgZGlyZWN0ID0gYXdhaXQgY2xpZW50LmNhbGxUb29sKHsKICAgICBuYW1lOiAnYnJvd3Nlcl90YWJfbGlzdCcsCiAgICAgYXJndW1lbnRzOiB7IGV4cGVjdGF0aW9uOiB7fSB9LAogICB9KTsKLSAgZXhwZWN0KGRpcmVjdC5pc0Vycm9yKS5ub3QudG9CZSh0cnVlKTsKKyAgZXhwZWN0KGRpcmVjdC5pc0Vycm9yKS50b0JlKHRydWUpOworICBleHBlY3QoZGlyZWN0LmNvbnRlbnRbMF0pLnRvTWF0Y2hPYmplY3QoeworICAgIHRleHQ6IGV4cGVjdC5zdHJpbmdDb250YWluaW5nKAorICAgICAgJ0Jyb3dzZXIgY29udGV4dCBzaG91bGQgbm90IGJlIGNyZWF0ZWQgaW4gY2F0YWxvZyB0ZXN0cycKKyAgICApLAorICB9KTsKKyAgZXhwZWN0KGRpcmVjdC5jb250ZW50WzBdKS5ub3QudG9NYXRjaE9iamVjdCh7CisgICAgdGV4dDogZXhwZWN0LnN0cmluZ0NvbnRhaW5pbmcoJ1Rvb2wgImJyb3dzZXJfdGFiX2xpc3QiIG5vdCBmb3VuZCcpLAorICB9KTsKICAgY29uc3QgcXVlcnkgPSBhd2FpdCBjbGllbnQuY2FsbFRvb2woewogICAgIG5hbWU6ICdicm93c2VyX3F1ZXJ5JywKICAgICBhcmd1bWVudHM6IHsgdG9vbDogJ2Jyb3dzZXJfdGFiX2xpc3QnLCBhcmd1bWVudHM6IHsgZXhwZWN0YXRpb246IHt9IH0gfSwKICAgfSk7Ci0gIGV4cGVjdChxdWVyeS5pc0Vycm9yKS5ub3QudG9CZSh0cnVlKTsKKyAgZXhwZWN0KHF1ZXJ5LmlzRXJyb3IpLnRvQmUodHJ1ZSk7CisgIGV4cGVjdChxdWVyeS5jb250ZW50WzBdKS50b01hdGNoT2JqZWN0KHsKKyAgICB0ZXh0OiBleHBlY3Quc3RyaW5nQ29udGFpbmluZygKKyAgICAgICdCcm93c2VyIGNvbnRleHQgc2hvdWxkIG5vdCBiZSBjcmVhdGVkIGluIGNhdGFsb2cgdGVzdHMnCisgICAgKSwKKyAgfSk7CisgIGV4cGVjdChxdWVyeS5jb250ZW50WzBdKS5ub3QudG9NYXRjaE9iamVjdCh7CisgICAgdGV4dDogZXhwZWN0LnN0cmluZ0NvbnRhaW5pbmcoJ1Vua25vd24gdG9vbDogYnJvd3Nlcl90YWJfbGlzdCcpLAorICB9KTsKICAgY29uc3QgcmVqZWN0ZWQgPSBhd2FpdCBjbGllbnQuY2FsbFRvb2woewogICAgIG5hbWU6ICdicm93c2VyX3F1ZXJ5JywKICAgICBhcmd1bWVudHM6IHsgdG9vbDogJ2Jyb3dzZXJfbmF2aWdhdGUnLCBhcmd1bWVudHM6IHsgdXJsOiAnYWJvdXQ6YmxhbmsnIH0gfSwKZGlmZiAtLWdpdCBhL3Rlc3RzL3Vwc3RyZWFtLWNvbmZpZy5zcGVjLnRzIGIvdGVzdHMvdXBzdHJlYW0tY29uZmlnLnNwZWMudHMKaW5kZXggN2Y5NmZkZi4uNmJmMzhmOCAxMDA2NDQKLS0tIGEvdGVzdHMvdXBzdHJlYW0tY29uZmlnLnNwZWMudHMKKysrIGIvdGVzdHMvdXBzdHJlYW0tY29uZmlnLnNwZWMudHMKQEAgLTY1LDYgKzY1LDI0IEBAIHRlc3QoJ0NMSSBhbmQgZW52aXJvbm1lbnQgcGFyc2luZyBwcmVzZXJ2ZSBoZWFkZXJzIGFuZCB0aW1lb3V0cycsIGFzeW5jICgpID0+IHsKICAgfSk7CiB9KTsKIAordGVzdCgna2VlcHMgQ2hyb21pdW0tb25seSBsYXVuY2ggZmxhZ3Mgb3V0IG9mIEZpcmVmb3ggYW5kIFdlYktpdCcsIGFzeW5jICgpID0+IHsKKyAgY29uc3QgYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcgPQorICAgICctLWRpc2FibGUtYmxpbmstZmVhdHVyZXM9QXV0b21hdGlvbkNvbnRyb2xsZWQnOworICBjb25zdCBjaHJvbWl1bSA9IGF3YWl0IHJlc29sdmVDTElDb25maWcoeyBicm93c2VyOiAnY2hyb21pdW0nIH0sIHt9KTsKKyAgY29uc3QgZmlyZWZveCA9IGF3YWl0IHJlc29sdmVDTElDb25maWcoeyBicm93c2VyOiAnZmlyZWZveCcgfSwge30pOworICBjb25zdCB3ZWJraXQgPSBhd2FpdCByZXNvbHZlQ0xJQ29uZmlnKHsgYnJvd3NlcjogJ3dlYmtpdCcgfSwge30pOworCisgIGV4cGVjdChjaHJvbWl1bS5icm93c2VyLmxhdW5jaE9wdGlvbnMuYXJncykudG9Db250YWluKAorICAgIGF1dG9tYXRpb25Db250cm9sbGVkQXJnCisgICk7CisgIGV4cGVjdChmaXJlZm94LmJyb3dzZXIubGF1bmNoT3B0aW9ucy5hcmdzID8/IFtdKS5ub3QudG9Db250YWluKAorICAgIGF1dG9tYXRpb25Db250cm9sbGVkQXJnCisgICk7CisgIGV4cGVjdCh3ZWJraXQuYnJvd3Nlci5sYXVuY2hPcHRpb25zLmFyZ3MgPz8gW10pLm5vdC50b0NvbnRhaW4oCisgICAgYXV0b21hdGlvbkNvbnRyb2xsZWRBcmcKKyAgKTsKK30pOworCiB0ZXN0KCdudW1lcmljIGFuZCBoZWFydGJlYXQgcGFyc2VycyByZWplY3Qgb3IgZGVmYXVsdCBpbnZhbGlkIHZhbHVlcycsICgpID0+IHsKICAgZXhwZWN0KCgpID0+IHBvc2l0aXZlTnVtYmVyKCctMScpKS50b1Rocm93KCdub24tbmVnYXRpdmUgbnVtYmVyJyk7CiAgIGV4cGVjdChyZXNvbHZlSGVhcnRiZWF0VGltZW91dCh1bmRlZmluZWQpKS50b0JlKDUwMDApOwo=
+          PATCH
+          base64 --decode /tmp/ci-fixes.patch.b64 > /tmp/ci-fixes.patch
+          echo '81abc628fdcfb3a4031b90a76e5fbf7078c1434ab3daed501173cecc1943d9da  /tmp/ci-fixes.patch' | sha256sum --check --strict
+          git apply --check /tmp/ci-fixes.patch
+          git apply /tmp/ci-fixes.patch
 
       - name: Install dependencies and browsers
         run: |
@@ -222,7 +75,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: verified-ci-fixes-failure
+          name: exact-ci-fix-failure
           path: |
             verification.log
             test-results/**/error-context.md
