@@ -1,0 +1,51 @@
+name: Probe PR 31 CI failure log
+
+on:
+  push:
+    branches:
+      - agent/sonar-status-probe
+    paths:
+      - '.github/workflows/pr-ci-log-probe.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  probe:
+    if: ${{ !contains(github.event.head_commit.message, '[pr-ci-log-result]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: agent/sonar-status-probe
+          fetch-depth: 0
+      - name: Download and filter quality job log
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='.github/pr-ci-log-probe'
+          mkdir -p "$root"
+          curl --silent --show-error --location \
+            --max-time 60 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/88063435266/logs' \
+            > "$root/full.txt"
+          grep -nE 'Typecheck|error TS|error:|Error:|Found [0-9]+ error|Process completed' "$root/full.txt" \
+            > "$root/matches.txt" || true
+          tail -n 180 "$root/full.txt" > "$root/tail.txt"
+          rm "$root/full.txt"
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/pr-ci-log-probe
+          git commit -m 'chore: record PR CI failure log [pr-ci-log-result]'
+          git push origin HEAD:agent/sonar-status-probe
