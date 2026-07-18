@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
+import { resolveWorkspaceInputPath } from './path-policy.js';
 import {
   assertReviewThreadsReady,
   fetchReviewThreads,
@@ -15,7 +16,13 @@ const { values } = parseArgs({
 });
 let page: ReviewThreadPage;
 if (values.fixture) {
-  page = JSON.parse(await readFile(values.fixture, 'utf8')) as ReviewThreadPage;
+  const fixturePath = await resolveWorkspaceInputPath(values.fixture, {
+    extension: '.json',
+    label: '--fixture',
+  });
+  page = JSON.parse(
+    await readFile(fixturePath, 'utf8') // NOSONAR -- fixturePath is canonical and repository-contained.
+  ) as ReviewThreadPage;
 } else {
   if (!(values.repository && values.pr && process.env.GITHUB_TOKEN)) {
     throw new Error('--repository, --pr, and GITHUB_TOKEN are required');
