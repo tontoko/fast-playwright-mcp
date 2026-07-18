@@ -3,7 +3,9 @@ import { expect, test } from '@playwright/test';
 import {
   buildUpstreamReport,
   classifyPath,
+  githubApiUrl,
   loadUpstreamManifest,
+  parseRepositorySlug,
 } from '../scripts/upstream-check.js';
 
 test('loads the pinned upstream manifest', async () => {
@@ -25,6 +27,28 @@ test('classifies upstream paths deterministically', () => {
     'excluded-automation'
   );
   expect(classifyPath('README.md')).toBe('documentation');
+});
+
+test('GitHub API URLs keep validated repositories on the fixed origin', () => {
+  expect(parseRepositorySlug('microsoft/playwright')).toEqual([
+    'microsoft',
+    'playwright',
+  ]);
+  expect(() => parseRepositorySlug('../attacker')).toThrow('valid owner/name');
+  expect(() =>
+    parseRepositorySlug('microsoft/playwright?access_token=secret')
+  ).toThrow('valid owner/name');
+
+  const url = githubApiUrl(
+    'microsoft/playwright',
+    'compare',
+    'a'.repeat(40) + '...' + 'b'.repeat(40)
+  );
+  expect(url.origin).toBe('https://api.github.com');
+  expect(url.pathname).toBe(
+    `/repos/microsoft/playwright/compare/${'a'.repeat(40)}...${'b'.repeat(40)}`
+  );
+  expect(url.search).toBe('');
 });
 
 test('fixture report is stable and read-only', async () => {
