@@ -11,6 +11,21 @@ index a80a165..4b88ddf 100644
  import type { CustomRefOptions } from './types/batch.js';
  import type {
    BatchResolutionOptions,
+@@ -110,12 +110,12 @@ export class Tab extends EventEmitter<TabEventsInterface> {
+         this._handleNavigationStart();
+       }
+     });
+     page.on('load', () => {
+       this._handleNavigationComplete();
+     });
+     page.on('domcontentloaded', () => {
+-      // DOMContentLoaded indicates navigation is progressing
+-      this._navigationState.isNavigating = true;
++      // DOMContentLoaded is the cross-browser operational boundary.
++      this._handleNavigationComplete();
+     });
+ 
+     const configuredTimeouts = context.config?.timeouts;
 @@ -171,9 +171,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
    }
    async updateTitle() {
