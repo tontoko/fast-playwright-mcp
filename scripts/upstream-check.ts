@@ -218,7 +218,8 @@ async function githubJson<T>(
   ...segments: readonly string[]
 ): Promise<T> {
   const url = githubApiUrl(repository, ...segments);
-  const response = await fetch(url, { // NOSONAR -- the URL origin is fixed and every path segment is validated and encoded.
+  const response = await fetch(url, {
+    // NOSONAR -- the URL origin is fixed and every path segment is validated and encoded.
     headers: {
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',

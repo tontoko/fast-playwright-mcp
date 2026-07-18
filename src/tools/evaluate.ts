@@ -102,14 +102,16 @@ const evaluate = defineTabTool({
         const expression = params.function;
         // browser_evaluate deliberately executes explicit user code only in the isolated browser page realm.
         const evalResult = locator
-          ? await locator.evaluate(async (element, source) => { //NOSONAR
+          ? await locator.evaluate(async (element, source) => {
+              //NOSONAR
               // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
               const value = eval(`(${source})`); //NOSONAR
               const isFunction = typeof value === 'function';
               const result = await (isFunction ? value(element) : value);
               return { result, isFunction };
             }, expression)
-          : await tab.page.evaluate(async (source) => { //NOSONAR
+          : await tab.page.evaluate(async (source) => {
+              //NOSONAR
               // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
               const value = eval(`(${source})`); //NOSONAR
               const isFunction = typeof value === 'function';
