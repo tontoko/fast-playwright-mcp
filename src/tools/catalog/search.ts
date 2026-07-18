@@ -24,7 +24,7 @@ function score(registration: ToolRegistration, query: string): number {
   if (name === query) {
     return 100;
   }
-  if (registration.aliases.some((alias) => alias === query)) {
+  if (registration.aliases.includes(query)) {
     return 90;
   }
   if (name.includes(query)) {
@@ -36,7 +36,7 @@ function score(registration: ToolRegistration, query: string): number {
   if (title.includes(query)) {
     return 50;
   }
-  if (registration.keywords.some((keyword) => keyword === query)) {
+  if (registration.keywords.includes(query)) {
     return 30;
   }
   if (description.includes(query)) {
