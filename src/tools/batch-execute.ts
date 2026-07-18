@@ -90,11 +90,9 @@ function addFinalStateIfNeeded(result: BatchResult, response: Response): void {
   if (result.stopReason !== 'completed') {
     return;
   }
-  const lastSuccessful = result.steps
-    .filter(
-      (step) => step.success && step.result && !isErrorResult(step.result)
-    )
-    .at(-1);
+  const lastSuccessful = result.steps.findLast(
+    (step) => step.success && step.result && !isErrorResult(step.result)
+  );
   const finalContent = lastSuccessful
     ? extractText(lastSuccessful.result)
     : undefined;
