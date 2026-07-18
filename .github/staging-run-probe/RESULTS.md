@@ -1,5 +1,25 @@
 # Staging workflow runs
 
+## Verify Sonar quality-gate fixes staging #14
+- id: 29637818515
+- event: push
+- head_sha: 150ecf2ccca206532cdeff90fdc26db653187534
+- status: completed
+- conclusion: success
+- created_at: 2026-07-18T08:39:15Z
+- updated_at: 2026-07-18T08:40:34Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637818515
+
+## Verify Sonar quality-gate fixes staging #13
+- id: 29637803160
+- event: push
+- head_sha: be8433d53ba2e0e19f2c1bbe36e6f6a71de6a60e
+- status: completed
+- conclusion: cancelled
+- created_at: 2026-07-18T08:38:42Z
+- updated_at: 2026-07-18T08:39:26Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/29637803160
+
 ## Apply remaining config Sonar cleanup #1
 - id: 29637728827
 - event: push
