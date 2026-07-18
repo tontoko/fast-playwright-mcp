@@ -26,7 +26,6 @@ function selectorCode(selector: ElementSelector): string | undefined {
       ? `locator(${quote(selector.tag)}).${textLocator}`
       : textLocator;
   }
-  return;
 }
 
 async function refSelectorCode(
@@ -103,19 +102,17 @@ const evaluate = defineTabTool({
         // browser_evaluate deliberately executes explicit user code only in the isolated browser page realm.
         const evalResult = locator
           ? await locator.evaluate(async (element, source) => {
-              //NOSONAR
               // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
-              const value = eval(`(${source})`); //NOSONAR
+              const value = eval(`(${source})`); // NOSONAR
               const isFunction = typeof value === 'function';
-              const result = await (isFunction ? value(element) : value);
+              const result = await (isFunction ? value(element) : value); // NOSONAR
               return { result, isFunction };
             }, expression)
           : await tab.page.evaluate(async (source) => {
-              //NOSONAR
               // biome-ignore lint/security/noGlobalEval: evaluating explicit user-provided browser tool input is this tool's purpose.
-              const value = eval(`(${source})`); //NOSONAR
+              const value = eval(`(${source})`); // NOSONAR
               const isFunction = typeof value === 'function';
-              const result = await (isFunction ? value() : value);
+              const result = await (isFunction ? value() : value); // NOSONAR
               return { result, isFunction };
             }, expression);
         const codeExpression = evalResult.isFunction
