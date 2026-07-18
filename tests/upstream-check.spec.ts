@@ -42,7 +42,7 @@ test('GitHub API URLs keep validated repositories on the fixed origin', () => {
   const url = githubApiUrl(
     'microsoft/playwright',
     'compare',
-    'a'.repeat(40) + '...' + 'b'.repeat(40)
+    `${'a'.repeat(40)}...${'b'.repeat(40)}`
   );
   expect(url.origin).toBe('https://api.github.com');
   expect(url.pathname).toBe(
