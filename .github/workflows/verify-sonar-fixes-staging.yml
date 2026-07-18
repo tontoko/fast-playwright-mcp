@@ -56,22 +56,7 @@ jobs:
           set -o pipefail
           {
             echo '## Sonar configuration'
-            python3 - <<'PY'
-            from pathlib import Path
-            automatic = Path('.sonarcloud.properties').read_text(
-                encoding='utf-8', errors='strict'
-            )
-            scanner = Path('sonar-project.properties').read_text(
-                encoding='utf-8', errors='strict'
-            )
-            assert 'sonar.sourceEncoding=UTF-8' in automatic
-            assert 'sonar.issue.ignore.multicriteria' not in automatic
-            assert 'sonar.sourceEncoding=UTF-8' in scanner
-            evaluate = Path('src/tools/evaluate.ts').read_text(encoding='utf-8')
-            assert evaluate.count('//NOSONAR') >= 4
-            upstream = Path('scripts/upstream-check.ts').read_text(encoding='utf-8')
-            assert 'fetch(url, { // NOSONAR' in upstream
-            PY
+            python3 -c "from pathlib import Path; automatic=Path('.sonarcloud.properties').read_text(encoding='utf-8', errors='strict'); scanner=Path('sonar-project.properties').read_text(encoding='utf-8', errors='strict'); evaluate=Path('src/tools/evaluate.ts').read_text(encoding='utf-8'); upstream=Path('scripts/upstream-check.ts').read_text(encoding='utf-8'); assert 'sonar.sourceEncoding=UTF-8' in automatic; assert 'sonar.issue.ignore.multicriteria' not in automatic; assert 'sonar.sourceEncoding=UTF-8' in scanner; assert evaluate.count('//NOSONAR') >= 4; assert 'fetch(url, { // NOSONAR' in upstream"
             echo '## Format'
             bun run lint-fix
             echo '## Encoding'
