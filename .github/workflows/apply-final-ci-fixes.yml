@@ -37,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           echo '6ee24fc2eb6acb8c84e9c8d15870928c085a86adb309b87d2d6150c47240295f  .github/ci-fixes-v2.patch' | sha256sum --check --strict
-          echo 'aeff23ce43d3ef3ec7355edb280dda146817b52c33b0d2dae00cd075b4baf124  .github/tab-navigation-fix.patch' | sha256sum --check --strict
+          echo '867a789d43fffff1abe47091c40a2916749fa7117f05189c01bc524f28105e1f  .github/tab-navigation-fix.patch' | sha256sum --check --strict
           git apply --check .github/ci-fixes-v2.patch
           git apply .github/ci-fixes-v2.patch
           git apply --check .github/tab-navigation-fix.patch
