@@ -1,0 +1,3 @@
+207:2026-07-18T08:43:27.5600426Z ##[error]src/config.ts(463,5): error TS2322: Type '{ [x: string]: string | undefined; }' is not assignable to type 'Record<string, string>'.
+211:2026-07-18T08:43:27.5888493Z error: script "typecheck" exited with code 1
+212:2026-07-18T08:43:27.5899409Z ##[error]Process completed with exit code 1.
