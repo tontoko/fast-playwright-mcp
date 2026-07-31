@@ -87,7 +87,7 @@ test('Commander-shaped CDP header option reaches the browser config', async () =
   });
 });
 
-test('Commander-shaped secrets option parses dotenv values for redaction', async ({}, testInfo) => {
+test('Commander-shaped secrets option parses dotenv values for redaction', async ({ page: _page }, testInfo) => {
   const secretsPath = testInfo.outputPath('secrets.env');
   await writeFile(
     secretsPath,
@@ -103,7 +103,7 @@ test('Commander-shaped secrets option parses dotenv values for redaction', async
   expect(config.secrets).toEqual({ API_TOKEN: 'secret with spaces' });
 });
 
-test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({}, testInfo) => {
+test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({ page: _page }, testInfo) => {
   const secretsPath = testInfo.outputPath('env-secrets.env');
   await writeFile(secretsPath, 'ENV_TOKEN="env secret"\n', 'utf8');
 
@@ -115,7 +115,7 @@ test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({},
   expect(config.secrets).toEqual({ ENV_TOKEN: 'env secret' });
 });
 
-test('PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides', async ({}, testInfo) => {
+test('PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides', async ({ page: _page }, testInfo) => {
   const configPath = testInfo.outputPath('mcp-config.json');
   await writeFile(
     configPath,
