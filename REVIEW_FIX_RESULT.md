@@ -1,11 +1,87 @@
 # PR 31 review-fix verification
 
 - result: FAIL
-- source commit: 28ecca51f30a0b091ea97ade8012650dc71e278e
+- source commit: 9270bb5d906e024e3b8d83222818051057927703
 
 ## Test output tail
 
 ```text
+          \"includeSnapshot\": true,
+          \"snapshotOptions\": {
+            \"selector\": \".dashboard\",
+            \"maxLength\": 1000,
+            \"format\": \"text\"
+          }
+        }
+      }
+    }
+    ```
+    
+    #### Console Filtering Options
+    
+    ```json
+    {
+      \"name\": \"browser_navigate\",
+      \"arguments\": {
+        \"url\": \"https://example.com\",
+        \"expectation\": {
+          \"includeConsole\": true,
+          \"consoleOptions\": {
+            \"levels\": [\"error\", \"warn\"],
+            \"maxMessages\": 5,
+            \"patterns\": [\"^Error:\"],
+            \"removeDuplicates\": true
+          }
+        }
+      }
+    }
+    ```
+    
+    ### Batch Execution
+    
+    Execute multiple browser actions in a single request with optimized response handling and flexible error control.
+    
+    #### Basic Batch Execution
+    
+    ```json
+    {
+      \"name\": \"browser_batch_execute\",
+      \"arguments\": {
+        \"steps\": [
+          {
+            \"tool\": \"browser_navigate\",
+            \"arguments\": { \"url\": \"https://example.com/login\" }
+          },
+          {
+            \"tool\": \"browser_type\",
+            \"arguments\": { 
+              \"element\": \"username field\", 
+              \"ref\": \"#username\", 
+              \"text\": \"testuser\" 
+            }
+          },
+          {
+            \"tool\": \"browser_type\",
+            \"arguments\": { 
+              \"element\": \"password field\", 
+              \"ref\": \"#password\", 
+              \"text\": \"password\" 
+            }
+          },
+          {
+            \"tool\": \"browser_click\",
+            \"arguments\": { \"element\": \"login button\", \"ref\": \"#login-btn\" }
+          }
+        ]
+      }
+    }
+    ```
+    
+    #### Advanced Batch Configuration
+    
+    ```json
+    {
+      \"name\": \"browser_batch_execute\",
       \"arguments\": {
         \"steps\": [
           {
@@ -282,7 +358,7 @@
 
     Error Context: test-results/readme-contract-README-pro-6e0e0-eturned-MCP-server-directly-chromium/error-context.md
 
-  4) [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
+  8) [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -300,7 +376,7 @@
 
     Error Context: test-results/tool-gateways-gateway-effe-749c7-s-from-browser-interactions-chromium/error-context.md
 
-  5) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
+  9) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
 
     Error: expect(received).toThrow(expected)
 
@@ -319,12 +395,16 @@
 
     Error Context: test-results/upstream-config-rejects-in-20ac7-eader-names-and-line-breaks-chromium/error-context.md
 
-  5 failed
+  9 failed
+    [chromium] › tests/mcp-server-initialize.spec.ts:54:1 › tool calls proceed when the backend has no initialize hook 
+    [chromium] › tests/mcp-server-initialize.spec.ts:68:1 › backend initialization failures reject pending tool calls 
+    [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin 
+    [chromium] › tests/network-origin-filter.spec.ts:38:1 › blockedOrigins wins when an origin is both allowed and blocked 
     [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
     [chromium] › tests/readme-contract.spec.ts:8:1 › README contains one generated tool catalog with current batch schema 
     [chromium] › tests/readme-contract.spec.ts:19:1 › README programmatic example uses the returned MCP server directly 
     [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
     [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
-  17 passed (7.0s)
+  17 passed (12.8s)
 
 ```
