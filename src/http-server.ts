@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import type * as net from 'node:net';
+import { isIP, type AddressInfo } from 'node:net';
+
 export async function startHttpServer(config: {
   host?: string;
   port?: number;
@@ -16,8 +17,9 @@ export async function startHttpServer(config: {
   });
   return httpServer;
 }
+
 export function httpAddressToString(
-  address: string | net.AddressInfo | null
+  address: string | AddressInfo | null
 ): string {
   assert(address, 'Could not bind server socket');
   if (typeof address === 'string') {
@@ -32,15 +34,31 @@ export function httpAddressToString(
   return `http://${resolvedHost}:${resolvedPort}`;
 }
 
+function stripIpv6Brackets(hostname: string): string {
+  return hostname.startsWith('[') && hostname.endsWith(']')
+    ? hostname.slice(1, -1)
+    : hostname;
+}
+
 export function normalizeHostHeader(value: string): string | null {
   if (value.includes('@')) {
     return null;
   }
   try {
-    return new URL(`http://${value}`).hostname.toLowerCase();
+    const hostname = new URL(`http://${value}`).hostname.toLowerCase();
+    return stripIpv6Brackets(hostname);
   } catch {
     return null;
   }
+}
+
+function normalizeConfiguredHost(value: string): string | null {
+  const normalized = normalizeHostHeader(value);
+  if (normalized) {
+    return normalized;
+  }
+  const bareHost = stripIpv6Brackets(value.trim().toLowerCase());
+  return isIP(bareHost) ? bareHost : null;
 }
 
 export function isHostAllowed(
@@ -59,14 +77,16 @@ export function isHostAllowed(
     return false;
   }
   if (allowedHosts?.length) {
-    return allowedHosts.some((allowed) => {
-      const normalized = normalizeHostHeader(allowed);
-      return normalized === host || allowed.toLowerCase() === host;
-    });
+    return allowedHosts.some(
+      (allowed) => normalizeConfiguredHost(allowed) === host
+    );
   }
   const defaults = new Set(['localhost', '127.0.0.1', '::1']);
   if (boundHost && boundHost !== '0.0.0.0' && boundHost !== '::') {
-    defaults.add(boundHost.toLowerCase());
+    const normalizedBoundHost = normalizeConfiguredHost(boundHost);
+    if (normalizedBoundHost) {
+      defaults.add(normalizedBoundHost);
+    }
   }
   return defaults.has(host);
 }
