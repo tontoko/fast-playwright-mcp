@@ -66,6 +66,13 @@ test('CLI and environment parsing preserve headers and timeouts', async () => {
   });
 });
 
+test('rejects invalid CDP header names and line breaks', () => {
+  expect(() => headerParser('Bad Header: value')).toThrow('Invalid header');
+  expect(() => headerParser('X-Test: safe\r\nInjected: value')).toThrow(
+    'Invalid header'
+  );
+});
+
 test('Commander-shaped CDP header option reaches the browser config', async () => {
   const commanderOptions = {
     cdpHeader: headerParser('Authorization: Bearer cli'),
