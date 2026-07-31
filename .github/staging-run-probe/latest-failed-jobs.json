@@ -2,21 +2,21 @@
   "total_count": 1,
   "jobs": [
     {
-      "id": 91209103677,
-      "run_id": 30646505250,
+      "id": 91213037391,
+      "run_id": 30647687368,
       "workflow_name": "PR 31 review fixes staging",
       "head_branch": "agent/pr31-review-fixes",
-      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30646505250",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30647687368",
       "run_attempt": 1,
-      "node_id": "CR_kwDOPYDXK88AAAAVPHx5PQ",
-      "head_sha": "1fcbeaeea99b000bb722aa5072220815160c820b",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91209103677",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646505250/job/91209103677",
+      "node_id": "CR_kwDOPYDXK88AAAAVPLh_Tw",
+      "head_sha": "97b3ce5f10b33a6d983020a4f144e123f5b83ac3",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91213037391",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647687368/job/91213037391",
       "status": "completed",
       "conclusion": "failure",
-      "created_at": "2026-07-31T16:17:28Z",
-      "started_at": "2026-07-31T16:17:31Z",
-      "completed_at": "2026-07-31T16:18:22Z",
+      "created_at": "2026-07-31T16:34:46Z",
+      "started_at": "2026-07-31T16:34:55Z",
+      "completed_at": "2026-07-31T16:35:44Z",
       "name": "focused",
       "steps": [
         {
@@ -24,96 +24,96 @@
           "status": "completed",
           "conclusion": "success",
           "number": 1,
-          "started_at": "2026-07-31T16:17:31Z",
-          "completed_at": "2026-07-31T16:17:33Z"
+          "started_at": "2026-07-31T16:34:56Z",
+          "completed_at": "2026-07-31T16:34:57Z"
         },
         {
           "name": "Run actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5",
           "status": "completed",
           "conclusion": "success",
           "number": 2,
-          "started_at": "2026-07-31T16:17:33Z",
-          "completed_at": "2026-07-31T16:17:38Z"
+          "started_at": "2026-07-31T16:34:57Z",
+          "completed_at": "2026-07-31T16:35:00Z"
         },
         {
           "name": "Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
           "status": "completed",
           "conclusion": "success",
           "number": 3,
-          "started_at": "2026-07-31T16:17:38Z",
-          "completed_at": "2026-07-31T16:17:40Z"
+          "started_at": "2026-07-31T16:35:00Z",
+          "completed_at": "2026-07-31T16:35:03Z"
         },
         {
           "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
           "status": "completed",
           "conclusion": "success",
           "number": 4,
-          "started_at": "2026-07-31T16:17:40Z",
-          "completed_at": "2026-07-31T16:17:41Z"
+          "started_at": "2026-07-31T16:35:03Z",
+          "completed_at": "2026-07-31T16:35:03Z"
         },
         {
           "name": "Run bun install --frozen-lockfile",
           "status": "completed",
           "conclusion": "success",
           "number": 5,
-          "started_at": "2026-07-31T16:17:41Z",
-          "completed_at": "2026-07-31T16:17:42Z"
+          "started_at": "2026-07-31T16:35:03Z",
+          "completed_at": "2026-07-31T16:35:05Z"
         },
         {
           "name": "Run bunx playwright install --with-deps chromium",
           "status": "completed",
           "conclusion": "success",
           "number": 6,
-          "started_at": "2026-07-31T16:17:42Z",
-          "completed_at": "2026-07-31T16:18:09Z"
+          "started_at": "2026-07-31T16:35:05Z",
+          "completed_at": "2026-07-31T16:35:29Z"
         },
         {
           "name": "Run focused review regressions and record result",
           "status": "completed",
           "conclusion": "failure",
           "number": 7,
-          "started_at": "2026-07-31T16:18:09Z",
-          "completed_at": "2026-07-31T16:18:20Z"
+          "started_at": "2026-07-31T16:35:29Z",
+          "completed_at": "2026-07-31T16:35:41Z"
         },
         {
           "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
           "status": "completed",
           "conclusion": "skipped",
           "number": 12,
-          "started_at": "2026-07-31T16:18:20Z",
-          "completed_at": "2026-07-31T16:18:20Z"
+          "started_at": "2026-07-31T16:35:41Z",
+          "completed_at": "2026-07-31T16:35:41Z"
         },
         {
           "name": "Post Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
           "status": "completed",
           "conclusion": "skipped",
           "number": 13,
-          "started_at": "2026-07-31T16:18:20Z",
-          "completed_at": "2026-07-31T16:18:20Z"
+          "started_at": "2026-07-31T16:35:41Z",
+          "completed_at": "2026-07-31T16:35:41Z"
         },
         {
           "name": "Post Run actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5",
           "status": "completed",
           "conclusion": "success",
           "number": 14,
-          "started_at": "2026-07-31T16:18:20Z",
-          "completed_at": "2026-07-31T16:18:20Z"
+          "started_at": "2026-07-31T16:35:41Z",
+          "completed_at": "2026-07-31T16:35:41Z"
         },
         {
           "name": "Complete job",
           "status": "completed",
           "conclusion": "success",
           "number": 15,
-          "started_at": "2026-07-31T16:18:20Z",
-          "completed_at": "2026-07-31T16:18:20Z"
+          "started_at": "2026-07-31T16:35:41Z",
+          "completed_at": "2026-07-31T16:35:41Z"
         }
       ],
-      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91209103677",
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91213037391",
       "labels": [
         "ubuntu-latest"
       ],
-      "runner_id": 1000019438,
-      "runner_name": "GitHub Actions 1000019438",
+      "runner_id": 1000019445,
+      "runner_name": "GitHub Actions 1000019445",
       "runner_group_id": 0,
       "runner_group_name": "GitHub Actions"
     }

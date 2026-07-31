@@ -1,5 +1,75 @@
 # PR 31 staging workflow runs
 
+## PR 31 review fixes staging #41
+- id: 30647687368
+- event: push
+- head_sha: 97b3ce5f10b33a6d983020a4f144e123f5b83ac3
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:34:46Z
+- updated_at: 2026-07-31T16:35:45Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647687368
+
+## PR 31 extension lifecycle staging #2
+- id: 30647687352
+- event: push
+- head_sha: 97b3ce5f10b33a6d983020a4f144e123f5b83ac3
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:34:46Z
+- updated_at: 2026-07-31T16:36:47Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647687352
+
+## PR 31 extension lifecycle staging #1
+- id: 30647534733
+- event: push
+- head_sha: 2a307dc4f18270ccf7ace8df4750180f9d486525
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:32:29Z
+- updated_at: 2026-07-31T16:33:38Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647534733
+
+## PR 31 review fixes staging #40
+- id: 30647534775
+- event: push
+- head_sha: 2a307dc4f18270ccf7ace8df4750180f9d486525
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:32:29Z
+- updated_at: 2026-07-31T16:33:37Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647534775
+
+## PR 31 review fixes staging #39
+- id: 30647489332
+- event: push
+- head_sha: 7fa98fd0f985575f15056003f0c53169c55b972f
+- status: completed
+- conclusion: cancelled
+- created_at: 2026-07-31T16:31:49Z
+- updated_at: 2026-07-31T16:32:38Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647489332
+
+## PR 31 review fixes staging #38
+- id: 30646741397
+- event: push
+- head_sha: 1ad9b19d875f18ee599f31f51872927c80865c54
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:20:48Z
+- updated_at: 2026-07-31T16:21:44Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646741397
+
+## PR 31 review fixes staging #37
+- id: 30646647787
+- event: push
+- head_sha: 9fb768521361babf7cd5efa588b6a7a69d6ed8aa
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:19:29Z
+- updated_at: 2026-07-31T16:20:18Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646647787
+
 ## Run PR 31 source-fix script #3
 - id: 30646507315
 - event: push
