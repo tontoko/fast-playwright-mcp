@@ -66,15 +66,11 @@ test('CLI and environment parsing preserve headers and timeouts', async () => {
   });
 });
 
-test('Commander-shaped CLI options preserve CDP headers and secrets', async ({}, testInfo) => {
-  const secretsPath = testInfo.outputPath('secrets.env');
-  await writeFile(secretsPath, 'API_TOKEN=super-secret\n', 'utf8');
+test('Commander-shaped CDP header option reaches the browser config', async () => {
   const commanderOptions = {
     cdpHeader: headerParser('Authorization: Bearer cli'),
-    secrets: secretsPath,
   } as Parameters<typeof resolveCLIConfig>[0] & {
     cdpHeader: Record<string, string>;
-    secrets: string;
   };
 
   const config = await resolveCLIConfig(commanderOptions, {});
@@ -82,7 +78,22 @@ test('Commander-shaped CLI options preserve CDP headers and secrets', async ({},
   expect(config.browser.cdpHeaders).toEqual({
     Authorization: 'Bearer cli',
   });
-  expect(config.secrets).toEqual({ API_TOKEN: 'super-secret' });
+});
+
+test('Commander-shaped secrets option parses dotenv values for redaction', async ({}, testInfo) => {
+  const secretsPath = testInfo.outputPath('secrets.env');
+  await writeFile(
+    secretsPath,
+    'API_TOKEN="secret with spaces" # deployment token\n',
+    'utf8'
+  );
+  const commanderOptions = {
+    secrets: secretsPath,
+  } as Parameters<typeof resolveCLIConfig>[0] & { secrets: string };
+
+  const config = await resolveCLIConfig(commanderOptions, {});
+
+  expect(config.secrets).toEqual({ API_TOKEN: 'secret with spaces' });
 });
 
 test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
