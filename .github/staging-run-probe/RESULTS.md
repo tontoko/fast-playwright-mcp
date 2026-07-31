@@ -1,5 +1,65 @@
 # PR 31 staging workflow runs
 
+## Run PR 31 source-fix script #3
+- id: 30646507315
+- event: push
+- head_sha: 1fcbeaeea99b000bb722aa5072220815160c820b
+- status: in_progress
+- conclusion: None
+- created_at: 2026-07-31T16:17:22Z
+- updated_at: 2026-07-31T16:17:25Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646507315
+
+## PR 31 review fixes staging #36
+- id: 30646505250
+- event: push
+- head_sha: 1fcbeaeea99b000bb722aa5072220815160c820b
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:17:20Z
+- updated_at: 2026-07-31T16:18:23Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646505250
+
+## PR 31 review fixes staging #35
+- id: 30646458696
+- event: push
+- head_sha: f63dda6c89a56eb45e769bd2be8a4fb6d1378225
+- status: completed
+- conclusion: cancelled
+- created_at: 2026-07-31T16:16:38Z
+- updated_at: 2026-07-31T16:17:29Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646458696
+
+## PR 31 review fixes staging #34
+- id: 30646401603
+- event: push
+- head_sha: 3218219084957ff9a6b51355e30723244a6d1897
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:15:48Z
+- updated_at: 2026-07-31T16:16:39Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646401603
+
+## PR 31 review fixes staging #33
+- id: 30646363999
+- event: push
+- head_sha: fd0a20581c218ca5d1d8bc23278bc1a8574d9cb0
+- status: completed
+- conclusion: cancelled
+- created_at: 2026-07-31T16:15:18Z
+- updated_at: 2026-07-31T16:15:54Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646363999
+
+## PR 31 review fixes staging #32
+- id: 30646294852
+- event: push
+- head_sha: c91636c77ed2630112e71b1a3489fe1ec2bc7641
+- status: completed
+- conclusion: failure
+- created_at: 2026-07-31T16:14:18Z
+- updated_at: 2026-07-31T16:15:18Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30646294852
+
 ## Run PR 31 source-fix script #2
 - id: 30645876373
 - event: push
