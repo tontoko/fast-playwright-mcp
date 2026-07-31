@@ -6,7 +6,7 @@ import { outputFile } from './config.js';
 import { OutputManager } from './output-manager.js';
 import type { Response } from './response.js';
 import type { Tab, TabSnapshot } from './tab.js';
-import { logUnhandledError } from './utils/log.js';
+import { SecretRedactor } from './utils/secret-redactor.js';
 
 type LogEntry = {
   timestamp: number;
@@ -20,19 +20,28 @@ type LogEntry = {
   code: string;
   tabSnapshot?: TabSnapshot;
 };
+
 export class SessionLog {
   private readonly _folder: string;
   private readonly _file: string;
   private _pendingEntries: LogEntry[] = [];
-  private _sessionFileQueue = Promise.resolve();
+  private _sessionFileQueue: Promise<void> = Promise.resolve();
   private _flushEntriesTimeout: NodeJS.Timeout | undefined;
   private _ordinal = 0;
   private readonly _outputManager: OutputManager;
-  constructor(sessionFolder: string, outputManager: OutputManager) {
+  private readonly _redactor: SecretRedactor;
+
+  constructor(
+    sessionFolder: string,
+    outputManager: OutputManager,
+    redactor: SecretRedactor
+  ) {
     this._folder = sessionFolder;
     this._file = path.join(this._folder, 'session.md');
     this._outputManager = outputManager;
+    this._redactor = redactor;
   }
+
   static async create(
     config: FullConfig,
     rootPath: string | undefined
@@ -46,9 +55,11 @@ export class SessionLog {
 
     return new SessionLog(
       sessionFolder,
-      new OutputManager(path.dirname(sessionFolder), config.outputMaxSize)
+      new OutputManager(path.dirname(sessionFolder), config.outputMaxSize),
+      new SecretRedactor(config.secrets)
     );
   }
+
   logResponse(response: Response) {
     const entry: LogEntry = {
       timestamp: performance.now(),
@@ -63,6 +74,7 @@ export class SessionLog {
     };
     this._appendEntry(entry);
   }
+
   logUserAction(
     action: actions.Action,
     tab: Tab,
@@ -141,6 +153,7 @@ export class SessionLog {
       downloads: [],
     };
   }
+
   private _appendEntry(entry: LogEntry) {
     this._pendingEntries.push(entry);
     if (this._flushEntriesTimeout) {
@@ -148,6 +161,7 @@ export class SessionLog {
     }
     this._flushEntriesTimeout = setTimeout(() => this._flushEntries(), 1000);
   }
+
   private _flushEntries() {
     this._executeFlushProcess();
   }
@@ -162,6 +176,7 @@ export class SessionLog {
   private _clearFlushTimeout(): void {
     if (this._flushEntriesTimeout) {
       clearTimeout(this._flushEntriesTimeout);
+      this._flushEntriesTimeout = undefined;
     }
   }
 
@@ -181,10 +196,14 @@ export class SessionLog {
   }
 
   private _writeToFile(lines: string[]): void {
-    this._sessionFileQueue = this._sessionFileQueue.then(async () => {
+    this._enqueueFileWrite(async () => {
       await fs.promises.appendFile(this._file, lines.join('\n'));
       await this._outputManager.finalizeFile(this._file);
     });
+  }
+
+  private _enqueueFileWrite(operation: () => Promise<void>): void {
+    this._sessionFileQueue = this._sessionFileQueue.then(operation);
   }
 
   async dispose(): Promise<void> {
@@ -236,7 +255,7 @@ export class SessionLog {
     if (!entry.code) {
       return;
     }
-    lines.push('- Code', '```js', entry.code, '```');
+    lines.push('- Code', '```js', this._redact(entry.code), '```');
   }
 
   private _addTabSnapshotContent(
@@ -266,7 +285,7 @@ export class SessionLog {
       `### Tool call: ${toolCall.toolName}`,
       '- Args',
       '```json',
-      JSON.stringify(toolCall.toolArgs, null, 2),
+      this._redact(JSON.stringify(toolCall.toolArgs, null, 2)),
       '```'
     );
   }
@@ -281,7 +300,7 @@ export class SessionLog {
     lines.push(
       toolCall.isError ? '- Error' : '- Result',
       '```',
-      toolCall.result,
+      this._redact(toolCall.result),
       '```'
     );
   }
@@ -299,7 +318,7 @@ export class SessionLog {
       `### User action: ${userAction.name}`,
       '- Args',
       '```json',
-      JSON.stringify(actionData, null, 2),
+      this._redact(JSON.stringify(actionData, null, 2)),
       '```'
     );
   }
@@ -311,10 +330,15 @@ export class SessionLog {
   ): void {
     const fileName = `${ordinal}.snapshot.yml`;
     const snapshotPath = path.join(this._folder, fileName);
-    fs.promises
-      .writeFile(snapshotPath, tabSnapshot.ariaSnapshot)
-      .then(() => this._outputManager.finalizeFile(snapshotPath))
-      .catch(logUnhandledError);
+    const snapshot = this._redact(tabSnapshot.ariaSnapshot);
+    this._enqueueFileWrite(async () => {
+      await fs.promises.writeFile(snapshotPath, snapshot);
+      await this._outputManager.finalizeFile(snapshotPath);
+    });
     lines.push(`- Snapshot: ${fileName}`);
+  }
+
+  private _redact(value: string): string {
+    return this._redactor.redact(value);
   }
 }
