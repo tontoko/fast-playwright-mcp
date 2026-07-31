@@ -16,7 +16,7 @@ jobs:
   focused:
     if: ${{ !contains(github.event.head_commit.message, '[review-fix-result]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -29,6 +29,7 @@ jobs:
         with:
           node-version: '22'
       - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
       - name: Run focused review regressions and record result
         shell: bash
         run: |
@@ -51,7 +52,7 @@ jobs:
             printf -- '- result: %s\n' "$result"
             printf -- '- source commit: %s\n\n' "$GITHUB_SHA"
             printf '## Test output tail\n\n```text\n'
-            tail -n 200 review-fix-test.log
+            tail -n 220 review-fix-test.log
             printf '\n```\n'
           } > REVIEW_FIX_RESULT.md
           rm -rf test-results playwright-report
