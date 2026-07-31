@@ -1,23 +1,24 @@
 # PR 31 review-fix verification
 
 - result: FAIL
-- source commit: 21813138699a62b85c34a6c0b7a983d5e1791b00
+- source commit: fa649b944bcb5344ed2851fb29beecbff86c1976
 
 ## Test output tail
 
 ```text
 
-Running 9 tests using 1 worker
+Running 10 tests using 1 worker
 
-  ✘  1 [chromium] › tests/http-allowed-hosts.spec.ts:4:1 › normalizes valid Host headers and strips ports and IPv6 brackets (14ms)
-  ✓  2 [chromium] › tests/http-allowed-hosts.spec.ts:10:1 › rejects malformed and credential-bearing Host headers (14ms)
-  ✘  3 [chromium] › tests/http-allowed-hosts.spec.ts:16:1 › allows IPv4 and IPv6 loopback defaults and configured hosts (13ms)
-  ✓  4 [chromium] › tests/upstream-config.spec.ts:12:1 › resolves upstream-compatible configuration fields (8ms)
-  ✓  5 [chromium] › tests/upstream-config.spec.ts:39:1 › CLI and environment parsing preserve headers and timeouts (4ms)
-  ✘  6 [chromium] › tests/upstream-config.spec.ts:69:1 › Commander-shaped CDP header option reaches the browser config (6ms)
-  ✘  7 [chromium] › tests/upstream-config.spec.ts:83:1 › Commander-shaped secrets option parses dotenv values for redaction (12ms)
-  ✓  8 [chromium] › tests/upstream-config.spec.ts:99:1 › keeps Chromium-only launch flags out of Firefox and WebKit (15ms)
-  ✓  9 [chromium] › tests/upstream-config.spec.ts:117:1 › numeric and heartbeat parsers reject or default invalid values (17ms)
+  ✘   1 [chromium] › tests/http-allowed-hosts.spec.ts:4:1 › normalizes valid Host headers and strips ports and IPv6 brackets (73ms)
+  ✓   2 [chromium] › tests/http-allowed-hosts.spec.ts:10:1 › rejects malformed and credential-bearing Host headers (12ms)
+  ✘   3 [chromium] › tests/http-allowed-hosts.spec.ts:16:1 › allows IPv4 and IPv6 loopback defaults and configured hosts (12ms)
+  ✓   4 [chromium] › tests/upstream-config.spec.ts:12:1 › resolves upstream-compatible configuration fields (12ms)
+  ✓   5 [chromium] › tests/upstream-config.spec.ts:39:1 › CLI and environment parsing preserve headers and timeouts (3ms)
+  ✘   6 [chromium] › tests/upstream-config.spec.ts:69:1 › Commander-shaped CDP header option reaches the browser config (6ms)
+  ✘   7 [chromium] › tests/upstream-config.spec.ts:83:1 › Commander-shaped secrets option parses dotenv values for redaction (11ms)
+  ✘   8 [chromium] › tests/upstream-config.spec.ts:99:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values (11ms)
+  ✓   9 [chromium] › tests/upstream-config.spec.ts:111:1 › keeps Chromium-only launch flags out of Firefox and WebKit (9ms)
+  ✓  10 [chromium] › tests/upstream-config.spec.ts:129:1 › numeric and heartbeat parsers reject or default invalid values (10ms)
 
 
   1) [chromium] › tests/http-allowed-hosts.spec.ts:4:1 › normalizes valid Host headers and strips ports and IPv6 brackets 
@@ -97,16 +98,40 @@ Running 9 tests using 1 worker
          |                          ^
       97 | });
       98 |
-      99 | test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
+      99 | test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({}, testInfo) => {
         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/upstream-config.spec.ts:96:26
 
     Error Context: test-results/upstream-config-Commander--d2618-dotenv-values-for-redaction-chromium/error-context.md
 
-  4 failed
+  5) [chromium] › tests/upstream-config.spec.ts:99:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Object {
+    -   "ENV_TOKEN": "env secret",
+    - }
+    + Object {}
+
+      106 |   );
+      107 |
+    > 108 |   expect(config.secrets).toEqual({ ENV_TOKEN: 'env secret' });
+          |                          ^
+      109 | });
+      110 |
+      111 | test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
+        at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/upstream-config.spec.ts:108:26
+
+    Error Context: test-results/upstream-config-PLAYWRIGHT-f3f18-ame-dotenv-redaction-values-chromium/error-context.md
+
+  5 failed
     [chromium] › tests/http-allowed-hosts.spec.ts:4:1 › normalizes valid Host headers and strips ports and IPv6 brackets 
     [chromium] › tests/http-allowed-hosts.spec.ts:16:1 › allows IPv4 and IPv6 loopback defaults and configured hosts 
     [chromium] › tests/upstream-config.spec.ts:69:1 › Commander-shaped CDP header option reaches the browser config 
     [chromium] › tests/upstream-config.spec.ts:83:1 › Commander-shaped secrets option parses dotenv values for redaction 
-  5 passed (4.1s)
+    [chromium] › tests/upstream-config.spec.ts:99:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values 
+  5 passed (4.5s)
 
 ```
