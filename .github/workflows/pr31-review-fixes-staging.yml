@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - agent/pr31-review-fixes
+    paths-ignore:
+      - '.github/workflows/apply-pr31-remaining-fixes.yml'
 
 permissions:
   contents: write
