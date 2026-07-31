@@ -45,12 +45,19 @@ jobs:
           else
             result=FAIL
           fi
-          printf '# PR 31 review-fix verification\n\n- result: %s\n- source commit: %s\n' \
-            "$result" "$GITHUB_SHA" > REVIEW_FIX_RESULT.md
+          {
+            printf '# PR 31 review-fix verification\n\n'
+            printf -- '- result: %s\n' "$result"
+            printf -- '- source commit: %s\n\n' "$GITHUB_SHA"
+            printf '## Test output tail\n\n```text\n'
+            tail -n 160 review-fix-test.log
+            printf '\n```\n'
+          } > REVIEW_FIX_RESULT.md
           rm -rf test-results playwright-report
+          rm -f review-fix-test.log
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add REVIEW_FIX_RESULT.md review-fix-test.log
+          git add REVIEW_FIX_RESULT.md
           git commit -m "test: record review fix ${result} [review-fix-result]"
           git push origin HEAD:agent/pr31-review-fixes
           exit "$status"
