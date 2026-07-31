@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import {
   configFromCLIOptions,
@@ -63,6 +64,25 @@ test('CLI and environment parsing preserve headers and timeouts', async () => {
     },
     timeouts: { action: 111, navigation: 222, expect: 333 },
   });
+});
+
+test('Commander-shaped CLI options preserve CDP headers and secrets', async ({}, testInfo) => {
+  const secretsPath = testInfo.outputPath('secrets.env');
+  await writeFile(secretsPath, 'API_TOKEN=super-secret\n', 'utf8');
+  const commanderOptions = {
+    cdpHeader: headerParser('Authorization: Bearer cli'),
+    secrets: secretsPath,
+  } as Parameters<typeof resolveCLIConfig>[0] & {
+    cdpHeader: Record<string, string>;
+    secrets: string;
+  };
+
+  const config = await resolveCLIConfig(commanderOptions, {});
+
+  expect(config.browser.cdpHeaders).toEqual({
+    Authorization: 'Bearer cli',
+  });
+  expect(config.secrets).toEqual({ API_TOKEN: 'super-secret' });
 });
 
 test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
