@@ -1,6 +1,7 @@
 import { promises as fsPromises } from 'node:fs';
 import { platform, tmpdir } from 'node:os';
 import { join as pathJoin } from 'node:path';
+import { parse as parseDotenv } from 'dotenv';
 import type { BrowserContextOptions, LaunchOptions } from 'playwright';
 import { devices } from 'playwright';
 import type { Config, ToolCapability, ToolProfile } from '../config.js';
@@ -11,7 +12,6 @@ const DEFAULT_ACTION_TIMEOUT = 5000;
 const DEFAULT_NAVIGATION_TIMEOUT = 60_000;
 const DEFAULT_EXPECT_TIMEOUT = 5000;
 const DEFAULT_CDP_TIMEOUT = 30_000;
-const LINE_BREAK_PATTERN = /\r?\n/u;
 const AUTOMATION_CONTROLLED_ARG =
   '--disable-blink-features=AutomationControlled';
 
@@ -23,6 +23,9 @@ export type CLIOptions = {
   browser?: string;
   caps?: string[];
   cdpEndpoint?: string;
+  /** Commander attribute for --cdp-header. */
+  cdpHeader?: Record<string, string>;
+  /** Programmatic and environment representation of CDP headers. */
   cdpHeaders?: Record<string, string>;
   cdpTimeout?: number;
   codegen?: 'typescript' | 'none';
@@ -42,6 +45,9 @@ export type CLIOptions = {
   sandbox?: boolean;
   saveSession?: boolean;
   saveTrace?: boolean;
+  /** Commander attribute for --secrets. */
+  secrets?: string;
+  /** Programmatic and environment path to a secrets file. */
   secretsFile?: string;
   storageState?: string;
   testIdAttribute?: string;
@@ -115,18 +121,21 @@ export async function resolveCLIConfig(
   cliOptions: CLIOptions,
   env: NodeJS.ProcessEnv = process.env
 ): Promise<FullConfig> {
-  const configInFile = await loadConfig(cliOptions.config);
-  const envOverrides = configFromEnv(env);
+  const envOptions = buildEnvOptions(env);
+  const configInFile = await loadConfig(cliOptions.config ?? envOptions.config);
+  const envOverrides = configFromCLIOptions(envOptions);
+  const envSecretOverrides = await loadSecretOverrides(envOptions.secretsFile);
   const cliOverrides = configFromCLIOptions(cliOptions);
-  const secretOverrides = cliOptions.secretsFile
-    ? { secrets: await loadSecretsFile(cliOptions.secretsFile) }
-    : {};
+  const cliSecretOverrides = await loadSecretOverrides(
+    cliOptions.secrets ?? cliOptions.secretsFile
+  );
 
   let result = defaultConfig;
   result = mergeConfig(result, configInFile);
   result = mergeConfig(result, envOverrides);
+  result = mergeConfig(result, envSecretOverrides);
   result = mergeConfig(result, cliOverrides);
-  result = mergeConfig(result, secretOverrides);
+  result = mergeConfig(result, cliSecretOverrides);
   return result;
 }
 
@@ -228,6 +237,18 @@ function validateDeviceAndCDPOptions(cliOptions: CLIOptions): void {
   }
 }
 
+function resolveCdpHeaders(
+  cliOptions: CLIOptions
+): Record<string, string> | undefined {
+  if (!(cliOptions.cdpHeaders || cliOptions.cdpHeader)) {
+    return;
+  }
+  return {
+    ...cliOptions.cdpHeaders,
+    ...cliOptions.cdpHeader,
+  };
+}
+
 export function configFromCLIOptions(cliOptions: CLIOptions): Config {
   const browserInfo = cliOptions.browser
     ? parseBrowserType(cliOptions.browser)
@@ -240,7 +261,7 @@ export function configFromCLIOptions(cliOptions: CLIOptions): Config {
     launchOptions: createLaunchOptions(cliOptions, browserInfo.channel),
     contextOptions: createContextOptions(cliOptions),
     cdpEndpoint: cliOptions.cdpEndpoint,
-    cdpHeaders: cliOptions.cdpHeaders,
+    cdpHeaders: resolveCdpHeaders(cliOptions),
     cdpTimeout: cliOptions.cdpTimeout,
   };
   if (browserInfo.browserName !== undefined) {
@@ -273,10 +294,6 @@ export function configFromCLIOptions(cliOptions: CLIOptions): Config {
     },
     codegen: cliOptions.codegen,
   };
-}
-
-function configFromEnv(env: NodeJS.ProcessEnv): Config {
-  return configFromCLIOptions(buildEnvOptions(env));
 }
 
 function buildEnvOptions(env: NodeJS.ProcessEnv): CLIOptions {
@@ -337,27 +354,20 @@ async function loadConfig(configFile: string | undefined): Promise<Config> {
   }
 }
 
+async function loadSecretOverrides(path: string | undefined): Promise<Config> {
+  return path ? { secrets: await loadSecretsFile(path) } : {};
+}
+
 async function loadSecretsFile(path: string): Promise<Record<string, string>> {
   const content = await fsPromises.readFile(path, 'utf8');
   if (content.length > MAX_CONFIG_FILE_SIZE) {
     throw new Error('Secrets file too large');
   }
-  const secrets: Record<string, string> = {};
-  for (const rawLine of content.split(LINE_BREAK_PATTERN)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) {
-      continue;
-    }
-    const separator = line.indexOf('=');
-    if (separator <= 0) {
-      throw new Error(`Invalid secrets line: ${rawLine}`);
-    }
-    const name = line.slice(0, separator).trim();
-    const value = line.slice(separator + 1).trim();
+  const secrets = parseDotenv(content);
+  for (const [name, value] of Object.entries(secrets)) {
     if (!value) {
       throw new Error(`Secret value must not be empty: ${name}`);
     }
-    secrets[name] = value;
   }
   return secrets;
 }
@@ -384,7 +394,7 @@ function sanitizeConfigIfNeeded(config: unknown): void {
 
 function sanitizeConfigObject(obj: Record<string, unknown>): void {
   for (const prop of ['__proto__', 'constructor', 'prototype']) {
-    if (prop in obj) {
+    if (Object.hasOwn(obj, prop)) {
       delete obj[prop];
     }
   }
