@@ -1,8 +1,9 @@
 const FULL_ORIGIN_WILDCARD_PORT = /^(https?):\/\/(\[[^\]]+\]|[^/:?#]+):\*$/u;
 const HOST_ONLY_PATTERN = /^(\[[^\]]+\]|[^/:?#]+)(?::(?:\d+|\*))?$/u;
+const TRAILING_SLASHES_PATTERN = /\/+$/u;
 
 export function originRoutePattern(value: string): string {
-  const origin = value.trim().replace(/\/+$/u, '');
+  const origin = value.trim().replace(TRAILING_SLASHES_PATTERN, '');
   if (!origin) {
     throw new Error('Network origin must not be empty');
   }
