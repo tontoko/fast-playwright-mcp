@@ -1,44 +1,306 @@
 # PR 31 review-fix verification
 
 - result: FAIL
-- source commit: 3c31555f779e7053fcafe32f116bc6ca3f43d6c0
+- source commit: 28ecca51f30a0b091ea97ade8012650dc71e278e
 
 ## Test output tail
 
 ```text
+      \"arguments\": {
+        \"steps\": [
+          {
+            \"tool\": \"browser_navigate\",
+            \"arguments\": { \"url\": \"https://example.com\" },
+            \"expectation\": { \"includeSnapshot\": false },
+            \"continueOnError\": true
+          },
+          {
+            \"tool\": \"browser_click\",
+            \"arguments\": { \"element\": \"button\", \"ref\": \"#submit\" },
+            \"expectation\": { 
+              \"includeSnapshot\": true,
+              \"snapshotOptions\": { \"selector\": \".result-area\" }
+            }
+          }
+        ],
+        \"stopOnFirstError\": false,
+        \"globalExpectation\": {
+          \"includeConsole\": false,
+          \"includeTabs\": false
+        }
+      }
+    }
+    ```
+    
+    #### Error Handling Options
+    
+    - **`continueOnError`** (per step): Continue batch execution even if this step fails
+    - **`stopOnFirstError`** (global): Stop entire batch on first error
+    - Flexible combination allows for robust automation workflows
+    
+    ### Tool-Specific Defaults
+    
+    Each tool has optimized defaults based on typical usage patterns:
+    
+    - **Navigation tools** (`browser_navigate`): Include full context for verification
+    - **Interactive tools** (`browser_click`, `browser_type`): Include snapshot but minimal logging
+    - **Screenshot/snapshot tools**: Exclude additional context
+    - **Code evaluation**: Include console output but minimal other info
+    - **Wait operations**: Minimal output for efficiency
+    
+    ### Performance Benefits
+    
+    - **Token Reduction**: 50-80% reduction in token usage with optimized expectations
+    - **Faster Execution**: 2-5x speed improvement with batch execution
+    - **Reduced Latency**: Fewer round trips between client and server
+    - **Cost Optimization**: Lower API costs due to reduced token consumption
+    
+    ### Response Diff Detection
+    
+    The Fast Server includes automatic diff detection to efficiently track changes between consecutive tool executions:
+    
+    ```json
+    {
+      \"name\": \"browser_click\",
+      \"arguments\": {
+        \"element\": \"Load more button\",
+        \"ref\": \"#load-more\",
+        \"expectation\": {
+          \"includeSnapshot\": true,
+          \"diffOptions\": {
+            \"enabled\": true,
+            \"threshold\": 0.1,
+            \"format\": \"unified\",
+            \"maxDiffLines\": 50,
+            \"context\": 3
+          }
+        }
+      }
+    }
+    ```
+    
+    #### Diff Detection Benefits
+    
+    - **Minimal token usage**: Only changed content is shown instead of full snapshots
+    - **Change tracking**: Automatically detects what changed after actions
+    - **Flexible formats**: Choose between unified, split, or minimal diff formats
+    - **Smart caching**: Compares against previous response from the same tool
+    
+    #### When to Use Diff Detection
+    
+    1. **UI interactions without navigation**: Clicks, typing, hover effects
+    2. **Dynamic content updates**: Loading more items, real-time updates
+    3. **Form interactions**: Track changes as users fill forms
+    4. **Selective monitoring**: Use with CSS selectors to track specific areas
+    
+    ```json
+    {
+      \"name\": \"browser_type\",
+      \"arguments\": {
+        \"element\": \"Search input\",
+        \"ref\": \"#search\",
+        \"text\": \"playwright\",
+        \"expectation\": {
+          \"includeSnapshot\": true,
+          \"snapshotOptions\": {
+            \"selector\": \"#search-results\"
+          },
+          \"diffOptions\": {
+            \"enabled\": true,
+            \"format\": \"minimal\"
+          }
+        }
+      }
+    }
+    ```
+    
+    ### Best Practices
+    
+    1. **Use batch execution** for multi-step workflows
+    2. **Enable diff detection** for actions without page navigation
+    3. **Disable snapshots** for intermediate steps that don't need verification
+    4. **Use selective snapshots** with CSS selectors for large pages
+    5. **Filter console messages** to relevant levels only
+    6. **Combine global and step-specific expectations** for fine-grained control
+    7. **Use minimal diff format** for maximum token savings
+    
+    ### Diagnostic System Examples
+    
+    **Find alternative elements when selectors fail:**
+    ```json
+    {
+      \"name\": \"browser_find_elements\",
+      \"arguments\": {
+        \"searchCriteria\": {
+          \"text\": \"Submit\",
+          \"role\": \"button\"
+        },
+        \"maxResults\": 5
+      }
+    }
+    ```
+    
+    **Generate comprehensive page diagnostics:**
+    ```json
+    {
+      \"name\": \"browser_diagnose\",
+      \"arguments\": {
+        \"includePerformanceMetrics\": true,
+        \"includeAccessibilityInfo\": true,
+        \"includeTroubleshootingSuggestions\": true
+      }
+    }
+    ```
+    
+    **Debug automation failures with enhanced errors:**
+    All tools automatically provide enhanced error messages with:
+    - Alternative element suggestions
+    - Page structure analysis
+    - Context-aware troubleshooting tips
+    - Performance insights
+    
+    ### Network Request Filtering
+    
+    The `browser_network_requests` tool provides advanced filtering capabilities to reduce token usage by up to 80-95% when working with network logs.
+    
+    #### Basic Usage Examples
+    
+    ```json
+    // Filter API requests only
+    {
+      \"name\": \"browser_network_requests\",
+      \"arguments\": {
+        \"urlPatterns\": [\"api/\", \"/graphql\"]
+      }
+    }
+    
+    // Exclude analytics and tracking
+    {
+      \"name\": \"browser_network_requests\", 
+      \"arguments\": {
+        \"excludeUrlPatterns\": [\"analytics\", \"tracking\", \"ads\"]
+      }
+    }
+    
+    // Success responses only
+    {
+      \"name\": \"browser_network_requests\",
+      \"arguments\": {
+        \"statusRanges\": [{ \"min\": 200, \"max\": 299 }]
+      }
+    }
+    
+    // Recent errors only
+    {
+      \"name\": \"browser_network_requests\",
+      \"arguments\": {
+        \"statusRanges\": [{ \"min\": 400, \"max\": 599 }],
+        \"maxRequests\": 5,
+        \"newestFirst\": true
+      }
+    }
+    ```
+    
+    #### Advanced Filtering
+    
+    ```json
+    // Complex filtering for API debugging
+    {
+      \"name\": \"browser_network_requests\",
+      \"arguments\": {
+        \"urlPatterns\": [\"/api/users\", \"/api/posts\"],
+        \"excludeUrlPatterns\": [\"/api/health\"],
+        \"methods\": [\"GET\", \"POST\"],
+        \"statusRanges\": [
+          { \"min\": 200, \"max\": 299 },
+          { \"min\": 400, \"max\": 499 }
+        ],
+        \"maxRequests\": 10,
+        \"newestFirst\": true
+      }
+    }
+    
+    // Monitor only failed requests
+    {
+      \"name\": \"browser_network_requests\", 
+      \"arguments\": {
+        \"statusRanges\": [
+          { \"min\": 400, \"max\": 499 },
+          { \"min\": 500, \"max\": 599 }
+        ],
+        \"maxRequests\": 3
+      }
+    }
+    ```
+    
+    #### Regex Pattern Support
+    
+    ```json
+    {
+      \"name\": \"browser_network_requests\",
+      \"arguments\": {
+        \"urlPatterns\": [\"^/api/v[0-9]+/users$\"],
+        \"excludeUrlPatterns\": [\"\\\\.(css|js|png)$\"]
+      }
+    }
+    ```
+    
+    #### Token Optimization Benefits
+    
+    - **Massive reduction**: 80-95% fewer tokens for large applications
+    - **Focused debugging**: See only relevant network activity
+    - **Performance monitoring**: Track specific endpoints or error patterns
+    - **Cost savings**: Lower API costs due to reduced token usage
+    
+    #### When to Use Network Filtering
+    
+    1. **API debugging**: Focus on specific endpoints and methods
+    2. **Error monitoring**: Track only failed requests
+    3. **Performance analysis**: Monitor slow or problematic endpoints  
+    4. **Large applications**: Reduce overwhelming network logs
+    5. **Token management**: Stay within LLM context limits
+    
+    ### Migration Guide
+    
+    Existing code continues to work without changes. To optimize:
+    
+    1. Start by adding `expectation: { includeSnapshot: false }` to intermediate steps
+    2. Use batch execution for sequences of 3+ operations
+    3. Gradually fine-tune expectations based on your specific needs
+    4. Use diagnostic tools when automation fails or needs debugging
+    5. Set `--tool-profile=full` before upgrading when a client depends on the complete static `tools/list` response.
+    "
 
-Running 17 tests using 1 worker
+      20 |   const readme = await readFile('README.md', 'utf8');
+      21 |
+    > 22 |   expect(readme).not.toContain('connection.sever.connect');
+         |                      ^
+      23 |   expect(readme).toContain('await connection.connect(transport);');
+      24 | });
+      25 |
+        at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/readme-contract.spec.ts:22:22
 
-  ✓   1 [chromium] › tests/http-allowed-hosts.spec.ts:4:1 › normalizes valid Host headers and strips ports and IPv6 brackets (10ms)
-  ✓   2 [chromium] › tests/http-allowed-hosts.spec.ts:10:1 › rejects malformed and credential-bearing Host headers (10ms)
-  ✓   3 [chromium] › tests/http-allowed-hosts.spec.ts:16:1 › allows IPv4 and IPv6 loopback defaults and configured hosts (11ms)
-  ✓   4 [chromium] › tests/output-manager.spec.ts:6:1 › evicts oldest completed files while preserving the finalized target (81ms)
-  ✓   5 [chromium] › tests/output-manager.spec.ts:22:1 › does not follow file symlinks and rejects lexical path traversal (61ms)
-  ✓   6 [chromium] › tests/output-manager.spec.ts:38:1 › rejects a symlinked parent that escapes the output directory (47ms)
-  ✓   7 [chromium] › tests/output-manager.spec.ts:55:1 › rejects finalization targets outside the output directory (49ms)
-  ✓   8 [chromium] › tests/upstream-config.spec.ts:12:1 › resolves upstream-compatible configuration fields (6ms)
-  ✓   9 [chromium] › tests/upstream-config.spec.ts:39:1 › CLI and environment parsing preserve headers and timeouts (4ms)
-  ✘  10 [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks (2ms)
-  ✓  11 [chromium] › tests/upstream-config.spec.ts:76:1 › Commander-shaped CDP header option reaches the browser config (8ms)
-  ✓  12 [chromium] › tests/upstream-config.spec.ts:90:1 › Commander-shaped secrets option parses dotenv values for redaction (9ms)
-  ✓  13 [chromium] › tests/upstream-config.spec.ts:106:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values (4ms)
-  ✓  14 [chromium] › tests/upstream-config.spec.ts:118:1 › PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides (3ms)
-  ✓  15 [chromium] › tests/upstream-config.spec.ts:145:1 › keeps Chromium-only launch flags out of Firefox and WebKit (4ms)
-  ✓  16 [chromium] › tests/upstream-config.spec.ts:163:1 › numeric and heartbeat parsers reject or default invalid values (10ms)
-  ✘  17 [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector (58ms)
+    Error Context: test-results/readme-contract-README-pro-6e0e0-eturned-MCP-server-directly-chromium/error-context.md
 
+  4) [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
 
-  1) [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
+    Error: expect(received).toBe(expected) // Object.is equality
 
-    McpError: MCP error -32000: Connection closed
-        at Function.fromError (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/types.ts:2316:16)
-        at Client._onclose (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/shared/protocol.ts:645:32)
-        at StdioClientTransport._transport.onclose (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/shared/protocol.ts:612:18)
-        at ChildProcess.<anonymous> (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/client/stdio.ts:143:31)
+    Expected: "readOnly"
+    Received: "action"
 
-    Error Context: test-results/partial-snapshot-css-snaps-4aa82-napshot-with-a-CSS-selector-chromium/error-context.md
+      66 | test('gateway effects distinguish reads from browser interactions', () => {
+      67 |   const registry = createBaseToolRegistry(resolveConfig({}));
+    > 68 |   expect(registry.require('browser_snapshot').tool.schema.type).toBe(
+         |                                                                 ^
+      69 |     'readOnly'
+      70 |   );
+      71 |   expect(registry.require('browser_hover').tool.schema.type).toBe('action');
+        at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/tool-gateways.spec.ts:68:65
 
-  2) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
+    Error Context: test-results/tool-gateways-gateway-effe-749c7-s-from-browser-interactions-chromium/error-context.md
+
+  5) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
 
     Error: expect(received).toThrow(expected)
 
@@ -57,9 +319,12 @@ Running 17 tests using 1 worker
 
     Error Context: test-results/upstream-config-rejects-in-20ac7-eader-names-and-line-breaks-chromium/error-context.md
 
-  2 failed
+  5 failed
     [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
+    [chromium] › tests/readme-contract.spec.ts:8:1 › README contains one generated tool catalog with current batch schema 
+    [chromium] › tests/readme-contract.spec.ts:19:1 › README programmatic example uses the returned MCP server directly 
+    [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
     [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
-  15 passed (3.9s)
+  17 passed (7.0s)
 
 ```
