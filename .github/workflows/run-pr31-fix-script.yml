@@ -1,4 +1,4 @@
-# Triggered after the workflow existed on the branch.
+# Trigger attempt 2 after lint findings were corrected.
 name: Run PR 31 source-fix script
 
 on:
