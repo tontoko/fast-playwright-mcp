@@ -63,11 +63,12 @@ test('adaptive catalog exposes seven bootstrap tools and can enable more', async
   await server.close();
 });
 
-test('snapshot is a read-only gateway target', () => {
+test('gateway effects distinguish reads from browser interactions', () => {
   const registry = createBaseToolRegistry(resolveConfig({}));
   expect(registry.require('browser_snapshot').tool.schema.type).toBe(
     'readOnly'
   );
+  expect(registry.require('browser_hover').tool.schema.type).toBe('action');
 });
 
 test('hidden tools resolve directly and gateways enforce effects', async () => {
