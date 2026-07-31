@@ -1,12 +1,12 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { expect, test } from '@playwright/test';
+import { z } from 'zod';
 import {
   createServer,
   type ServerBackend,
 } from '../src/mcp/server.js';
 import type { ToolSchema } from '../src/mcp/types.js';
-import { z } from 'zod';
 
 const pingTool: ToolSchema = {
   name: 'ping_tool',
@@ -67,9 +67,7 @@ test('tool calls proceed when the backend has no initialize hook', async () => {
 
 test('backend initialization failures reject pending tool calls', async () => {
   const { client, server } = await connect(
-    backend(async () => {
-      throw new Error('backend initialization failed');
-    })
+    backend(() => Promise.reject(new Error('backend initialization failed')))
   );
   try {
     await expect(
