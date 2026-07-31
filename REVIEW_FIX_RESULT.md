@@ -1,7 +1,7 @@
 # PR 31 review-fix verification
 
 - result: FAIL
-- source commit: 2a307dc4f18270ccf7ace8df4750180f9d486525
+- source commit: 97b3ce5f10b33a6d983020a4f144e123f5b83ac3
 
 ## Test output tail
 
@@ -405,6 +405,6 @@
     [chromium] › tests/readme-contract.spec.ts:8:1 › README contains one generated tool catalog with current batch schema 
     [chromium] › tests/readme-contract.spec.ts:19:1 › README programmatic example uses the returned MCP server directly 
     [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
-  20 passed (7.2s)
+  20 passed (8.2s)
 
 ```
