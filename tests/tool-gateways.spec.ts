@@ -8,6 +8,7 @@ import type {
 import { BrowserServerBackend } from '../src/browser-server-backend.js';
 import { resolveConfig } from '../src/config.js';
 import { createServer } from '../src/mcp/server.js';
+import { createBaseToolRegistry } from '../src/tools.js';
 
 const factory: BrowserContextFactory = {
   name: 'test',
@@ -60,6 +61,13 @@ test('adaptive catalog exposes seven bootstrap tools and can enable more', async
   );
   await client.close();
   await server.close();
+});
+
+test('snapshot is a read-only gateway target', () => {
+  const registry = createBaseToolRegistry(resolveConfig({}));
+  expect(registry.require('browser_snapshot').tool.schema.type).toBe(
+    'readOnly'
+  );
 });
 
 test('hidden tools resolve directly and gateways enforce effects', async () => {
