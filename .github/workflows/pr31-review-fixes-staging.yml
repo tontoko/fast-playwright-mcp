@@ -39,6 +39,7 @@ jobs:
             tests/upstream-config.spec.ts \
             tests/http-allowed-hosts.spec.ts \
             tests/output-manager.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
             --project=chromium \
             --workers=1 2>&1 | tee review-fix-test.log
           status=${PIPESTATUS[0]}
@@ -52,7 +53,7 @@ jobs:
             printf -- '- result: %s\n' "$result"
             printf -- '- source commit: %s\n\n' "$GITHUB_SHA"
             printf '## Test output tail\n\n```text\n'
-            tail -n 220 review-fix-test.log
+            tail -n 240 review-fix-test.log
             printf '\n```\n'
           } > REVIEW_FIX_RESULT.md
           rm -rf test-results playwright-report
