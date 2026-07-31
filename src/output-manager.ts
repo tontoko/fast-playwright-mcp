@@ -110,30 +110,41 @@ export class OutputManager {
     const absolute = this.assertLexicallyContained(directory);
     const root = await this.canonicalOutputDir;
     const pathFromRoot = relative(this.lexicalOutputDir, absolute);
-    if (!pathFromRoot) {
-      return root;
-    }
+    const segments = pathFromRoot.split(sep).filter(Boolean);
+    return this.ensureSafeDirectorySegments(root, root, segments, 0);
+  }
 
-    let current = root;
-    for (const segment of pathFromRoot.split(sep).filter(Boolean)) {
-      const next = resolve(current, segment);
-      try {
-        const status = await fs.lstat(next);
-        if (status.isSymbolicLink() || !status.isDirectory()) {
-          throw new Error(OUTSIDE_OUTPUT_ERROR);
-        }
-      } catch (error) {
-        if (!isErrnoException(error, 'ENOENT')) {
-          throw error;
-        }
-        await fs.mkdir(next);
-      }
-      current = await fs.realpath(next);
-      if (!isPathInside(root, current)) {
+  private async ensureSafeDirectorySegments(
+    root: string,
+    current: string,
+    segments: readonly string[],
+    index: number
+  ): Promise<string> {
+    if (index >= segments.length) {
+      return current;
+    }
+    const next = resolve(current, segments[index]);
+    try {
+      const status = await fs.lstat(next);
+      if (status.isSymbolicLink() || !status.isDirectory()) {
         throw new Error(OUTSIDE_OUTPUT_ERROR);
       }
+    } catch (error) {
+      if (!isErrnoException(error, 'ENOENT')) {
+        throw error;
+      }
+      await fs.mkdir(next);
     }
-    return current;
+    const canonicalNext = await fs.realpath(next);
+    if (!isPathInside(root, canonicalNext)) {
+      throw new Error(OUTSIDE_OUTPUT_ERROR);
+    }
+    return this.ensureSafeDirectorySegments(
+      root,
+      canonicalNext,
+      segments,
+      index + 1
+    );
   }
 
   private async resolveFinalizationTarget(
