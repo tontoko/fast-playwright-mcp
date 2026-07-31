@@ -1,3 +1,4 @@
+# Triggered after registration on the staging branch.
 name: PR 31 extension lifecycle staging
 
 on:
