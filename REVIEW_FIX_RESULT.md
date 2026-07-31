@@ -1,11 +1,32 @@
 # PR 31 review-fix verification
 
 - result: FAIL
-- source commit: 9270bb5d906e024e3b8d83222818051057927703
+- source commit: 24baba5512c49dd82f8b962d457730f5c63754cc
 
 ## Test output tail
 
 ```text
+      }
+    }
+    ```
+    
+    #### Expectation Options
+    
+    - **`includeSnapshot`** (boolean, default: varies by tool): Include page accessibility snapshot
+    - **`includeConsole`** (boolean, default: varies by tool): Include browser console messages
+    - **`includeDownloads`** (boolean, default: true): Include download information
+    - **`includeTabs`** (boolean, default: varies by tool): Include tab information
+    - **`includeCode`** (boolean, default: true): Include executed code in response
+    
+    #### Advanced Snapshot Options
+    
+    ```json
+    {
+      \"name\": \"browser_click\",
+      \"arguments\": {
+        \"element\": \"Login button\",
+        \"ref\": \"#login-btn\",
+        \"expectation\": {
           \"includeSnapshot\": true,
           \"snapshotOptions\": {
             \"selector\": \".dashboard\",
@@ -358,25 +379,7 @@
 
     Error Context: test-results/readme-contract-README-pro-6e0e0-eturned-MCP-server-directly-chromium/error-context.md
 
-  8) [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
-
-    Error: expect(received).toBe(expected) // Object.is equality
-
-    Expected: "readOnly"
-    Received: "action"
-
-      66 | test('gateway effects distinguish reads from browser interactions', () => {
-      67 |   const registry = createBaseToolRegistry(resolveConfig({}));
-    > 68 |   expect(registry.require('browser_snapshot').tool.schema.type).toBe(
-         |                                                                 ^
-      69 |     'readOnly'
-      70 |   );
-      71 |   expect(registry.require('browser_hover').tool.schema.type).toBe('action');
-        at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/tool-gateways.spec.ts:68:65
-
-    Error Context: test-results/tool-gateways-gateway-effe-749c7-s-from-browser-interactions-chromium/error-context.md
-
-  9) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
+  6) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
 
     Error: expect(received).toThrow(expected)
 
@@ -395,16 +398,13 @@
 
     Error Context: test-results/upstream-config-rejects-in-20ac7-eader-names-and-line-breaks-chromium/error-context.md
 
-  9 failed
-    [chromium] › tests/mcp-server-initialize.spec.ts:54:1 › tool calls proceed when the backend has no initialize hook 
-    [chromium] › tests/mcp-server-initialize.spec.ts:68:1 › backend initialization failures reject pending tool calls 
+  6 failed
     [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin 
     [chromium] › tests/network-origin-filter.spec.ts:38:1 › blockedOrigins wins when an origin is both allowed and blocked 
     [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
     [chromium] › tests/readme-contract.spec.ts:8:1 › README contains one generated tool catalog with current batch schema 
     [chromium] › tests/readme-contract.spec.ts:19:1 › README programmatic example uses the returned MCP server directly 
-    [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions 
     [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
-  17 passed (12.8s)
+  20 passed (7.6s)
 
 ```
