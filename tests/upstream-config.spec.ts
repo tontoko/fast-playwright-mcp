@@ -108,6 +108,33 @@ test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({},
   expect(config.secrets).toEqual({ ENV_TOKEN: 'env secret' });
 });
 
+test('PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides', async ({}, testInfo) => {
+  const configPath = testInfo.outputPath('mcp-config.json');
+  await writeFile(
+    configPath,
+    JSON.stringify({
+      toolProfile: 'minimal',
+      timeouts: { action: 111, navigation: 222, expect: 333 },
+    }),
+    'utf8'
+  );
+
+  const config = await resolveCLIConfig(
+    {},
+    {
+      PLAYWRIGHT_MCP_CONFIG: configPath,
+      PLAYWRIGHT_MCP_TIMEOUT_ACTION: '444',
+    }
+  );
+
+  expect(config.toolProfile).toBe('minimal');
+  expect(config.timeouts).toEqual({
+    action: 444,
+    navigation: 222,
+    expect: 333,
+  });
+});
+
 test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
   const automationControlledArg =
     '--disable-blink-features=AutomationControlled';
