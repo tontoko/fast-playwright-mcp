@@ -1,240 +1,360 @@
-2026-07-18T08:36:19.6273228Z   tools/common.js                              2.1 KB     (entry point)
-2026-07-18T08:36:19.6273840Z   tools/console.js                             2.17 KB    (entry point)
-2026-07-18T08:36:19.6274259Z   tools/diagnose.js                            7.24 KB    (entry point)
-2026-07-18T08:36:19.6274676Z   tools/dialogs.js                             2.0 KB     (entry point)
-2026-07-18T08:36:19.6275091Z   tools/evaluate.js                            4.76 KB    (entry point)
-2026-07-18T08:36:19.6275683Z   tools/files.js                               1.93 KB    (entry point)
-2026-07-18T08:36:19.6276113Z   tools/find-elements.js                       13.13 KB   (entry point)
-2026-07-18T08:36:19.6276542Z   tools/find.js                                3.42 KB    (entry point)
-2026-07-18T08:36:19.6276943Z   mcp/server.js                                4.70 KB    (entry point)
-2026-07-18T08:36:19.6277381Z   mcp/tool.js                                  3.52 KB    (entry point)
-2026-07-18T08:36:19.6277803Z   mcp/transport.js                             5.73 KB    (entry point)
-2026-07-18T08:36:19.6278424Z   mcp/types.js                                 0 KB       (entry point)
-2026-07-18T08:36:19.6278852Z   schemas/expectation.js                       5.22 KB    (entry point)
-2026-07-18T08:36:19.6279320Z   services/selector-resolver.js                18.91 KB   (entry point)
-2026-07-18T08:36:19.6279785Z   tools/base-tool-handler.js                   4.15 KB    (entry point)
-2026-07-18T08:36:19.6280243Z   tools/batch-execute.js                       4.78 KB    (entry point)
-2026-07-18T08:36:19.6280678Z   loop/main.js                                 1.43 KB    (entry point)
-2026-07-18T08:36:19.6281094Z   loopTools/context.js                         2.81 KB    (entry point)
-2026-07-18T08:36:19.6281524Z   loopTools/main.js                            2.1 KB     (entry point)
-2026-07-18T08:36:19.6281947Z   loopTools/perform.js                         1.36 KB    (entry point)
-2026-07-18T08:36:19.6282390Z   loopTools/snapshot.js                        1.23 KB    (entry point)
-2026-07-18T08:36:19.6282828Z   loopTools/tool.js                            0.84 KB    (entry point)
-2026-07-18T08:36:19.6283268Z   mcp/in-process-transport.js                  2.38 KB    (entry point)
-2026-07-18T08:36:19.6283717Z   mcp/proxy-backend.js                         3.87 KB    (entry point)
-2026-07-18T08:36:19.6284187Z   diagnostics/unified-system.js                27.94 KB   (entry point)
-2026-07-18T08:36:19.6284646Z   extension/cdp-relay.js                       16.11 KB   (entry point)
-2026-07-18T08:36:19.6285115Z   extension/connect-url.js                     1.57 KB    (entry point)
-2026-07-18T08:36:19.6285592Z   extension/extension-context-factory.js       3.14 KB    (entry point)
-2026-07-18T08:36:19.6286045Z   extension/main.js                            1.74 KB    (entry point)
-2026-07-18T08:36:19.6286475Z   loop/loop-claude.js                          7.41 KB    (entry point)
-2026-07-18T08:36:19.6286935Z   loop/loop-open-ai.js                         6.68 KB    (entry point)
-2026-07-18T08:36:19.6287365Z   loop/loop.js                                 6.77 KB    (entry point)
-2026-07-18T08:36:19.6287823Z   diagnostics/enhanced-error-handler.js        15.23 KB   (entry point)
-2026-07-18T08:36:19.6288550Z   diagnostics/error-enrichment.js              6.64 KB    (entry point)
-2026-07-18T08:36:19.6289035Z   diagnostics/frame-reference-manager.js       5.42 KB    (entry point)
-2026-07-18T08:36:19.6289512Z   diagnostics/page-analyzer.js                 23.97 KB   (entry point)
-2026-07-18T08:36:19.6289994Z   diagnostics/parallel-page-analyzer.js        4.43 KB    (entry point)
-2026-07-18T08:36:19.6290499Z   diagnostics/resource-manager.js              4.0 KB     (entry point)
-2026-07-18T08:36:19.6290977Z   diagnostics/smart-config.js                  18.0 KB    (entry point)
-2026-07-18T08:36:19.6291427Z   diagnostics/smart-handle.js                  3.21 KB    (entry point)
-2026-07-18T08:36:19.6292156Z   tools/diagnose/diagnose-config-handler.js    5.37 KB    (entry point)
-2026-07-18T08:36:19.6293169Z   tools/diagnose/diagnose-report-builder.js    17.80 KB   (entry point)
-2026-07-18T08:36:19.6293694Z   batch/batch-executor.js                      5.78 KB    (entry point)
-2026-07-18T08:36:19.6294152Z   config/constants.js                          2.17 KB    (entry point)
-2026-07-18T08:36:19.6294621Z   diagnostics/diagnostic-error.js              4.53 KB    (entry point)
-2026-07-18T08:36:19.6295220Z   diagnostics/diagnostic-level.js              3.81 KB    (entry point)
-2026-07-18T08:36:19.6295697Z   diagnostics/diagnostic-thresholds.js         12.75 KB   (entry point)
-2026-07-18T08:36:19.6296172Z   diagnostics/element-discovery.js             18.20 KB   (entry point)
-2026-07-18T08:36:19.6296673Z   diagnostics/common/initialization-manager.js  6.27 KB    (entry point)
-2026-07-18T08:36:19.6297176Z   diagnostics/common/performance-tracker.js    4.81 KB    (entry point)
-2026-07-18T08:36:19.6297642Z   tools/catalog/gateways.js                    5.73 KB    (entry point)
-2026-07-18T08:36:19.6298296Z   tools/catalog/registry.js                    5.0 KB     (entry point)
-2026-07-18T08:36:19.6298756Z   tools/catalog/search.js                      2.40 KB    (entry point)
-2026-07-18T08:36:19.6299203Z   tools/catalog/types.js                       0 KB       (entry point)
-2026-07-18T08:36:19.6299649Z   tools/catalog/visibility.js                  2.93 KB    (entry point)
-2026-07-18T08:36:19.6300124Z   tools/diagnose/diagnose-analysis-runner.js   4.0 KB     (entry point)
-2026-07-18T08:36:19.6300599Z   apps/dashboard/client.js                     2.84 KB    (entry point)
-2026-07-18T08:36:19.6301061Z   apps/dashboard/render.js                     3.15 KB    (entry point)
-2026-07-18T08:36:19.6301518Z   apps/dashboard/resource.js                   1.55 KB    (entry point)
-2026-07-18T08:36:19.6301967Z   apps/dashboard/tool.js                       1.44 KB    (entry point)
-2026-07-18T08:36:19.6302415Z   apps/generated/dashboard.js                  0.46 MB    (entry point)
-2026-07-18T08:36:19.6302880Z   diagnostics/common/diagnostic-base.js        1.58 KB    (entry point)
-2026-07-18T08:36:19.6303377Z   diagnostics/common/error-enrichment-utils.js  7.31 KB    (entry point)
-2026-07-18T08:36:19.6303850Z   diagnostics/common/index.js                  205 bytes  (entry point)
-2026-07-18T08:36:19.6304116Z 
-2026-07-18T08:36:19.6304225Z ## Lint
-2026-07-18T08:36:19.6304436Z $ ultracite lint
-2026-07-18T08:36:20.7138968Z scripts/path-policy.ts:49:1 lint/suspicious/useAwait ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-07-18T08:36:20.7139637Z 
-2026-07-18T08:36:20.7140006Z   × This async function lacks an await expression.
-2026-07-18T08:36:20.7140486Z   
-2026-07-18T08:36:20.7140803Z     47 │ }
-2026-07-18T08:36:20.7141140Z     48 │ 
-2026-07-18T08:36:20.7141801Z   > 49 │ async function resolveRoot(root: string): Promise<string> {
-2026-07-18T08:36:20.7146141Z        │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2026-07-18T08:36:20.7146842Z   > 50 │   return realpath(resolve(root));
-2026-07-18T08:36:20.7147367Z   > 51 │ }
-2026-07-18T08:36:20.7147689Z        │ ^
-2026-07-18T08:36:20.7148149Z     52 │ 
-2026-07-18T08:36:20.7148685Z     53 │ export async function resolveWorkspaceInputPath(
-2026-07-18T08:36:20.7149177Z   
-2026-07-18T08:36:20.7149726Z   i Remove this async modifier, or add an await expression in the function.
-2026-07-18T08:36:20.7150305Z   
-2026-07-18T08:36:20.7150617Z     47 │ }
-2026-07-18T08:36:20.7150914Z     48 │ 
-2026-07-18T08:36:20.7151516Z   > 49 │ async function resolveRoot(root: string): Promise<string> {
-2026-07-18T08:36:20.7152265Z        │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2026-07-18T08:36:20.7152854Z   > 50 │   return realpath(resolve(root));
-2026-07-18T08:36:20.7153303Z   > 51 │ }
-2026-07-18T08:36:20.7153599Z        │ ^
-2026-07-18T08:36:20.7153906Z     52 │ 
-2026-07-18T08:36:20.7154420Z     53 │ export async function resolveWorkspaceInputPath(
-2026-07-18T08:36:20.7154898Z   
-2026-07-18T08:36:20.7155462Z   i Async functions without await expressions may not need to be declared async.
-2026-07-18T08:36:20.7156539Z   
-2026-07-18T08:36:20.7156698Z 
-2026-07-18T08:36:20.7157516Z tests/path-policy.spec.ts:9:75 lint/correctness/noEmptyPattern ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-07-18T08:36:20.7158285Z 
-2026-07-18T08:36:20.7158551Z   × Unexpected empty object pattern.
-2026-07-18T08:36:20.7158947Z   
-2026-07-18T08:36:20.7159371Z      7 │ } from '../scripts/path-policy.js';
-2026-07-18T08:36:20.7160022Z      8 │ 
-2026-07-18T08:36:20.7160866Z    > 9 │ test('workspace path policy preserves repository-contained files', async ({}, testInfo) => {
-2026-07-18T08:36:20.7161845Z        │                                                                           ^^
-2026-07-18T08:36:20.7162543Z     10 │   const root = testInfo.outputPath('workspace');
-2026-07-18T08:36:20.7163210Z     11 │   const fixtures = resolve(root, 'fixtures');
-2026-07-18T08:36:20.7163654Z   
-2026-07-18T08:36:20.7163799Z 
-2026-07-18T08:36:20.7164597Z tests/path-policy.spec.ts:31:82 lint/correctness/noEmptyPattern ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-07-18T08:36:20.7165231Z 
-2026-07-18T08:36:20.7165487Z   × Unexpected empty object pattern.
-2026-07-18T08:36:20.7165883Z   
-2026-07-18T08:36:20.7166192Z     29 │ });
-2026-07-18T08:36:20.7166506Z     30 │ 
-2026-07-18T08:36:20.7167365Z   > 31 │ test('workspace path policy rejects traversal and unexpected extensions', async ({}, testInfo) => {
-2026-07-18T08:36:20.7168555Z        │                                                                                  ^^
-2026-07-18T08:36:20.7169306Z     32 │   const root = testInfo.outputPath('workspace');
-2026-07-18T08:36:20.7169956Z     33 │   await mkdir(root, { recursive: true });
-2026-07-18T08:36:20.7170385Z   
-2026-07-18T08:36:20.7170555Z 
-2026-07-18T08:36:20.7171338Z tests/path-policy.spec.ts:53:81 lint/correctness/noEmptyPattern ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-07-18T08:36:20.7171939Z 
-2026-07-18T08:36:20.7172191Z   × Unexpected empty object pattern.
-2026-07-18T08:36:20.7172576Z   
-2026-07-18T08:36:20.7172902Z     51 │ });
-2026-07-18T08:36:20.7173214Z     52 │ 
-2026-07-18T08:36:20.7174043Z   > 53 │ test('workspace path policy rejects symlinks that escape the workspace', async ({}, testInfo) => {
-2026-07-18T08:36:20.7175062Z        │                                                                                 ^^
-2026-07-18T08:36:20.7175776Z     54 │   const root = testInfo.outputPath('workspace');
-2026-07-18T08:36:20.7176434Z     55 │   await mkdir(root, { recursive: true });
-2026-07-18T08:36:20.7176867Z   
-2026-07-18T08:36:20.7177024Z 
-2026-07-18T08:36:20.7177814Z tests/upstream-check.spec.ts:45:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-07-18T08:36:20.7178597Z 
-2026-07-18T08:36:20.7178998Z   × Template literals are preferred over string concatenation.
-2026-07-18T08:36:20.7179492Z   
-2026-07-18T08:36:20.7179853Z     43 │     'microsoft/playwright',
-2026-07-18T08:36:20.7180300Z     44 │     'compare',
-2026-07-18T08:36:20.7180788Z   > 45 │     'a'.repeat(40) + '...' + 'b'.repeat(40)
-2026-07-18T08:36:20.7181386Z        │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2026-07-18T08:36:20.7181837Z     46 │   );
-2026-07-18T08:36:20.7182369Z     47 │   expect(url.origin).toBe('https://api.github.com');
-2026-07-18T08:36:20.7182864Z   
-2026-07-18T08:36:20.7183217Z   i Unsafe fix: Use a template literal.
-2026-07-18T08:36:20.7183624Z   
-2026-07-18T08:36:20.7184035Z     43 43 │       'microsoft/playwright',
-2026-07-18T08:36:20.7184753Z     44 44 │       'compare',
-2026-07-18T08:36:20.7185384Z     45    │ - ····'a'.repeat(40)·+·'...'·+·'b'.repeat(40)
-2026-07-18T08:36:20.7185997Z        45 │ + ····`${'a'.repeat(40)}...${'b'.repeat(40)}`
-2026-07-18T08:36:20.7186466Z     46 46 │     );
-2026-07-18T08:36:20.7187045Z     47 47 │     expect(url.origin).toBe('https://api.github.com');
-2026-07-18T08:36:20.7187536Z   
-2026-07-18T08:36:20.7187694Z 
-2026-07-18T08:36:20.7188127Z Checked 273 files in 509ms. No fixes applied.
-2026-07-18T08:36:20.7188548Z Found 5 errors.
-2026-07-18T08:36:20.7202519Z check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-07-18T08:36:20.7203264Z 
-2026-07-18T08:36:20.7203605Z   × Some errors were emitted while running checks.
-2026-07-18T08:36:20.7204066Z   
-2026-07-18T08:36:20.7204181Z 
-2026-07-18T08:36:20.7389207Z Failed to run Ultracite: Command failed: npx @biomejs/biome check ./
-2026-07-18T08:36:20.7434473Z error: script "lint" exited with code 1
-2026-07-18T08:36:20.7440182Z ## Focused regression tests
-2026-07-18T08:36:23.0574828Z 
-2026-07-18T08:36:23.0575496Z Running 38 tests using 1 worker
-2026-07-18T08:36:23.0578649Z 
-2026-07-18T08:36:25.0624628Z   ✓   1 [chromium] › tests/batch-execute-basic.spec.ts:31:3 › Browser Batch Execute Basic Tests › should execute basic navigation batch successfully (1.3s)
-2026-07-18T08:36:25.7951824Z   ✓   2 [chromium] › tests/batch-execute-basic.spec.ts:69:3 › Browser Batch Execute Basic Tests › should handle invalid tool name in batch (706ms)
-2026-07-18T08:36:26.8960134Z   ✓   3 [chromium] › tests/batch-execute-basic.spec.ts:86:3 › Browser Batch Execute Basic Tests › should optimize token usage with minimal expectations (1.1s)
-2026-07-18T08:36:28.0310021Z   ✓   4 [chromium] › tests/batch-execute-basic.spec.ts:109:3 › Browser Batch Execute Basic Tests › should track execution time (1.1s)
-2026-07-18T08:36:30.2558135Z   ✓   5 [chromium] › tests/evaluate-expectation.spec.ts:22:5 › Evaluate Tool Expectation Parameter › browser_evaluate › should accept expectation parameter with minimal response for page evaluation (2.2s)
-2026-07-18T08:36:32.4937549Z   ✓   6 [chromium] › tests/evaluate-expectation.spec.ts:47:5 › Evaluate Tool Expectation Parameter › browser_evaluate › should accept expectation parameter with full response for page evaluation (2.2s)
-2026-07-18T08:36:34.6249130Z   ✓   7 [chromium] › tests/evaluate-expectation.spec.ts:71:5 › Evaluate Tool Expectation Parameter › browser_evaluate › should accept expectation parameter for element evaluation (2.1s)
-2026-07-18T08:36:36.7481088Z   ✓   8 [chromium] › tests/evaluate.spec.ts:151:3 › browser_evaluate (2.1s)
-2026-07-18T08:36:38.9451263Z   ✓   9 [chromium] › tests/evaluate.spec.ts:151:3 › browser_evaluate (element) (2.2s)
-2026-07-18T08:36:41.1022093Z   ✓  10 [chromium] › tests/evaluate.spec.ts:151:3 › browser_evaluate (error) (2.1s)
-2026-07-18T08:36:42.2104337Z   ✓  11 [chromium] › tests/tabs.spec.ts:54:1 › list initial tabs (1.1s)
-2026-07-18T08:36:43.4065079Z   ✓  12 [chromium] › tests/tabs.spec.ts:64:1 › list first tab (1.2s)
-2026-07-18T08:36:44.6613038Z   ✓  13 [chromium] › tests/tabs.spec.ts:76:1 › create new tab (1.2s)
-2026-07-18T08:36:45.9502432Z   ✓  14 [chromium] › tests/tabs.spec.ts:103:1 › select tab (1.3s)
-2026-07-18T08:36:47.2332363Z   ✓  15 [chromium] › tests/tabs.spec.ts:127:1 › close tab (1.3s)
-2026-07-18T08:36:48.7210530Z   ✓  16 [chromium] › tests/tabs.spec.ts:150:1 › reuse first tab when navigating (1.5s)
-2026-07-18T08:36:49.8893304Z   ✓  17 [chromium] › tests/tabs.spec.ts:170:1 › browser_snapshot applies maxLength to a partial snapshot (1.2s)
-2026-07-18T08:36:51.0618623Z   ✓  18 [chromium] › tests/tabs.spec.ts:194:1 › browser_snapshot limits a partial snapshot to the selected landmark (1.2s)
-2026-07-18T08:36:51.5473980Z   ✓  19 [chromium] › tests/dashboard-build.spec.ts:14:1 › dashboard is self-contained and protected by exact CSP hashes (16ms)
-2026-07-18T08:36:51.9339479Z   ✓  20 [chromium] › tests/dashboard-e2e.spec.ts:4:1 › dashboard loads without external network requests (270ms)
-2026-07-18T08:36:51.9490555Z   ✓  21 [chromium] › tests/dashboard-render.spec.ts:7:1 › tab parser preserves untrusted labels as plain data (2ms)
-2026-07-18T08:36:51.9682147Z   ✓  22 [chromium] › tests/dashboard-render.spec.ts:20:1 › tab parser rejects malformed and unsafe indexes without backtracking (3ms)
-2026-07-18T08:36:51.9789622Z   ✓  23 [chromium] › tests/dashboard-render.spec.ts:29:1 › dashboard renderer does not use HTML string sinks (2ms)
-2026-07-18T08:36:51.9968927Z   ✓  24 [chromium] › tests/path-policy.spec.ts:9:1 › workspace path policy preserves repository-contained files (3ms)
-2026-07-18T08:36:52.0157634Z   ✓  25 [chromium] › tests/path-policy.spec.ts:31:1 › workspace path policy rejects traversal and unexpected extensions (8ms)
-2026-07-18T08:36:52.0285043Z   ✓  26 [chromium] › tests/path-policy.spec.ts:53:1 › workspace path policy rejects symlinks that escape the workspace (3ms)
-2026-07-18T08:36:52.3862827Z   ✓  27 [chromium] › tests/tool-gateways.spec.ts:40:1 › adaptive catalog exposes seven bootstrap tools and can enable more (35ms)
-2026-07-18T08:36:52.4062492Z   ✓  28 [chromium] › tests/tool-gateways.spec.ts:65:1 › hidden tools resolve directly and gateways enforce effects (9ms)
-2026-07-18T08:36:52.4226490Z   ✓  29 [chromium] › tests/tool-search.spec.ts:44:1 › search uses deterministic score ordering (3ms)
-2026-07-18T08:36:52.4310336Z   ✓  30 [chromium] › tests/tool-search.spec.ts:59:1 › search limits results and sorts ties by name (1ms)
-2026-07-18T08:36:52.4434739Z   ✓  31 [chromium] › tests/upstream-check.spec.ts:11:1 › loads the pinned upstream manifest (2ms)
-2026-07-18T08:36:52.4525130Z   ✓  32 [chromium] › tests/upstream-check.spec.ts:19:1 › classifies upstream paths deterministically (2ms)
-2026-07-18T08:36:52.4644005Z   ✓  33 [chromium] › tests/upstream-check.spec.ts:32:1 › GitHub API URLs keep validated repositories on the fixed origin (5ms)
-2026-07-18T08:36:52.4748473Z   ✓  34 [chromium] › tests/upstream-check.spec.ts:54:1 › fixture report is stable and read-only (3ms)
-2026-07-18T08:36:52.4862098Z   ✓  35 [chromium] › tests/upstream-config.spec.ts:11:1 › resolves upstream-compatible configuration fields (1ms)
-2026-07-18T08:36:52.4949017Z   ✓  36 [chromium] › tests/upstream-config.spec.ts:38:1 › CLI and environment parsing preserve headers and timeouts (2ms)
-2026-07-18T08:36:52.5037795Z   ✓  37 [chromium] › tests/upstream-config.spec.ts:68:1 › keeps Chromium-only launch flags out of Firefox and WebKit (2ms)
-2026-07-18T08:36:52.5145315Z   ✓  38 [chromium] › tests/upstream-config.spec.ts:86:1 › numeric and heartbeat parsers reject or default invalid values (4ms)
-2026-07-18T08:36:52.5586353Z 
-2026-07-18T08:36:52.5591658Z   38 passed (31.2s)
-2026-07-18T08:36:52.5787703Z ## Fixture commands
-2026-07-18T08:36:52.5812730Z $ bun scripts/upstream-check.ts --fixture tests/upstream/fixtures/compare.json
-2026-07-18T08:36:52.6831536Z Review thread check passed.
-2026-07-18T08:36:52.6870665Z ## Sonar sink suppressions after formatting
-2026-07-18T08:36:52.6989552Z ## Resolved Sonar source patterns
-2026-07-18T08:36:52.7028922Z Redundant empty cdpHeaders fallback remains.
-2026-07-18T08:36:52.8459872Z [agent/sonar-quality-gate-fixes dce3300] test: record Sonar fix verification FAIL [sonar-fix-verification]
-2026-07-18T08:36:52.8460564Z  2 files changed, 3 insertions(+), 3 deletions(-)
-2026-07-18T08:36:53.1175027Z To https://github.com/tontoko/fast-playwright-mcp
-2026-07-18T08:36:53.1175605Z  ! [rejected]        HEAD -> agent/sonar-quality-gate-fixes (fetch first)
-2026-07-18T08:36:53.1176246Z error: failed to push some refs to 'https://github.com/tontoko/fast-playwright-mcp'
-2026-07-18T08:36:53.1186558Z hint: Updates were rejected because the remote contains work that you do not
-2026-07-18T08:36:53.1187189Z hint: have locally. This is usually caused by another repository pushing to
-2026-07-18T08:36:53.1187744Z hint: the same ref. If you want to integrate the remote changes, use
-2026-07-18T08:36:53.1188407Z hint: 'git pull' before pushing again.
-2026-07-18T08:36:53.1189105Z hint: See the 'Note about fast-forwards' in 'git push --help' for details.
-2026-07-18T08:36:53.1204495Z ##[error]Process completed with exit code 1.
-2026-07-18T08:36:53.1318979Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-2026-07-18T08:36:53.1320180Z Post job cleanup.
-2026-07-18T08:36:53.2168911Z [command]/usr/bin/git version
-2026-07-18T08:36:53.2225390Z git version 2.54.0
-2026-07-18T08:36:53.2255382Z Temporarily overriding HOME='/home/runner/work/_temp/71445dad-f671-40dc-936b-50b3e76a7a49' before making global git config changes
-2026-07-18T08:36:53.2256967Z Adding repository directory to the temporary git global config as a safe directory
-2026-07-18T08:36:53.2262472Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
-2026-07-18T08:36:53.2303247Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-07-18T08:36:53.2364439Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-07-18T08:36:53.2627060Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-07-18T08:36:53.2654803Z http.https://github.com/.extraheader
-2026-07-18T08:36:53.2665817Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-07-18T08:36:53.2710740Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-07-18T08:36:53.2975317Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-07-18T08:36:53.3013440Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-07-18T08:36:53.3450821Z Cleaning up orphan processes
-2026-07-18T08:36:53.3774581Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-07-31T16:08:32.8868832Z + @modelcontextprotocol/sdk@1.25.2
+2026-07-31T16:08:32.8869120Z + @types/sharp@0.31.1
+2026-07-31T16:08:32.8869376Z + commander@13.1.0
+2026-07-31T16:08:32.8869590Z + debug@4.4.3
+2026-07-31T16:08:32.8869785Z + dotenv@17.4.2
+2026-07-31T16:08:32.8870013Z + fast-diff@1.3.0
+2026-07-31T16:08:32.8870211Z + mime@4.1.0
+2026-07-31T16:08:32.8870477Z + playwright@1.62.0-alpha-1783623505000
+2026-07-31T16:08:32.8870830Z + playwright-core@1.62.0-alpha-1783623505000
+2026-07-31T16:08:32.8871119Z + sharp@0.34.5
+2026-07-31T16:08:32.8871351Z + ws@8.21.1
+2026-07-31T16:08:32.8871543Z + zod@3.25.76
+2026-07-31T16:08:32.8871783Z + zod-to-json-schema@3.25.2
+2026-07-31T16:08:32.8871944Z 
+2026-07-31T16:08:32.8872098Z 191 packages installed [1.76s]
+2026-07-31T16:08:33.7008864Z Installing dependencies...
+2026-07-31T16:08:33.7123282Z Switching to root user to install dependencies...
+2026-07-31T16:08:33.8165558Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-07-31T16:08:33.8645783Z Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+2026-07-31T16:08:33.8654606Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-07-31T16:08:33.8684664Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-07-31T16:08:33.8695493Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-07-31T16:08:33.8751865Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-07-31T16:08:33.8772353Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-07-31T16:08:33.8785157Z Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
+2026-07-31T16:08:34.0302148Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [260 kB]
+2026-07-31T16:08:34.0444762Z Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [226 kB]
+2026-07-31T16:08:34.0788866Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1154 kB]
+2026-07-31T16:08:34.0861202Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [278 kB]
+2026-07-31T16:08:34.0880835Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+2026-07-31T16:08:34.0888005Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1681 kB]
+2026-07-31T16:08:34.0971723Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [334 kB]
+2026-07-31T16:08:34.0999339Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+2026-07-31T16:08:34.1020747Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1367 kB]
+2026-07-31T16:08:34.1089982Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [308 kB]
+2026-07-31T16:08:34.1114750Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [45.4 kB]
+2026-07-31T16:08:34.1125050Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.3 kB]
+2026-07-31T16:08:34.1570498Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+2026-07-31T16:08:34.1585802Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5744 B]
+2026-07-31T16:08:34.1600497Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [32.5 kB]
+2026-07-31T16:08:34.1616280Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+2026-07-31T16:08:34.1883887Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [897 kB]
+2026-07-31T16:08:34.1948178Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [198 kB]
+2026-07-31T16:08:34.1956551Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
+2026-07-31T16:08:34.1967909Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1199 kB]
+2026-07-31T16:08:34.2057784Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [239 kB]
+2026-07-31T16:08:34.2084664Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
+2026-07-31T16:08:34.2089857Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1273 kB]
+2026-07-31T16:08:34.2265857Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [290 kB]
+2026-07-31T16:08:34.2286349Z Get:33 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [40.3 kB]
+2026-07-31T16:08:34.2300603Z Get:34 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [10.6 kB]
+2026-07-31T16:08:34.2779024Z Get:35 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1410 B]
+2026-07-31T16:08:38.5153025Z Fetched 10.9 MB in 1s (8137 kB/s)
+2026-07-31T16:08:39.2332265Z Reading package lists...
+2026-07-31T16:08:39.2630535Z Reading package lists...
+2026-07-31T16:08:39.4175338Z Building dependency tree...
+2026-07-31T16:08:39.4182438Z Reading state information...
+2026-07-31T16:08:39.5555288Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+2026-07-31T16:08:39.5556122Z libasound2t64 set to manually installed.
+2026-07-31T16:08:39.5557054Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-07-31T16:08:39.5557990Z libatk-bridge2.0-0t64 set to manually installed.
+2026-07-31T16:08:39.5559351Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+2026-07-31T16:08:39.5560059Z libatk1.0-0t64 set to manually installed.
+2026-07-31T16:08:39.5560799Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-07-31T16:08:39.5561479Z libatspi2.0-0t64 set to manually installed.
+2026-07-31T16:08:39.5562048Z libcairo2 is already the newest version (1.18.0-3build1).
+2026-07-31T16:08:39.5562442Z libcairo2 set to manually installed.
+2026-07-31T16:08:39.5562870Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+2026-07-31T16:08:39.5563289Z libcups2t64 set to manually installed.
+2026-07-31T16:08:39.5564019Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+2026-07-31T16:08:39.5564449Z libdbus-1-3 set to manually installed.
+2026-07-31T16:08:39.5564879Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+2026-07-31T16:08:39.5565321Z libdrm2 set to manually installed.
+2026-07-31T16:08:39.5565973Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.2).
+2026-07-31T16:08:39.5566365Z libgbm1 set to manually installed.
+2026-07-31T16:08:39.5566768Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.8).
+2026-07-31T16:08:39.5567195Z libglib2.0-0t64 set to manually installed.
+2026-07-31T16:08:39.5567616Z libnspr4 is already the newest version (2:4.35-1.1build1).
+2026-07-31T16:08:39.5567993Z libnspr4 set to manually installed.
+2026-07-31T16:08:39.5568375Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
+2026-07-31T16:08:39.5568749Z libnss3 set to manually installed.
+2026-07-31T16:08:39.5569377Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+2026-07-31T16:08:39.5569815Z libpango-1.0-0 set to manually installed.
+2026-07-31T16:08:39.5570404Z libx11-6 is already the newest version (2:1.8.7-1build1).
+2026-07-31T16:08:39.5570776Z libx11-6 set to manually installed.
+2026-07-31T16:08:39.5571137Z libxcb1 is already the newest version (1.15-1ubuntu2).
+2026-07-31T16:08:39.5571496Z libxcb1 set to manually installed.
+2026-07-31T16:08:39.5571906Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+2026-07-31T16:08:39.5572315Z libxcomposite1 set to manually installed.
+2026-07-31T16:08:39.5572918Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+2026-07-31T16:08:39.5573803Z libxdamage1 set to manually installed.
+2026-07-31T16:08:39.5574517Z libxext6 is already the newest version (2:1.3.4-1build2).
+2026-07-31T16:08:39.5575162Z libxext6 set to manually installed.
+2026-07-31T16:08:39.5575875Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+2026-07-31T16:08:39.5576276Z libxfixes3 set to manually installed.
+2026-07-31T16:08:39.5576674Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+2026-07-31T16:08:39.5577075Z libxkbcommon0 set to manually installed.
+2026-07-31T16:08:39.5577479Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+2026-07-31T16:08:39.5577863Z libxrandr2 set to manually installed.
+2026-07-31T16:08:39.5578301Z xvfb is already the newest version (2:21.1.12-1ubuntu1.6).
+2026-07-31T16:08:39.5578981Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+2026-07-31T16:08:39.5580038Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+2026-07-31T16:08:39.5580795Z libfontconfig1 set to manually installed.
+2026-07-31T16:08:39.5581307Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.1).
+2026-07-31T16:08:39.5581731Z libfreetype6 set to manually installed.
+2026-07-31T16:08:39.5582152Z fonts-liberation is already the newest version (1:2.1.5-3).
+2026-07-31T16:08:39.5582558Z fonts-liberation set to manually installed.
+2026-07-31T16:08:39.5582958Z The following additional packages will be installed:
+2026-07-31T16:08:39.5583316Z   xfonts-encodings xfonts-utils
+2026-07-31T16:08:39.5583836Z Recommended packages:
+2026-07-31T16:08:39.5584116Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-07-31T16:08:39.5756946Z The following NEW packages will be installed:
+2026-07-31T16:08:39.5758372Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-07-31T16:08:39.5763771Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-07-31T16:08:39.5764665Z   xfonts-utils
+2026-07-31T16:08:39.5942022Z 0 upgraded, 9 newly installed, 0 to remove and 79 not upgraded.
+2026-07-31T16:08:39.5942485Z Need to get 21.1 MB of archives.
+2026-07-31T16:08:39.5942931Z After this operation, 79.5 MB of additional disk space will be used.
+2026-07-31T16:08:39.5943915Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-07-31T16:08:39.6178685Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+2026-07-31T16:08:39.6492060Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+2026-07-31T16:08:39.6962823Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+2026-07-31T16:08:39.7036557Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+2026-07-31T16:08:39.7292821Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+2026-07-31T16:08:39.7817264Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+2026-07-31T16:08:39.7926999Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+2026-07-31T16:08:39.8009127Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+2026-07-31T16:08:39.8113126Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+2026-07-31T16:08:40.1328746Z Fetched 21.1 MB in 0s (91.7 MB/s)
+2026-07-31T16:08:40.1604908Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-07-31T16:08:40.1949875Z (Reading database ... 
+2026-07-31T16:08:40.1950484Z (Reading database ... 5%
+2026-07-31T16:08:40.1950990Z (Reading database ... 10%
+2026-07-31T16:08:40.1951424Z (Reading database ... 15%
+2026-07-31T16:08:40.1951804Z (Reading database ... 20%
+2026-07-31T16:08:40.1952047Z (Reading database ... 25%
+2026-07-31T16:08:40.1952290Z (Reading database ... 30%
+2026-07-31T16:08:40.1952548Z (Reading database ... 35%
+2026-07-31T16:08:40.1952788Z (Reading database ... 40%
+2026-07-31T16:08:40.1953032Z (Reading database ... 45%
+2026-07-31T16:08:40.1953267Z (Reading database ... 50%
+2026-07-31T16:08:40.2006006Z (Reading database ... 55%
+2026-07-31T16:08:40.3090089Z (Reading database ... 60%
+2026-07-31T16:08:40.5247506Z (Reading database ... 65%
+2026-07-31T16:08:40.6923084Z (Reading database ... 70%
+2026-07-31T16:08:40.8288231Z (Reading database ... 75%
+2026-07-31T16:08:40.9979533Z (Reading database ... 80%
+2026-07-31T16:08:41.2397057Z (Reading database ... 85%
+2026-07-31T16:08:41.4278493Z (Reading database ... 90%
+2026-07-31T16:08:41.5612268Z (Reading database ... 95%
+2026-07-31T16:08:41.5612753Z (Reading database ... 100%
+2026-07-31T16:08:41.5613415Z (Reading database ... 202954 files and directories currently installed.)
+2026-07-31T16:08:41.5651336Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+2026-07-31T16:08:41.5742931Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-07-31T16:08:41.8029342Z Selecting previously unselected package fonts-freefont-ttf.
+2026-07-31T16:08:41.8153202Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+2026-07-31T16:08:41.8163883Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-07-31T16:08:41.8980313Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-07-31T16:08:41.9104303Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+2026-07-31T16:08:41.9115421Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-07-31T16:08:41.9326633Z Selecting previously unselected package fonts-unifont.
+2026-07-31T16:08:41.9449281Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+2026-07-31T16:08:41.9459417Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+2026-07-31T16:08:42.0585167Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-07-31T16:08:42.0710384Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+2026-07-31T16:08:42.0809456Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+2026-07-31T16:08:43.5342857Z Selecting previously unselected package xfonts-encodings.
+2026-07-31T16:08:43.5468293Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+2026-07-31T16:08:43.5479051Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-07-31T16:08:43.5766343Z Selecting previously unselected package xfonts-utils.
+2026-07-31T16:08:43.5891817Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+2026-07-31T16:08:43.5900071Z Unpacking xfonts-utils (1:7.7+6build3) ...
+2026-07-31T16:08:43.6352492Z Selecting previously unselected package xfonts-cyrillic.
+2026-07-31T16:08:43.6477195Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+2026-07-31T16:08:43.6485752Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-07-31T16:08:43.6827237Z Selecting previously unselected package xfonts-scalable.
+2026-07-31T16:08:43.6950715Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+2026-07-31T16:08:43.6959119Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+2026-07-31T16:08:43.7361760Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+2026-07-31T16:08:43.7480145Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-07-31T16:08:43.7500949Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-07-31T16:08:43.7521539Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-07-31T16:08:43.7541220Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-07-31T16:08:43.7607492Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-07-31T16:08:43.7623128Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+2026-07-31T16:08:43.7642955Z Setting up xfonts-utils (1:7.7+6build3) ...
+2026-07-31T16:08:43.7682105Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-07-31T16:08:43.8048066Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+2026-07-31T16:08:43.8338804Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-07-31T16:08:43.8360659Z Not building database; man-db/auto-update is not 'true'.
+2026-07-31T16:08:43.8372932Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+2026-07-31T16:08:44.7105400Z 
+2026-07-31T16:08:44.7106197Z Running kernel seems to be up-to-date.
+2026-07-31T16:08:44.7106634Z 
+2026-07-31T16:08:44.7106912Z No services need to be restarted.
+2026-07-31T16:08:44.7107227Z 
+2026-07-31T16:08:44.7107506Z No containers need to be restarted.
+2026-07-31T16:08:44.7107863Z 
+2026-07-31T16:08:44.7108190Z No user sessions are running outdated binaries.
+2026-07-31T16:08:44.7108571Z 
+2026-07-31T16:08:44.7109078Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-07-31T16:08:45.4971294Z Downloading Chrome for Testing 151.0.7922.10 (playwright chromium v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-linux64.zip
+2026-07-31T16:08:46.5445357Z |                                                                                |   0% of 184.3 MiB
+2026-07-31T16:08:46.7458167Z |■■■■■■■■                                                                        |  10% of 184.3 MiB
+2026-07-31T16:08:46.8395352Z |■■■■■■■■■■■■■■■■                                                                |  20% of 184.3 MiB
+2026-07-31T16:08:46.9154635Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 184.3 MiB
+2026-07-31T16:08:46.9904157Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 184.3 MiB
+2026-07-31T16:08:47.0713033Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 184.3 MiB
+2026-07-31T16:08:47.1568827Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 184.3 MiB
+2026-07-31T16:08:47.2515035Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 184.3 MiB
+2026-07-31T16:08:47.3277013Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 184.3 MiB
+2026-07-31T16:08:47.4242029Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 184.3 MiB
+2026-07-31T16:08:47.5072670Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 184.3 MiB
+2026-07-31T16:08:50.2582431Z Chrome for Testing 151.0.7922.10 (playwright chromium v1232) downloaded to /home/runner/.cache/ms-playwright/chromium-1232
+2026-07-31T16:08:50.2595060Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+2026-07-31T16:08:51.2429961Z |                                                                                |   0% of 2.3 MiB
+2026-07-31T16:08:51.2466737Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+2026-07-31T16:08:51.2490148Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+2026-07-31T16:08:51.2516046Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+2026-07-31T16:08:51.2532364Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+2026-07-31T16:08:51.2551483Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+2026-07-31T16:08:51.2564665Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+2026-07-31T16:08:51.2604688Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+2026-07-31T16:08:51.2606101Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+2026-07-31T16:08:51.2609650Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+2026-07-31T16:08:51.2618505Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+2026-07-31T16:08:51.3265128Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+2026-07-31T16:08:51.3269220Z Downloading Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-headless-shell-linux64.zip
+2026-07-31T16:08:52.3236479Z |                                                                                |   0% of 114.7 MiB
+2026-07-31T16:08:52.4574704Z |■■■■■■■■                                                                        |  10% of 114.7 MiB
+2026-07-31T16:08:52.5197414Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.7 MiB
+2026-07-31T16:08:52.5770359Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.7 MiB
+2026-07-31T16:08:52.6282498Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.7 MiB
+2026-07-31T16:08:52.6749196Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.7 MiB
+2026-07-31T16:08:52.7161762Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.7 MiB
+2026-07-31T16:08:52.7567995Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.7 MiB
+2026-07-31T16:08:52.8014947Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.7 MiB
+2026-07-31T16:08:52.8458328Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.7 MiB
+2026-07-31T16:08:52.8853865Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.7 MiB
+2026-07-31T16:08:54.8409025Z Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1232
+2026-07-31T16:08:54.8593165Z $ ultracite format
+2026-07-31T16:08:57.7311256Z src/network-origin.ts:5:39 lint/performance/useTopLevelRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7312047Z 
+2026-07-31T16:08:57.7313119Z   × This regex literal is not defined in the top level scope. This can lead to performance issues if this function is called frequently.
+2026-07-31T16:08:57.7314349Z   
+2026-07-31T16:08:57.7315027Z     4 │ export function originRoutePattern(value: string): string {
+2026-07-31T16:08:57.7315938Z   > 5 │   const origin = value.trim().replace(/\/+$/u, '');
+2026-07-31T16:08:57.7316734Z       │                                       ^^^^^^^
+2026-07-31T16:08:57.7317301Z     6 │   if (!origin) {
+2026-07-31T16:08:57.7317980Z     7 │     throw new Error('Network origin must not be empty');
+2026-07-31T16:08:57.7318549Z   
+2026-07-31T16:08:57.7319408Z   i Move the regex literal outside of this scope, and place it at the top level of this module, as a constant.
+2026-07-31T16:08:57.7320260Z   
+2026-07-31T16:08:57.7320431Z 
+2026-07-31T16:08:57.7321345Z src/output-manager.ts:121:24 lint/nursery/noAwaitInLoop ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7322032Z 
+2026-07-31T16:08:57.7322311Z   × Avoid using await inside loops.
+2026-07-31T16:08:57.7322754Z   
+2026-07-31T16:08:57.7323414Z     119 │       const next = resolve(current, segment);
+2026-07-31T16:08:57.7324598Z     120 │       try {
+2026-07-31T16:08:57.7325180Z   > 121 │         const status = await fs.lstat(next);
+2026-07-31T16:08:57.7325885Z         │                        ^^^^^^^^^^^^^^^^^^^^
+2026-07-31T16:08:57.7326727Z     122 │         if (status.isSymbolicLink() || !status.isDirectory()) {
+2026-07-31T16:08:57.7327586Z     123 │           throw new Error(OUTSIDE_OUTPUT_ERROR);
+2026-07-31T16:08:57.7328104Z   
+2026-07-31T16:08:57.7329417Z   i Using await inside loops might cause performance issues or unintended sequential execution, consider use Promise.all() instead.
+2026-07-31T16:08:57.7330468Z   
+2026-07-31T16:08:57.7330632Z 
+2026-07-31T16:08:57.7331575Z tests/mcp-server-initialize.spec.ts:70:13 lint/suspicious/useAwait ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7332294Z 
+2026-07-31T16:08:57.7332655Z   × This async function lacks an await expression.
+2026-07-31T16:08:57.7333169Z   
+2026-07-31T16:08:57.7334304Z     68 │ test('backend initialization failures reject pending tool calls', async () => {
+2026-07-31T16:08:57.7335272Z     69 │   const { client, server } = await connect(
+2026-07-31T16:08:57.7335905Z   > 70 │     backend(async () => {
+2026-07-31T16:08:57.7336461Z        │             ^^^^^^^^^^^^^
+2026-07-31T16:08:57.7337183Z   > 71 │       throw new Error('backend initialization failed');
+2026-07-31T16:08:57.7337793Z   > 72 │     })
+2026-07-31T16:08:57.7338163Z        │     ^
+2026-07-31T16:08:57.7338533Z     73 │   );
+2026-07-31T16:08:57.7338909Z     74 │   try {
+2026-07-31T16:08:57.7339251Z   
+2026-07-31T16:08:57.7339848Z   i Remove this async modifier, or add an await expression in the function.
+2026-07-31T16:08:57.7340506Z   
+2026-07-31T16:08:57.7341305Z     68 │ test('backend initialization failures reject pending tool calls', async () => {
+2026-07-31T16:08:57.7342269Z     69 │   const { client, server } = await connect(
+2026-07-31T16:08:57.7342955Z   > 70 │     backend(async () => {
+2026-07-31T16:08:57.7343657Z        │             ^^^^^^^^^^^^^
+2026-07-31T16:08:57.7344363Z   > 71 │       throw new Error('backend initialization failed');
+2026-07-31T16:08:57.7344967Z   > 72 │     })
+2026-07-31T16:08:57.7345342Z        │     ^
+2026-07-31T16:08:57.7345700Z     73 │   );
+2026-07-31T16:08:57.7346348Z     74 │   try {
+2026-07-31T16:08:57.7346677Z   
+2026-07-31T16:08:57.7347321Z   i Async functions without await expressions may not need to be declared async.
+2026-07-31T16:08:57.7348031Z   
+2026-07-31T16:08:57.7348199Z 
+2026-07-31T16:08:57.7349112Z tests/upstream-config.spec.ts:90:83 lint/correctness/noEmptyPattern ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7349811Z 
+2026-07-31T16:08:57.7350108Z   × Unexpected empty object pattern.
+2026-07-31T16:08:57.7350546Z   
+2026-07-31T16:08:57.7350870Z     88 │ });
+2026-07-31T16:08:57.7351224Z     89 │ 
+2026-07-31T16:08:57.7352213Z   > 90 │ test('Commander-shaped secrets option parses dotenv values for redaction', async ({}, testInfo) => {
+2026-07-31T16:08:57.7353413Z        │                                                                                   ^^
+2026-07-31T16:08:57.7354522Z     91 │   const secretsPath = testInfo.outputPath('secrets.env');
+2026-07-31T16:08:57.7355221Z     92 │   await writeFile(
+2026-07-31T16:08:57.7355619Z   
+2026-07-31T16:08:57.7355774Z 
+2026-07-31T16:08:57.7356666Z tests/upstream-config.spec.ts:106:78 lint/correctness/noEmptyPattern ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7357380Z 
+2026-07-31T16:08:57.7357667Z   × Unexpected empty object pattern.
+2026-07-31T16:08:57.7358101Z   
+2026-07-31T16:08:57.7358743Z     104 │ });
+2026-07-31T16:08:57.7359135Z     105 │ 
+2026-07-31T16:08:57.7360088Z   > 106 │ test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({}, testInfo) => {
+2026-07-31T16:08:57.7361243Z         │                                                                              ^^
+2026-07-31T16:08:57.7362198Z     107 │   const secretsPath = testInfo.outputPath('env-secrets.env');
+2026-07-31T16:08:57.7363236Z     108 │   await writeFile(secretsPath, 'ENV_TOKEN="env secret"\n', 'utf8');
+2026-07-31T16:08:57.7364466Z   
+2026-07-31T16:08:57.7364588Z 
+2026-07-31T16:08:57.7365153Z tests/upstream-config.spec.ts:118:94 lint/correctness/noEmptyPattern ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7365563Z 
+2026-07-31T16:08:57.7365733Z   × Unexpected empty object pattern.
+2026-07-31T16:08:57.7365993Z   
+2026-07-31T16:08:57.7366190Z     116 │ });
+2026-07-31T16:08:57.7366399Z     117 │ 
+2026-07-31T16:08:57.7367033Z   > 118 │ test('PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides', async ({}, testInfo) => {
+2026-07-31T16:08:57.7367761Z         │                                                                                              ^^
+2026-07-31T16:08:57.7368293Z     119 │   const configPath = testInfo.outputPath('mcp-config.json');
+2026-07-31T16:08:57.7368691Z     120 │   await writeFile(
+2026-07-31T16:08:57.7368922Z   
+2026-07-31T16:08:57.7369015Z 
+2026-07-31T16:08:57.7369195Z Checked 278 files in 914ms. Fixed 4 files.
+2026-07-31T16:08:57.7369468Z Found 6 errors.
+2026-07-31T16:08:57.7370011Z check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-07-31T16:08:57.7370310Z 
+2026-07-31T16:08:57.7370868Z   × Some errors were emitted while applying fixes.
+2026-07-31T16:08:57.7371166Z   
+2026-07-31T16:08:57.7371261Z 
+2026-07-31T16:08:57.7843207Z Failed to run Ultracite: Command failed: npx @biomejs/biome check --write ./
+2026-07-31T16:08:57.7888749Z error: script "lint-fix" exited with code 1
+2026-07-31T16:08:57.7907317Z ##[error]Process completed with exit code 1.
+2026-07-31T16:08:57.8030974Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-07-31T16:08:57.8032232Z Post job cleanup.
+2026-07-31T16:08:57.8880724Z [command]/usr/bin/git version
+2026-07-31T16:08:57.8924041Z git version 2.54.0
+2026-07-31T16:08:57.8963321Z Temporarily overriding HOME='/home/runner/work/_temp/a7f879ce-47f8-408e-88b9-3cf01561412d' before making global git config changes
+2026-07-31T16:08:57.8965239Z Adding repository directory to the temporary git global config as a safe directory
+2026-07-31T16:08:57.8969244Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
+2026-07-31T16:08:57.9007919Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-07-31T16:08:57.9066715Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-07-31T16:08:57.9305820Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-07-31T16:08:57.9335219Z http.https://github.com/.extraheader
+2026-07-31T16:08:57.9347007Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-07-31T16:08:57.9436275Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-07-31T16:08:57.9746822Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-07-31T16:08:57.9785109Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-07-31T16:08:58.0166952Z Cleaning up orphan processes
+2026-07-31T16:08:58.0470486Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
