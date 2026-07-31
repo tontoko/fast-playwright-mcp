@@ -96,6 +96,18 @@ test('Commander-shaped secrets option parses dotenv values for redaction', async
   expect(config.secrets).toEqual({ API_TOKEN: 'secret with spaces' });
 });
 
+test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({}, testInfo) => {
+  const secretsPath = testInfo.outputPath('env-secrets.env');
+  await writeFile(secretsPath, 'ENV_TOKEN="env secret"\n', 'utf8');
+
+  const config = await resolveCLIConfig(
+    {},
+    { PLAYWRIGHT_MCP_SECRETS: secretsPath }
+  );
+
+  expect(config.secrets).toEqual({ ENV_TOKEN: 'env secret' });
+});
+
 test('keeps Chromium-only launch flags out of Firefox and WebKit', async () => {
   const automationControlledArg =
     '--disable-blink-features=AutomationControlled';
