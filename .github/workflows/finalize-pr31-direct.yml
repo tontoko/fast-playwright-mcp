@@ -64,36 +64,34 @@ jobs:
           set -euo pipefail
           python3 scripts/apply-pr31-final.py tests
           python3 - <<'PY'
+          import re
           from pathlib import Path
 
           dialog = Path('tests/dialog-lifecycle.spec.ts')
           text = dialog.read_text(encoding='utf-8')
-          replacements = [
-              (
-                  ".join('\n');",
-                  ".join('\\\\n');",
-                  'dialog response separator',
-              ),
-              (
-                  "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",
-                  "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",
-                  'dialog fixture quoting',
-              ),
-              (
-                  "  await page.getByRole('button', { name: 'Open dialog' }).click();\n",
-                  """  void page
-                    .getByRole('button', { name: 'Open dialog' })
-                    .click()
-                    .catch(() => {});
-          """,
-                  'non-blocking dialog trigger',
-              ),
-          ]
-          for old, new, label in replacements:
-              if text.count(old) != 1:
-                  raise SystemExit(f'{label}: expected one marker, found {text.count(old)}')
-              text = text.replace(old, new)
-          dialog.write_text(text, encoding='utf-8')
+          text, count = re.subn(
+              r"\.join\('\s*'\);",
+              lambda _match: r".join('\n');",
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit(f'dialog response separator: expected one marker, found {count}')
+          text = text.replace(
+              "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",
+              "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",
+          )
+          old_click = "  await page.getByRole('button', { name: 'Open dialog' }).click();\n"
+          new_click = """  void page
+            .getByRole('button', { name: 'Open dialog' })
+            .click()
+            .catch(() => {});
+          """
+          if text.count(old_click) != 1:
+              raise SystemExit(
+                  f'non-blocking dialog trigger: expected one marker, found {text.count(old_click)}'
+              )
+          dialog.write_text(text.replace(old_click, new_click), encoding='utf-8')
 
           runtime = Path('tests/upstream-runtime.spec.ts')
           text = runtime.read_text(encoding='utf-8')
