@@ -1,5 +1,25 @@
 # PR 31 final-review workflow runs
 
+## Finalize PR 31 source changes #3
+- id: 30690499320
+- event: push
+- head_sha: 2c587a9ead37c809cf7007b700ecbde154dbfb02
+- status: in_progress
+- conclusion: None
+- created_at: 2026-08-01T07:49:28Z
+- updated_at: 2026-08-01T07:49:31Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30690499320
+
+## .github/workflows/finalize-pr31-direct-v3.yml #3
+- id: 30690498835
+- event: push
+- head_sha: 2c587a9ead37c809cf7007b700ecbde154dbfb02
+- status: completed
+- conclusion: failure
+- created_at: 2026-08-01T07:49:27Z
+- updated_at: 2026-08-01T07:49:27Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30690498835
+
 ## .github/workflows/finalize-pr31-direct-v2.yml #2
 - id: 30690397629
 - event: push
