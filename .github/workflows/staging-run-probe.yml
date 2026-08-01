@@ -1,4 +1,4 @@
-# Refresh marker: 2026-08-01-pr31-review-fixes-3
+# Refresh marker: 2026-08-01-pr31-final-review-1
 name: Probe staging workflow runs
 
 on:
@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           ref: agent/sonar-status-probe
           fetch-depth: 0
-      - name: Query PR 31 staging workflow runs and latest failure log
+      - name: Query PR 31 final-review workflow runs and latest failure log
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -38,7 +38,7 @@ jobs:
               -H 'X-GitHub-Api-Version: 2022-11-28' \
               "$1"
           }
-          api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=agent%2Fpr31-review-fixes&per_page=50" \
+          api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=agent%2Fpr31-final-review&per_page=50" \
             > "$root/runs.json"
           python3 - <<'PY'
           import json
@@ -46,7 +46,7 @@ jobs:
 
           root = Path('.github/staging-run-probe')
           payload = json.loads((root / 'runs.json').read_text(encoding='utf-8'))
-          lines = ['# PR 31 staging workflow runs', '']
+          lines = ['# PR 31 final-review workflow runs', '']
           latest_failed_run = None
           for run in payload.get('workflow_runs', []):
               lines.extend([
