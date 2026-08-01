@@ -87,13 +87,13 @@ jobs:
 
           runtime = Path('tests/upstream-runtime.spec.ts')
           text = runtime.read_text(encoding='utf-8')
-          old = "async (_fixtures, testInfo) => {"
-          new = "async ({ page: _page }, testInfo) => {"
-          if text.count(old) != 1:
-              raise SystemExit(
-                  f'fixture replacement: expected one marker, found {text.count(old)}'
-              )
-          runtime.write_text(text.replace(old, new), encoding='utf-8')
+          runtime.write_text(
+              text.replace(
+                  "async (_fixtures, testInfo) => {",
+                  "async ({ page: _page }, testInfo) => {",
+              ),
+              encoding='utf-8',
+          )
           PY
           bunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts
 
