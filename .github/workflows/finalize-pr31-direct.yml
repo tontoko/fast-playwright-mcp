@@ -83,13 +83,13 @@ jobs:
                   f'non-blocking dialog trigger: expected one marker, found {text.count(old_click)}'
               )
           text = text.replace(old_click, new_click)
-          old_accept = "  await dialog.accept();\n"
-          new_accept = "  await dialog.accept();\n  await clickPromise;\n"
-          if text.count(old_accept) != 1:
+          old_close = "  await closedPromise;\n"
+          new_close = "  await closedPromise;\n  await clickPromise;\n"
+          if text.count(old_close) != 1:
               raise SystemExit(
-                  f'dialog completion: expected one marker, found {text.count(old_accept)}'
+                  f'dialog completion: expected one marker, found {text.count(old_close)}'
               )
-          dialog.write_text(text.replace(old_accept, new_accept), encoding='utf-8')
+          dialog.write_text(text.replace(old_close, new_close), encoding='utf-8')
 
           runtime = Path('tests/upstream-runtime.spec.ts')
           text = runtime.read_text(encoding='utf-8')
