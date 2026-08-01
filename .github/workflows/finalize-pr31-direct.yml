@@ -83,7 +83,7 @@ jobs:
           )
           runtime.write_text(text, encoding='utf-8')
           PY
-          bunx biome check tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts
+          bunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts
 
       - name: RED - prove the selected regressions fail before implementation
         shell: bash
