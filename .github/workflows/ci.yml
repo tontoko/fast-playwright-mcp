@@ -20,13 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.5
       - name: Use Node.js 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
       - name: Install dependencies
@@ -68,6 +68,7 @@ jobs:
           bunx playwright test \
             tests/adaptive-config.spec.ts \
             tests/mcp-tool-schema.spec.ts \
+            tests/mcp-server-initialize.spec.ts \
             tests/tool-registry.spec.ts \
             tests/tool-visibility.spec.ts \
             tests/tool-search.spec.ts \
@@ -75,14 +76,19 @@ jobs:
             tests/tool-context-budget.spec.ts \
             tests/browser-find.spec.ts \
             tests/http-allowed-hosts.spec.ts \
+            tests/network-origin-filter.spec.ts \
             tests/output-manager.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
             tests/secret-redaction.spec.ts \
+            tests/session-log-redaction.spec.ts \
             tests/mcp-resources.spec.ts \
             tests/dashboard-build.spec.ts \
             tests/dashboard-render.spec.ts \
             tests/dashboard-e2e.spec.ts \
+            tests/readme-contract.spec.ts \
             tests/upstream-check.spec.ts \
             tests/upstream-config.spec.ts \
+            tests/upstream-runtime.spec.ts \
             tests/review-threads.spec.ts \
             --project=chromium 2>&1 | tee focused-tests.log
       - name: Test packed npm artifact
@@ -94,7 +100,7 @@ jobs:
         run: git diff --exit-code
       - name: Upload quality failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
         with:
           name: quality-failure-diagnostics
           path: |
@@ -114,13 +120,13 @@ jobs:
       matrix:
         project: [chrome, chromium, msedge, firefox, webkit]
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.5
       - name: Use Node.js 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
       - name: Install dependencies
@@ -143,7 +149,7 @@ jobs:
           bunx playwright test --project=${{ matrix.project }} 2>&1 | tee browser-${{ matrix.project }}.log
       - name: Upload ${{ matrix.project }} failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
         with:
           name: browser-${{ matrix.project }}-failure-diagnostics
           path: |
@@ -157,13 +163,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.5
       - name: Use Node.js 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
           cache: npm
@@ -191,7 +197,7 @@ jobs:
           xvfb-run --auto-servernum bunx playwright test --config=extension/playwright.config.ts 2>&1 | tee extension-e2e.log
       - name: Upload extension failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
         with:
           name: extension-failure-diagnostics
           path: |
@@ -202,7 +208,7 @@ jobs:
           retention-days: 7
       - name: Upload extension artifact
         if: success()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
         with:
           name: playwright-mcp-extension
           path: extension/dist
@@ -214,11 +220,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
       - name: Build image
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
         with:
           context: .
           tags: fast-playwright-mcp-ci:latest
@@ -232,7 +238,7 @@ jobs:
           docker run --rm fast-playwright-mcp-ci:latest --version 2>&1 | tee docker-smoke.log
       - name: Upload Docker smoke-test failure log
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
         with:
           name: docker-smoke-failure-log
           path: docker-smoke.log
@@ -245,7 +251,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
