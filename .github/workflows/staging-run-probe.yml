@@ -1,5 +1,4 @@
-# Refresh marker: 2026-08-01-pr31-final-review-6
-name: Probe staging workflow runs
+name: Probe final PR 31 status
 
 on:
   push:
@@ -11,19 +10,26 @@ on:
 
 permissions:
   actions: read
+  checks: read
   contents: write
+  statuses: read
 
 jobs:
   probe:
     if: ${{ !contains(github.event.head_commit.message, '[staging-run-result]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      TARGET_SHA: 3795262331742b87fc04d604a62e5282a0fd1afc
+      PROJECT_KEY: tontoko_fast-playwright-mcp
+      TARGET_PR: '31'
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           ref: agent/sonar-status-probe
           fetch-depth: 0
-      - name: Query PR 31 final-review workflow runs and latest failure log
+
+      - name: Query GitHub and Sonar
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -31,75 +37,101 @@ jobs:
           set -euo pipefail
           root='.github/staging-run-probe'
           mkdir -p "$root"
-          api() {
+
+          github_api() {
             curl --silent --show-error --location \
-              --max-time 30 \
+              --max-time 40 \
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H 'Accept: application/vnd.github+json' \
               -H 'X-GitHub-Api-Version: 2022-11-28' \
               "$1"
           }
-          api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=agent%2Fpr31-final-review&per_page=50" \
+          sonar_api() {
+            curl --silent --show-error --location \
+              --max-time 40 \
+              --user-agent 'fast-playwright-mcp-final-probe/1.0' \
+              "$1"
+          }
+
+          github_api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${TARGET_SHA}&per_page=50" \
             > "$root/runs.json"
+          github_api "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${TARGET_SHA}/check-runs?per_page=100" \
+            > "$root/check-runs.json"
+          github_api "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${TARGET_SHA}/status" \
+            > "$root/legacy-status.json"
+
+          sonar_api "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${PROJECT_KEY}&pullRequest=${TARGET_PR}" \
+            > "$root/quality-gate.json"
+          sonar_api "https://sonarcloud.io/api/issues/search?componentKeys=${PROJECT_KEY}&pullRequest=${TARGET_PR}&resolved=false&ps=500" \
+            > "$root/issues.json"
+          sonar_api "https://sonarcloud.io/api/measures/component?component=${PROJECT_KEY}&pullRequest=${TARGET_PR}&metricKeys=new_reliability_rating,new_security_rating,new_maintainability_rating,new_bugs,new_vulnerabilities,new_code_smells,new_duplicated_lines_density,new_security_hotspots_reviewed" \
+            > "$root/measures.json"
+          sonar_api "https://sonarcloud.io/api/project_pull_requests/list?project=${PROJECT_KEY}" \
+            > "$root/pull-requests.json"
+
           python3 - <<'PY'
           import json
           from pathlib import Path
 
           root = Path('.github/staging-run-probe')
-          payload = json.loads((root / 'runs.json').read_text(encoding='utf-8'))
-          lines = ['# PR 31 final-review workflow runs', '']
-          latest_failed_run = None
-          for run in payload.get('workflow_runs', []):
-              lines.extend([
-                  f"## {run.get('name')} #{run.get('run_number')}",
-                  f"- id: {run.get('id')}",
-                  f"- event: {run.get('event')}",
-                  f"- head_sha: {run.get('head_sha')}",
-                  f"- status: {run.get('status')}",
-                  f"- conclusion: {run.get('conclusion')}",
-                  f"- created_at: {run.get('created_at')}",
-                  f"- updated_at: {run.get('updated_at')}",
-                  f"- html_url: {run.get('html_url')}",
-                  '',
-              ])
-              if latest_failed_run is None and run.get('conclusion') == 'failure':
-                  latest_failed_run = run.get('id')
-          (root / 'RESULTS.md').write_text('\n'.join(lines), encoding='utf-8')
-          (root / 'LATEST_FAILED_RUN').write_text(
-              str(latest_failed_run or ''), encoding='utf-8'
-          )
+          target_sha = '3795262331742b87fc04d604a62e5282a0fd1afc'
+
+          def load(name: str):
+              return json.loads((root / name).read_text(encoding='utf-8'))
+
+          runs = load('runs.json').get('workflow_runs', [])
+          checks = load('check-runs.json').get('check_runs', [])
+          legacy = load('legacy-status.json')
+          gate = load('quality-gate.json').get('projectStatus', {})
+          issues = load('issues.json')
+          measure_payload = load('measures.json')
+          prs = load('pull-requests.json').get('pullRequests', [])
+          sonar_pr = next((item for item in prs if str(item.get('key')) == '31'), {})
+          measures = {
+              item.get('metric'): item.get('period', {}).get('value', item.get('value'))
+              for item in measure_payload.get('component', {}).get('measures', [])
+          }
+
+          lines = [
+              '# Final PR 31 status',
+              '',
+              f'- target SHA: {target_sha}',
+              f"- Sonar analyzed revision: {sonar_pr.get('revision')}",
+              f"- Sonar analysis date: {sonar_pr.get('analysisDate')}",
+              f"- Sonar quality gate: {gate.get('status')}",
+              f"- unresolved Sonar issues: {issues.get('total')}",
+              f"- GitHub aggregate status: {legacy.get('state')}",
+              '',
+              '## Workflow runs',
+          ]
+          for run in runs:
+              lines.append(
+                  f"- {run.get('name')} #{run.get('run_number')}: "
+                  f"status={run.get('status')}, conclusion={run.get('conclusion')}"
+              )
+
+          lines.extend(['', '## Check runs'])
+          for check in checks:
+              app = check.get('app') or {}
+              lines.append(
+                  f"- {check.get('name')} ({app.get('slug')}): "
+                  f"status={check.get('status')}, conclusion={check.get('conclusion')}"
+              )
+
+          lines.extend(['', '## Sonar measures'])
+          for key in sorted(measures):
+              lines.append(f'- {key}: {measures[key]}')
+
+          lines.extend(['', '## Sonar quality-gate conditions'])
+          for condition in gate.get('conditions', []):
+              lines.append(
+                  f"- {condition.get('metricKey')}: status={condition.get('status')}, "
+                  f"actual={condition.get('actualValue')}, threshold={condition.get('errorThreshold')}"
+              )
+
+          (root / 'RESULTS.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
 
-          failed_run="$(cat "$root/LATEST_FAILED_RUN")"
-          if [ -n "$failed_run" ]; then
-            api "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${failed_run}/jobs?filter=latest&per_page=100" \
-              > "$root/latest-failed-jobs.json"
-            job_id="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-          payload = json.loads(
-              Path('.github/staging-run-probe/latest-failed-jobs.json').read_text(
-                  encoding='utf-8'
-              )
-          )
-          jobs = payload.get('jobs', [])
-          failed = next((job for job in jobs if job.get('conclusion') == 'failure'), None)
-          print((failed or (jobs[0] if jobs else {})).get('id', ''))
-          PY
-            )"
-            if [ -n "$job_id" ]; then
-              curl --silent --show-error --location \
-                --max-time 60 \
-                -H "Authorization: Bearer ${GH_TOKEN}" \
-                -H 'Accept: application/vnd.github+json' \
-                -H 'X-GitHub-Api-Version: 2022-11-28' \
-                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/jobs/${job_id}/logs" \
-                > "$root/latest-failed-job-full.txt"
-              tail -n 400 "$root/latest-failed-job-full.txt" \
-                > "$root/latest-failed-job-tail.txt"
-              rm "$root/latest-failed-job-full.txt"
-            fi
-          fi
       - name: Commit result
         shell: bash
         run: |
@@ -107,5 +139,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .github/staging-run-probe
-          git commit -m 'chore: record staging workflow runs [staging-run-result]'
+          git commit -m 'chore: record final PR 31 status [staging-run-result]'
           git push origin HEAD:agent/sonar-status-probe
