@@ -1,0 +1,31 @@
+name: Inspect PR 31 generated regressions
+
+on:
+  push:
+    branches: [agent/pr31-final-review]
+    paths: ['.github/workflows/inspect-pr31-generated.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Generate and print regression sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin agent/pr31-review-fixes:refs/remotes/origin/agent/pr31-review-fixes
+          cat scripts/apply-pr31-final.py.gz.b64.* > /tmp/payload.b64
+          base64 --decode /tmp/payload.b64 | gzip --decompress > scripts/apply-pr31-final.py
+          python3 scripts/apply-pr31-final.py tests
+          echo '=== tests/dialog-lifecycle.spec.ts ==='
+          nl -ba tests/dialog-lifecycle.spec.ts
+          echo '=== tests/upstream-runtime.spec.ts relevant lines ==='
+          grep -n -A8 -B4 'extension profile discovery' tests/upstream-runtime.spec.ts || true
