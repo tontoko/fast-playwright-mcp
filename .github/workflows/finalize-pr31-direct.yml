@@ -44,12 +44,12 @@ jobs:
             '6248edd96a856f8a59b05b8ac5cc8294ff3d8219eb13c20b2a4d23e6858b0022' \
             /tmp/pr31-payload.b64 | sha256sum --check
           base64 --decode /tmp/pr31-payload.b64 | gzip --decompress \
-            > /tmp/apply-pr31-final.py
+            > scripts/apply-pr31-final.py
           printf '%s  %s\n' \
             '6a95d924a4d0051c3db738f1e126776a51f3ab8185231cc24c49a7d7fa3a0d0d' \
-            /tmp/apply-pr31-final.py | sha256sum --check
-          python3 -m py_compile /tmp/apply-pr31-final.py
-          chmod +x /tmp/apply-pr31-final.py
+            scripts/apply-pr31-final.py | sha256sum --check
+          python3 -m py_compile scripts/apply-pr31-final.py
+          chmod +x scripts/apply-pr31-final.py
 
       - name: Install the reviewed baseline
         shell: bash
@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 /tmp/apply-pr31-final.py tests
+          python3 scripts/apply-pr31-final.py tests
           python3 - <<'PY'
           from pathlib import Path
 
@@ -118,7 +118,7 @@ jobs:
               exit 1
               ;;
           esac
-          PLAYWRIGHT_VERSION="$version" python3 /tmp/apply-pr31-final.py implementation
+          PLAYWRIGHT_VERSION="$version" python3 scripts/apply-pr31-final.py implementation
           printf 'Applied Playwright version %s\n' "$version"
 
       - name: Install refreshed dependency graph
@@ -217,7 +217,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git reset -- .github/workflows
-          git reset -- scripts/apply-pr31-final.py.gz.b64 scripts/apply-pr31-final.py.gz.b64.* scripts/materialize-pr31-final.sh
+          git reset -- scripts/apply-pr31-final.py scripts/apply-pr31-final.py.gz.b64 scripts/apply-pr31-final.py.gz.b64.* scripts/materialize-pr31-final.sh
           if git diff --cached --quiet; then
             echo 'No source changes were produced.' >&2
             exit 1
