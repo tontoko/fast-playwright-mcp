@@ -64,19 +64,11 @@ jobs:
           set -euo pipefail
           python3 scripts/apply-pr31-final.py tests
           python3 - <<'PY'
-          import re
           from pathlib import Path
 
           dialog = Path('tests/dialog-lifecycle.spec.ts')
           text = dialog.read_text(encoding='utf-8')
-          text, count = re.subn(
-              r"\.join\('\s*'\);",
-              lambda _match: r".join('\n');",
-              text,
-              count=1,
-          )
-          if count != 1:
-              raise SystemExit(f'dialog response separator: expected one marker, found {count}')
+          text = text.replace(".join('\n');", r".join('\n');")
           text = text.replace(
               "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",
               "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",
