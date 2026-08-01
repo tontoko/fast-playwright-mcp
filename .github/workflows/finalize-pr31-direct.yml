@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: finalize-pr31-direct
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   finalize:
@@ -127,19 +127,31 @@ jobs:
       - name: Remove generated Python bytecode
         run: rm -rf scripts/__pycache__
 
-      - name: Format, encode, typecheck, build, generate, and lint
+      - name: Format source
+        run: timeout 5m bun run lint-fix
+
+      - name: Verify source encoding
+        run: bun run check:encoding
+
+      - name: Typecheck
+        run: timeout 10m bun run typecheck
+
+      - name: Build package
+        run: timeout 10m bun run build:publish
+
+      - name: Regenerate README
+        run: timeout 10m bun run update-readme
+
+      - name: Reformat generated output
+        run: timeout 5m bun run lint-fix
+
+      - name: Verify generated output
         shell: bash
         run: |
           set -euo pipefail
-          bun run lint-fix
           bun run check:encoding
-          bun run typecheck
-          bun run build:publish
-          bun run update-readme
-          bun run lint-fix
-          bun run check:encoding
-          bun run typecheck
-          bun run build:publish
+          timeout 10m bun run typecheck
+          timeout 10m bun run build:publish
           bun run lint
           bun run benchmark:tools -- --check
           git diff --check
