@@ -36,6 +36,7 @@ test('dialog modal state clears when a side-channel client closes the dialog', a
     .getByRole('button', { name: 'Open dialog' })
     .click();
   const dialog = await dialogPromise;
+  expect(dialog.message()).toBe('Alert from page');
 
   await expect
     .poll(async () =>

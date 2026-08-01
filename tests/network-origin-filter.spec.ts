@@ -1,3 +1,4 @@
+import { originRoutePattern } from '../src/network-origin.js';
 import { expect, test } from './fixtures.js';
 
 function localBrowserConfig() {
@@ -14,6 +15,28 @@ function localBrowserConfig() {
     },
   };
 }
+
+test('origin route patterns support URL, host-only, wildcard-port, and IPv6 forms', () => {
+  expect(originRoutePattern('https://example.test')).toBe(
+    'https://example.test/**'
+  );
+  expect(originRoutePattern('https://example.test:*')).toBe(
+    'https://example.test:*/**'
+  );
+  expect(originRoutePattern('example.test:443')).toBe(
+    '*://example.test:443/**'
+  );
+  expect(originRoutePattern('[::1]:*')).toBe('*://[::1]:*/**');
+  expect(() => originRoutePattern('https://user@example.test')).toThrow(
+    'Invalid network origin'
+  );
+  expect(() => originRoutePattern('https://example.test/path')).toThrow(
+    'Invalid network origin'
+  );
+  expect(() => originRoutePattern('ftp://example.test')).toThrow(
+    'Invalid network origin'
+  );
+});
 
 test('allowedOrigins accepts a full URL origin', async ({
   startClient,

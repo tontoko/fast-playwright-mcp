@@ -118,7 +118,7 @@ class TabShareExtension {
               error: error instanceof Error ? error.message : String(error),
             })
         );
-        return true; // Return true to indicate that the response will be sent asynchronously
+        return true;
       case 'rejectConnection':
         if (!sender.tab?.id) {
           sendResponse({ success: false, error: 'Missing tab ID' });
@@ -147,7 +147,6 @@ class TabShareExtension {
         );
         return true;
       default:
-        // Handle unexpected message types
         sendResponse({
           success: false,
           error: `Unknown message type: ${(message as { type: string }).type}`,
@@ -302,7 +301,6 @@ class TabShareExtension {
         await chrome.action.setBadgeBackgroundColor({ tabId, color });
       }
     } catch (error: unknown) {
-      // Log errors as the tab may be closed already, but still track the issue
       debugLog(
         'Failed to update badge:',
         error instanceof Error ? error.message : String(error)
@@ -398,7 +396,7 @@ class TabShareExtension {
   private async _disconnect(): Promise<void> {
     this._activeConnection?.close('User disconnected');
     this._activeConnection = undefined;
-    for (const tabId of [...this._pendingTabSelection.keys()]) {
+    for (const tabId of this._pendingTabSelection.keys()) {
       this._closePendingConnection(tabId, 'User disconnected');
     }
     await this._setConnectedTabId(null);

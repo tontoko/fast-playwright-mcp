@@ -12,9 +12,11 @@ export function escapeWithQuotes(
   }
   const body = stringified.slice(1, -1);
   if (char === "'") {
-    return `'${body.replaceAll("'", "\\'")}'`;
+    return `'${body.replaceAll("'", String.raw`\'`)}'`;
   }
-  return `\`${body.replaceAll('`', '\\`').replaceAll('${', '\\${')}\``;
+  return `\`${body
+    .replaceAll('`', String.raw`\``)
+    .replaceAll('${', String.raw`\${')}\``;
 }
 
 export function quote(text: string): string {

@@ -1,40 +1,93 @@
-const FULL_ORIGIN_WILDCARD_PORT = /^(https?):\/\/(\[[^\]]+\]|[^/:?#]+):\*$/u;
-const HOST_ONLY_PATTERN = /^(\[[^\]]+\]|[^/:?#]+)(?::(?:\d+|\*))?$/u;
-const TRAILING_SLASHES_PATTERN = /\/+$/u;
+const SUPPORTED_PROTOCOLS = new Set(['http:', 'https:']);
 
-export function originRoutePattern(value: string): string {
-  const origin = value.trim().replace(TRAILING_SLASHES_PATTERN, '');
-  if (!origin) {
-    throw new Error('Network origin must not be empty');
+function stripTrailingSlashes(value: string): string {
+  let end = value.length;
+  while (end > 0 && value.charCodeAt(end - 1) === 47) {
+    end--;
   }
+  return value.slice(0, end);
+}
 
-  const wildcardPort = FULL_ORIGIN_WILDCARD_PORT.exec(origin);
-  if (wildcardPort) {
-    return `${wildcardPort[1]}://${wildcardPort[2]}:*/**`;
-  }
-
-  if (!origin.includes('://')) {
-    if (!HOST_ONLY_PATTERN.test(origin)) {
-      throw new Error(`Invalid network origin: ${value}`);
-    }
-    return `*://${origin}/**`;
-  }
-
-  let url: URL;
-  try {
-    url = new URL(origin);
-  } catch {
-    throw new Error(`Invalid network origin: ${value}`);
-  }
+function assertSupportedOrigin(url: URL, original: string): void {
   if (
-    !['http:', 'https:'].includes(url.protocol) ||
+    !SUPPORTED_PROTOCOLS.has(url.protocol) ||
     url.username ||
     url.password ||
     url.pathname !== '/' ||
     url.search ||
-    url.hash
+    url.hash ||
+    !url.hostname
   ) {
+    throw new Error(`Invalid network origin: ${original}`);
+  }
+}
+
+function fullOriginWildcardPattern(
+  origin: string,
+  schemeSeparator: number,
+  original: string
+): string | undefined {
+  if (!origin.endsWith(':*')) {
+    return;
+  }
+  const protocol = `${origin.slice(0, schemeSeparator)}:`;
+  if (!SUPPORTED_PROTOCOLS.has(protocol)) {
+    throw new Error(`Invalid network origin: ${original}`);
+  }
+  const authority = origin.slice(schemeSeparator + 3, -2);
+  if (!authority) {
+    throw new Error(`Invalid network origin: ${original}`);
+  }
+  try {
+    const parsed = new URL(`${protocol}//${authority}:1`);
+    assertSupportedOrigin(parsed, original);
+    if (parsed.port !== '1') {
+      throw new Error(`Invalid network origin: ${original}`);
+    }
+  } catch {
+    throw new Error(`Invalid network origin: ${original}`);
+  }
+  return `${protocol}//${authority}:*/**`;
+}
+
+function hostOnlyRoutePattern(origin: string, original: string): string {
+  const wildcardPort = origin.endsWith(':*');
+  const candidate = wildcardPort
+    ? `${origin.slice(0, -2)}:1`
+    : origin;
+  try {
+    const parsed = new URL(`http://${candidate}`);
+    assertSupportedOrigin(parsed, original);
+    if (wildcardPort && parsed.port !== '1') {
+      throw new Error(`Invalid network origin: ${original}`);
+    }
+  } catch {
+    throw new Error(`Invalid network origin: ${original}`);
+  }
+  return `*://${origin}/**`;
+}
+
+export function originRoutePattern(value: string): string {
+  const origin = stripTrailingSlashes(value.trim());
+  if (!origin) {
+    throw new Error('Network origin must not be empty');
+  }
+
+  const schemeSeparator = origin.indexOf('://');
+  if (schemeSeparator === -1) {
+    return hostOnlyRoutePattern(origin, value);
+  }
+
+  const wildcard = fullOriginWildcardPattern(origin, schemeSeparator, value);
+  if (wildcard) {
+    return wildcard;
+  }
+
+  try {
+    const parsed = new URL(origin);
+    assertSupportedOrigin(parsed, value);
+    return `${parsed.origin}/**`;
+  } catch {
     throw new Error(`Invalid network origin: ${value}`);
   }
-  return `${url.origin}/**`;
 }

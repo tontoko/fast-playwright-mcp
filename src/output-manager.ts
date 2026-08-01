@@ -43,12 +43,11 @@ function isPathInside(root: string, candidate: string): boolean {
 export class OutputManager {
   private queue: Promise<void> = Promise.resolve();
   private readonly lexicalOutputDir: string;
-  private readonly canonicalOutputDir: Promise<string>;
+  private canonicalOutputDirPromise: Promise<string> | undefined;
   private readonly maxSize: number;
 
   constructor(outputDir: string, maxSize: number) {
     this.lexicalOutputDir = resolve(outputDir);
-    this.canonicalOutputDir = this.initializeOutputDirectory();
     this.maxSize = maxSize;
   }
 
@@ -60,7 +59,7 @@ export class OutputManager {
 
     const canonicalParent = await this.ensureSafeDirectory(dirname(absolute));
     const target = resolve(canonicalParent, basename(absolute));
-    const root = await this.canonicalOutputDir;
+    const root = await this.canonicalOutputDirectory();
     if (!isPathInside(root, target)) {
       throw new Error(OUTSIDE_OUTPUT_ERROR);
     }
@@ -93,6 +92,11 @@ export class OutputManager {
     await this.enqueue(() => this.evict(target, true));
   }
 
+  private canonicalOutputDirectory(): Promise<string> {
+    this.canonicalOutputDirPromise ??= this.initializeOutputDirectory();
+    return this.canonicalOutputDirPromise;
+  }
+
   private async initializeOutputDirectory(): Promise<string> {
     await fs.mkdir(this.lexicalOutputDir, { recursive: true });
     return fs.realpath(this.lexicalOutputDir);
@@ -108,7 +112,7 @@ export class OutputManager {
 
   private async ensureSafeDirectory(directory: string): Promise<string> {
     const absolute = this.assertLexicallyContained(directory);
-    const root = await this.canonicalOutputDir;
+    const root = await this.canonicalOutputDirectory();
     const pathFromRoot = relative(this.lexicalOutputDir, absolute);
     const segments = pathFromRoot.split(sep).filter(Boolean);
     return this.ensureSafeDirectorySegments(root, root, segments, 0);
@@ -152,7 +156,7 @@ export class OutputManager {
     expectedKind: ExpectedPathKind
   ): Promise<string> {
     const absolute = this.assertLexicallyContained(path);
-    const root = await this.canonicalOutputDir;
+    const root = await this.canonicalOutputDirectory();
     try {
       const status = await fs.lstat(absolute);
       if (status.isSymbolicLink()) {
@@ -245,7 +249,7 @@ export class OutputManager {
   }
 
   private async collectEntries(): Promise<OutputEntry[]> {
-    const root = await this.canonicalOutputDir;
+    const root = await this.canonicalOutputDirectory();
     const visit = async (directory: string): Promise<OutputEntry[]> => {
       const children = await fs
         .readdir(directory, { withFileTypes: true })
