@@ -1,5 +1,15 @@
 # PR 31 final-review workflow runs
 
+## Finalize PR 31 directly #12
+- id: 30687907650
+- event: push
+- head_sha: 6ce213f6282caf1a378b77c89ccad5a83eb3c244
+- status: completed
+- conclusion: failure
+- created_at: 2026-08-01T06:31:38Z
+- updated_at: 2026-08-01T06:32:15Z
+- html_url: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30687907650
+
 ## Finalize PR 31 directly #11
 - id: 30687789830
 - event: push
