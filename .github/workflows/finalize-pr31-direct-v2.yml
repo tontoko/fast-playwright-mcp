@@ -178,9 +178,11 @@ jobs:
               raise SystemExit('session-log import marker mismatch')
           text = text.replace(import_marker, import_replacement)
           queue_marker = '    this._sessionFileQueue = this._sessionFileQueue.then(operation);'
-          queue_replacement = """    this._sessionFileQueue = this._sessionFileQueue
-      .then(operation)
-      .catch(logUnhandledError);"""
+          queue_replacement = (
+              '    this._sessionFileQueue = this._sessionFileQueue\n'
+              '      .then(operation)\n'
+              '      .catch(logUnhandledError);'
+          )
           if text.count(queue_marker) != 1:
               raise SystemExit('session-log queue marker mismatch')
           session_log.write_text(
