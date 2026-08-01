@@ -217,6 +217,9 @@ jobs:
           git diff --check
 
       - name: GREEN - focused regressions
+        env:
+          DEBUG: 'pw:mcp:*'
+          PWMCP_DEBUG: '1'
         shell: bash
         run: |
           set -euo pipefail
