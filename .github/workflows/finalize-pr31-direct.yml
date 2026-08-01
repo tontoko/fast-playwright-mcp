@@ -124,6 +124,9 @@ jobs:
       - name: Install refreshed dependency graph
         run: bun install
 
+      - name: Remove generated Python bytecode
+        run: rm -rf scripts/__pycache__
+
       - name: Format, encode, typecheck, build, generate, and lint
         shell: bash
         run: |
@@ -210,7 +213,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf lib test-results playwright-report
+          rm -rf lib test-results playwright-report scripts/__pycache__
           rm -rf extension/dist extension/test-results extension/playwright-report
           rm -f -- *.tgz tsconfig.tsbuildinfo
           git config user.name 'github-actions[bot]'
