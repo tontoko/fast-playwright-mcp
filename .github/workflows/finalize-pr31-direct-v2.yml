@@ -154,6 +154,39 @@ jobs:
               text.replace('tab.context.config.timeouts.settle', 'settleTimeout'),
               encoding='utf-8',
           )
+
+          tab = Path('src/tab.ts')
+          text = tab.read_text(encoding='utf-8')
+          navigation_access = 'this.context.config.timeouts.navigation'
+          if text.count(navigation_access) != 2:
+              raise SystemExit(
+                  f'expected two navigation timeout accesses, found {text.count(navigation_access)}'
+              )
+          tab.write_text(
+              text.replace(
+                  navigation_access,
+                  '(this.context.config.timeouts?.navigation ?? 60_000)',
+              ),
+              encoding='utf-8',
+          )
+
+          session_log = Path('src/session-log.ts')
+          text = session_log.read_text(encoding='utf-8')
+          import_marker = "import { SecretRedactor } from './utils/secret-redactor.js';"
+          import_replacement = "import { logUnhandledError } from './utils/log.js';\nimport { SecretRedactor } from './utils/secret-redactor.js';"
+          if text.count(import_marker) != 1:
+              raise SystemExit('session-log import marker mismatch')
+          text = text.replace(import_marker, import_replacement)
+          queue_marker = '    this._sessionFileQueue = this._sessionFileQueue.then(operation);'
+          queue_replacement = """    this._sessionFileQueue = this._sessionFileQueue
+      .then(operation)
+      .catch(logUnhandledError);"""
+          if text.count(queue_marker) != 1:
+              raise SystemExit('session-log queue marker mismatch')
+          session_log.write_text(
+              text.replace(queue_marker, queue_replacement),
+              encoding='utf-8',
+          )
           PY
 
       - name: Install refreshed dependencies and browser revision
