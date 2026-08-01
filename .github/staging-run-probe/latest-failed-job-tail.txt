@@ -1,400 +1,400 @@
-2026-08-01T06:00:42.6960847Z + @modelcontextprotocol/sdk@1.25.2
-2026-08-01T06:00:42.6961205Z + @types/sharp@0.31.1
-2026-08-01T06:00:42.6961471Z + commander@13.1.0
-2026-08-01T06:00:42.6961724Z + debug@4.4.3
-2026-08-01T06:00:42.6962083Z + dotenv@17.4.2
-2026-08-01T06:00:42.6962388Z + fast-diff@1.3.0
-2026-08-01T06:00:42.6962672Z + mime@4.1.0
-2026-08-01T06:00:42.6963003Z + playwright@1.62.0-alpha-1783623505000
-2026-08-01T06:00:42.6963455Z + playwright-core@1.62.0-alpha-1783623505000
-2026-08-01T06:00:42.6964036Z + sharp@0.34.5
-2026-08-01T06:00:42.6964337Z + ws@8.21.1
-2026-08-01T06:00:42.6964594Z + zod@3.25.76
-2026-08-01T06:00:42.6964884Z + zod-to-json-schema@3.25.2
-2026-08-01T06:00:42.6965074Z 
-2026-08-01T06:00:42.6965279Z 191 packages installed [1275.00ms]
-2026-08-01T06:00:43.0366582Z Installing dependencies...
-2026-08-01T06:00:43.0407097Z Switching to root user to install dependencies...
-2026-08-01T06:00:43.1094856Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-2026-08-01T06:00:43.1338024Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-2026-08-01T06:00:43.1357684Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-2026-08-01T06:00:43.1391817Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
-2026-08-01T06:00:43.1415496Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
-2026-08-01T06:00:43.1479930Z Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-2026-08-01T06:00:43.1544589Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
-2026-08-01T06:00:43.2160734Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1154 kB]
-2026-08-01T06:00:43.2265144Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [278 kB]
-2026-08-01T06:00:43.2281565Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
-2026-08-01T06:00:43.2298988Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1681 kB]
-2026-08-01T06:00:43.2362958Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [334 kB]
-2026-08-01T06:00:43.2398989Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
-2026-08-01T06:00:43.2405401Z Get:19 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
-2026-08-01T06:00:43.2425464Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1367 kB]
-2026-08-01T06:00:43.2490344Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [308 kB]
-2026-08-01T06:00:43.2518620Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [45.4 kB]
-2026-08-01T06:00:43.2528488Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.3 kB]
-2026-08-01T06:00:43.2976453Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
-2026-08-01T06:00:43.2990154Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5744 B]
-2026-08-01T06:00:43.2998872Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [32.5 kB]
-2026-08-01T06:00:43.3008507Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
-2026-08-01T06:00:43.3017628Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [897 kB]
-2026-08-01T06:00:43.3058135Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [198 kB]
-2026-08-01T06:00:43.3075088Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
-2026-08-01T06:00:43.3085218Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1199 kB]
-2026-08-01T06:00:43.3145191Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [239 kB]
-2026-08-01T06:00:43.3155653Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
-2026-08-01T06:00:43.3173365Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1273 kB]
-2026-08-01T06:00:43.3233260Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [290 kB]
-2026-08-01T06:00:43.3252343Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [40.3 kB]
-2026-08-01T06:00:43.3262251Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [10.6 kB]
-2026-08-01T06:00:43.3509965Z Get:33 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [227 kB]
-2026-08-01T06:00:43.3563286Z Get:34 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.7 kB]
-2026-08-01T06:00:43.3584903Z Get:35 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [261 kB]
-2026-08-01T06:00:43.5235420Z Get:36 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1411 B]
-2026-08-01T06:00:49.3097406Z Fetched 11.0 MB in 1s (11.6 MB/s)
-2026-08-01T06:00:49.8491488Z Reading package lists...
-2026-08-01T06:00:49.8733570Z Reading package lists...
-2026-08-01T06:00:49.9858660Z Building dependency tree...
-2026-08-01T06:00:49.9864103Z Reading state information...
-2026-08-01T06:00:50.1316785Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
-2026-08-01T06:00:50.1317634Z libasound2t64 set to manually installed.
-2026-08-01T06:00:50.1318266Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T06:00:50.1318794Z libatk-bridge2.0-0t64 set to manually installed.
-2026-08-01T06:00:50.1319446Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T06:00:50.1319958Z libatk1.0-0t64 set to manually installed.
-2026-08-01T06:00:50.1320560Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T06:00:50.1321077Z libatspi2.0-0t64 set to manually installed.
-2026-08-01T06:00:50.1321588Z libcairo2 is already the newest version (1.18.0-3build1).
-2026-08-01T06:00:50.1322085Z libcairo2 set to manually installed.
-2026-08-01T06:00:50.1322603Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
-2026-08-01T06:00:50.1323166Z libcups2t64 set to manually installed.
-2026-08-01T06:00:50.1323674Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
-2026-08-01T06:00:50.1324296Z libdbus-1-3 set to manually installed.
-2026-08-01T06:00:50.1324748Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
-2026-08-01T06:00:50.1325148Z libdrm2 set to manually installed.
-2026-08-01T06:00:50.1325544Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.2).
-2026-08-01T06:00:50.1325922Z libgbm1 set to manually installed.
-2026-08-01T06:00:50.1326275Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.8).
-2026-08-01T06:00:50.1326936Z libglib2.0-0t64 set to manually installed.
-2026-08-01T06:00:50.1327332Z libnspr4 is already the newest version (2:4.35-1.1build1).
-2026-08-01T06:00:50.1327707Z libnspr4 set to manually installed.
-2026-08-01T06:00:50.1328103Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
-2026-08-01T06:00:50.1328450Z libnss3 set to manually installed.
-2026-08-01T06:00:50.1328849Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
-2026-08-01T06:00:50.1329225Z libpango-1.0-0 set to manually installed.
-2026-08-01T06:00:50.1329627Z libx11-6 is already the newest version (2:1.8.7-1build1).
-2026-08-01T06:00:50.1329996Z libx11-6 set to manually installed.
-2026-08-01T06:00:50.1330347Z libxcb1 is already the newest version (1.15-1ubuntu2).
-2026-08-01T06:00:50.1330706Z libxcb1 set to manually installed.
-2026-08-01T06:00:50.1331075Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
-2026-08-01T06:00:50.1331437Z libxcomposite1 set to manually installed.
-2026-08-01T06:00:50.1331874Z libxdamage1 is already the newest version (1:1.1.6-1build1).
-2026-08-01T06:00:50.1332229Z libxdamage1 set to manually installed.
-2026-08-01T06:00:50.1332716Z libxext6 is already the newest version (2:1.3.4-1build2).
-2026-08-01T06:00:50.1333074Z libxext6 set to manually installed.
-2026-08-01T06:00:50.1333452Z libxfixes3 is already the newest version (1:6.0.0-2build1).
-2026-08-01T06:00:50.1334021Z libxfixes3 set to manually installed.
-2026-08-01T06:00:50.1334413Z libxkbcommon0 is already the newest version (1.6.0-1build1).
-2026-08-01T06:00:50.1334794Z libxkbcommon0 set to manually installed.
-2026-08-01T06:00:50.1335180Z libxrandr2 is already the newest version (2:1.5.2-2build1).
-2026-08-01T06:00:50.1335559Z libxrandr2 set to manually installed.
-2026-08-01T06:00:50.1335952Z xvfb is already the newest version (2:21.1.12-1ubuntu1.6).
-2026-08-01T06:00:50.1336422Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
-2026-08-01T06:00:50.1336976Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
-2026-08-01T06:00:50.1337410Z libfontconfig1 set to manually installed.
-2026-08-01T06:00:50.1337875Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.1).
-2026-08-01T06:00:50.1338276Z libfreetype6 set to manually installed.
-2026-08-01T06:00:50.1338697Z fonts-liberation is already the newest version (1:2.1.5-3).
-2026-08-01T06:00:50.1339053Z fonts-liberation set to manually installed.
-2026-08-01T06:00:50.1339462Z The following additional packages will be installed:
-2026-08-01T06:00:50.1339821Z   xfonts-encodings xfonts-utils
-2026-08-01T06:00:50.1340137Z Recommended packages:
-2026-08-01T06:00:50.1340434Z   fonts-ipafont-mincho fonts-tlwg-loma
-2026-08-01T06:00:50.1481141Z The following NEW packages will be installed:
-2026-08-01T06:00:50.1482163Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
-2026-08-01T06:00:50.1488088Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
-2026-08-01T06:00:50.1489588Z   xfonts-utils
-2026-08-01T06:00:50.1628587Z 0 upgraded, 9 newly installed, 0 to remove and 79 not upgraded.
-2026-08-01T06:00:50.1629096Z Need to get 21.1 MB of archives.
-2026-08-01T06:00:50.1629665Z After this operation, 79.5 MB of additional disk space will be used.
-2026-08-01T06:00:50.1630058Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-2026-08-01T06:00:50.2887157Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
-2026-08-01T06:00:50.5618935Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
-2026-08-01T06:00:50.6195182Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
-2026-08-01T06:00:50.6480276Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
-2026-08-01T06:00:50.6925156Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
-2026-08-01T06:00:50.7598063Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
-2026-08-01T06:00:50.7904271Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
-2026-08-01T06:00:50.8188166Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
-2026-08-01T06:00:50.8486194Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
-2026-08-01T06:00:51.0394911Z Fetched 21.1 MB in 1s (30.4 MB/s)
-2026-08-01T06:00:51.0593289Z Selecting previously unselected package fonts-ipafont-gothic.
-2026-08-01T06:00:51.0789149Z (Reading database ... 
-2026-08-01T06:00:51.0789420Z (Reading database ... 5%
-2026-08-01T06:00:51.0789814Z (Reading database ... 10%
-2026-08-01T06:00:51.0790051Z (Reading database ... 15%
-2026-08-01T06:00:51.0790297Z (Reading database ... 20%
-2026-08-01T06:00:51.0790550Z (Reading database ... 25%
-2026-08-01T06:00:51.0790832Z (Reading database ... 30%
-2026-08-01T06:00:51.0791210Z (Reading database ... 35%
-2026-08-01T06:00:51.0791465Z (Reading database ... 40%
-2026-08-01T06:00:51.0791868Z (Reading database ... 45%
-2026-08-01T06:00:51.0792098Z (Reading database ... 50%
-2026-08-01T06:00:51.1871470Z (Reading database ... 55%
-2026-08-01T06:00:51.3022934Z (Reading database ... 60%
-2026-08-01T06:00:51.7445484Z (Reading database ... 65%
-2026-08-01T06:00:52.0944024Z (Reading database ... 70%
-2026-08-01T06:00:52.3832511Z (Reading database ... 75%
-2026-08-01T06:00:52.6791497Z (Reading database ... 80%
-2026-08-01T06:00:53.0896525Z (Reading database ... 85%
-2026-08-01T06:00:53.3492239Z (Reading database ... 90%
-2026-08-01T06:00:53.7584366Z (Reading database ... 95%
-2026-08-01T06:00:53.7584742Z (Reading database ... 100%
-2026-08-01T06:00:53.7585086Z (Reading database ... 202954 files and directories currently installed.)
-2026-08-01T06:00:53.7620896Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
-2026-08-01T06:00:53.8158845Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
-2026-08-01T06:00:54.2939598Z Selecting previously unselected package fonts-freefont-ttf.
-2026-08-01T06:00:54.3031037Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
-2026-08-01T06:00:54.3404036Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
-2026-08-01T06:00:54.8601406Z Selecting previously unselected package fonts-tlwg-loma-otf.
-2026-08-01T06:00:54.8709871Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
-2026-08-01T06:00:54.8819215Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
-2026-08-01T06:00:55.3520935Z Selecting previously unselected package fonts-unifont.
-2026-08-01T06:00:55.3638727Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
-2026-08-01T06:00:55.4613124Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
-2026-08-01T06:00:57.7640892Z Selecting previously unselected package fonts-wqy-zenhei.
-2026-08-01T06:00:57.7751351Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
-2026-08-01T06:00:57.7839092Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
-2026-08-01T06:00:58.2614022Z Selecting previously unselected package xfonts-encodings.
-2026-08-01T06:00:58.2724303Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
-2026-08-01T06:00:58.2738234Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
-2026-08-01T06:00:58.3882342Z Selecting previously unselected package xfonts-utils.
-2026-08-01T06:00:58.3992561Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
-2026-08-01T06:00:58.4010411Z Unpacking xfonts-utils (1:7.7+6build3) ...
-2026-08-01T06:00:58.6416368Z Selecting previously unselected package xfonts-cyrillic.
-2026-08-01T06:00:58.6516285Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
-2026-08-01T06:00:58.6538715Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
-2026-08-01T06:00:58.7145417Z Selecting previously unselected package xfonts-scalable.
-2026-08-01T06:00:58.7249048Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
-2026-08-01T06:00:58.7579648Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
-2026-08-01T06:00:58.7912988Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
-2026-08-01T06:00:58.8350309Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
-2026-08-01T06:00:58.8383152Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
-2026-08-01T06:00:58.8417727Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
-2026-08-01T06:00:58.8452340Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
-2026-08-01T06:00:58.8516293Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
-2026-08-01T06:00:58.8538532Z Setting up fonts-unifont (1:15.1.01-1build1) ...
-2026-08-01T06:00:58.8573273Z Setting up xfonts-utils (1:7.7+6build3) ...
-2026-08-01T06:00:58.8625243Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
-2026-08-01T06:00:58.9168830Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
-2026-08-01T06:00:58.9377340Z Processing triggers for man-db (2.12.0-4build2) ...
-2026-08-01T06:00:58.9401457Z Not building database; man-db/auto-update is not 'true'.
-2026-08-01T06:00:58.9418955Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
-2026-08-01T06:00:59.6799101Z 
-2026-08-01T06:00:59.6800006Z Running kernel seems to be up-to-date.
-2026-08-01T06:00:59.6800348Z 
-2026-08-01T06:00:59.6800699Z No services need to be restarted.
-2026-08-01T06:00:59.6800964Z 
-2026-08-01T06:00:59.6801151Z No containers need to be restarted.
-2026-08-01T06:00:59.6801336Z 
-2026-08-01T06:00:59.6801553Z No user sessions are running outdated binaries.
-2026-08-01T06:00:59.6801849Z 
-2026-08-01T06:00:59.6802149Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
-2026-08-01T06:01:00.3577187Z Downloading Chrome for Testing 151.0.7922.10 (playwright chromium v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-linux64.zip
-2026-08-01T06:01:01.3931605Z |                                                                                |   0% of 184.3 MiB
-2026-08-01T06:01:01.7221330Z |■■■■■■■■                                                                        |  10% of 184.3 MiB
-2026-08-01T06:01:02.0012958Z |■■■■■■■■■■■■■■■■                                                                |  20% of 184.3 MiB
-2026-08-01T06:01:02.2027886Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 184.3 MiB
-2026-08-01T06:01:02.3842238Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 184.3 MiB
-2026-08-01T06:01:02.5665388Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 184.3 MiB
-2026-08-01T06:01:02.7022062Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 184.3 MiB
-2026-08-01T06:01:02.8299209Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 184.3 MiB
-2026-08-01T06:01:02.9632116Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 184.3 MiB
-2026-08-01T06:01:03.1150263Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 184.3 MiB
-2026-08-01T06:01:03.2044714Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 184.3 MiB
-2026-08-01T06:01:05.8652468Z Chrome for Testing 151.0.7922.10 (playwright chromium v1232) downloaded to /home/runner/.cache/ms-playwright/chromium-1232
-2026-08-01T06:01:05.8653711Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
-2026-08-01T06:01:06.8135907Z |                                                                                |   0% of 2.3 MiB
-2026-08-01T06:01:06.8434693Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
-2026-08-01T06:01:06.8632790Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
-2026-08-01T06:01:06.8751790Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
-2026-08-01T06:01:06.8860124Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
-2026-08-01T06:01:06.8920110Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
-2026-08-01T06:01:06.8953203Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
-2026-08-01T06:01:06.9050257Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
-2026-08-01T06:01:06.9086328Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
-2026-08-01T06:01:06.9150426Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
-2026-08-01T06:01:06.9177259Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
-2026-08-01T06:01:06.9640500Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
-2026-08-01T06:01:06.9643020Z Downloading Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-headless-shell-linux64.zip
-2026-08-01T06:01:07.9270543Z |                                                                                |   0% of 114.7 MiB
-2026-08-01T06:01:08.1380952Z |■■■■■■■■                                                                        |  10% of 114.7 MiB
-2026-08-01T06:01:08.2682507Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.7 MiB
-2026-08-01T06:01:08.3695621Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.7 MiB
-2026-08-01T06:01:08.4414072Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.7 MiB
-2026-08-01T06:01:08.5243260Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.7 MiB
-2026-08-01T06:01:08.5757434Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.7 MiB
-2026-08-01T06:01:08.6393663Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.7 MiB
-2026-08-01T06:01:08.6992980Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.7 MiB
-2026-08-01T06:01:08.7500775Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.7 MiB
-2026-08-01T06:01:08.7930000Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.7 MiB
-2026-08-01T06:01:10.6904472Z Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1232
-2026-08-01T06:01:10.7013067Z ##[group]Run set -euo pipefail
-2026-08-01T06:01:10.7013401Z [36;1mset -euo pipefail[0m
-2026-08-01T06:01:10.7013666Z [36;1mpython3 scripts/apply-pr31-final.py tests[0m
-2026-08-01T06:01:10.7014417Z [36;1mpython3 - <<'PY'[0m
-2026-08-01T06:01:10.7014716Z [36;1mfrom pathlib import Path[0m
-2026-08-01T06:01:10.7015051Z [36;1m[0m
-2026-08-01T06:01:10.7015319Z [36;1mdialog = Path('tests/dialog-lifecycle.spec.ts')[0m
-2026-08-01T06:01:10.7015642Z [36;1mtext = dialog.read_text(encoding='utf-8')[0m
-2026-08-01T06:01:10.7015952Z [36;1mtext = text.replace(".join('\n');", ".join('\\\\n');")[0m
-2026-08-01T06:01:10.7016288Z [36;1mtext = text.replace([0m
-2026-08-01T06:01:10.7016598Z [36;1m    "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",[0m
-2026-08-01T06:01:10.7016972Z [36;1m    "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",[0m
-2026-08-01T06:01:10.7017316Z [36;1m)[0m
-2026-08-01T06:01:10.7017624Z [36;1mdialog.write_text(text, encoding='utf-8')[0m
-2026-08-01T06:01:10.7017939Z [36;1m[0m
-2026-08-01T06:01:10.7018182Z [36;1mruntime = Path('tests/upstream-runtime.spec.ts')[0m
-2026-08-01T06:01:10.7018506Z [36;1mtext = runtime.read_text(encoding='utf-8')[0m
-2026-08-01T06:01:10.7018787Z [36;1mtext = text.replace([0m
-2026-08-01T06:01:10.7019034Z [36;1m    "async (_fixtures, testInfo) => {",[0m
-2026-08-01T06:01:10.7019359Z [36;1m    "async ({ page: _page }, testInfo) => {",[0m
-2026-08-01T06:01:10.7019612Z [36;1m)[0m
-2026-08-01T06:01:10.7019825Z [36;1mruntime.write_text(text, encoding='utf-8')[0m
-2026-08-01T06:01:10.7020145Z [36;1mPY[0m
-2026-08-01T06:01:10.7020489Z [36;1mbunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts[0m
-2026-08-01T06:01:10.7044921Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:01:10.7045346Z ##[endgroup]
-2026-08-01T06:01:10.8186110Z Checked 2 files in 12ms. Fixed 1 file.
-2026-08-01T06:01:10.8238577Z ##[group]Run set -euo pipefail
-2026-08-01T06:01:10.8238882Z [36;1mset -euo pipefail[0m
-2026-08-01T06:01:10.8239128Z [36;1mset +e[0m
-2026-08-01T06:01:10.8239326Z [36;1mbunx playwright test \[0m
-2026-08-01T06:01:10.8239586Z [36;1m  tests/upstream-runtime.spec.ts \[0m
-2026-08-01T06:01:10.8239904Z [36;1m  tests/dialog-lifecycle.spec.ts \[0m
-2026-08-01T06:01:10.8240158Z [36;1m  tests/upstream-config.spec.ts \[0m
-2026-08-01T06:01:10.8240443Z [36;1m  tests/network-origin-filter.spec.ts \[0m
-2026-08-01T06:01:10.8240776Z [36;1m  tests/partial-snapshot-css.spec.ts \[0m
-2026-08-01T06:01:10.8241057Z [36;1m  --project=chromium \[0m
-2026-08-01T06:01:10.8241321Z [36;1m  --workers=1 > /tmp/pr31-red.log 2>&1[0m
-2026-08-01T06:01:10.8241563Z [36;1mstatus=$?[0m
-2026-08-01T06:01:10.8241749Z [36;1mset -e[0m
-2026-08-01T06:01:10.8241986Z [36;1mcat /tmp/pr31-red.log[0m
-2026-08-01T06:01:10.8242215Z [36;1mif [ "$status" -eq 0 ]; then[0m
-2026-08-01T06:01:10.8242650Z [36;1m  echo 'Expected the regression suite to be red before implementation.' >&2[0m
-2026-08-01T06:01:10.8242967Z [36;1m  exit 1[0m
-2026-08-01T06:01:10.8243168Z [36;1mfi[0m
-2026-08-01T06:01:10.8267478Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:01:10.8267860Z ##[endgroup]
-2026-08-01T06:01:11.8426571Z Error: Cannot find module '/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/src/extension/profile.js' imported from /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/upstream-runtime.spec.ts
-2026-08-01T06:01:11.8427594Z 
-2026-08-01T06:01:11.8451376Z ##[group]Run set -euo pipefail
-2026-08-01T06:01:11.8451680Z [36;1mset -euo pipefail[0m
-2026-08-01T06:01:11.8451972Z [36;1mversion="$(npm view playwright@next version)"[0m
-2026-08-01T06:01:11.8452252Z [36;1mcase "$version" in[0m
-2026-08-01T06:01:11.8452488Z [36;1m  1.63.0-alpha-*) ;;[0m
-2026-08-01T06:01:11.8452737Z [36;1m  *)[0m
-2026-08-01T06:01:11.8452968Z [36;1m    echo "Unexpected playwright@next version: $version" >&2[0m
-2026-08-01T06:01:11.8453259Z [36;1m    exit 1[0m
-2026-08-01T06:01:11.8453447Z [36;1m    ;;[0m
-2026-08-01T06:01:11.8453635Z [36;1mesac[0m
-2026-08-01T06:01:11.8454149Z [36;1mPLAYWRIGHT_VERSION="$version" python3 scripts/apply-pr31-final.py implementation[0m
-2026-08-01T06:01:11.8454757Z [36;1mprintf 'Applied Playwright version %s\n' "$version"[0m
-2026-08-01T06:01:11.8479724Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:01:11.8480437Z ##[endgroup]
-2026-08-01T06:01:13.7414702Z Applied Playwright version 1.63.0-alpha-2026-07-31
-2026-08-01T06:01:13.7437749Z ##[group]Run bun install
-2026-08-01T06:01:13.7438029Z [36;1mbun install[0m
-2026-08-01T06:01:13.7462588Z shell: /usr/bin/bash -e {0}
-2026-08-01T06:01:13.7462890Z ##[endgroup]
-2026-08-01T06:01:13.7519746Z bun install v1.3.5 (1e86cebd)
-2026-08-01T06:01:13.7569127Z Resolving dependencies
-2026-08-01T06:01:14.2146011Z Resolved, downloaded and extracted [14]
-2026-08-01T06:01:14.2190597Z Saved lockfile
-2026-08-01T06:01:14.2190934Z 
-2026-08-01T06:01:14.2194443Z + @playwright/test@1.63.0-alpha-2026-07-31
-2026-08-01T06:01:14.2195021Z + playwright@1.63.0-alpha-2026-07-31
-2026-08-01T06:01:14.2195669Z + playwright-core@1.63.0-alpha-2026-07-31
-2026-08-01T06:01:14.2196014Z 
-2026-08-01T06:01:14.2196290Z 3 packages installed [467.00ms]
-2026-08-01T06:01:14.2282221Z ##[group]Run set -euo pipefail
-2026-08-01T06:01:14.2282632Z [36;1mset -euo pipefail[0m
-2026-08-01T06:01:14.2282921Z [36;1mbun run lint-fix[0m
-2026-08-01T06:01:14.2283279Z [36;1mbun run check:encoding[0m
-2026-08-01T06:01:14.2283634Z [36;1mbun run typecheck[0m
-2026-08-01T06:01:14.2284230Z [36;1mbun run build:publish[0m
-2026-08-01T06:01:14.2284594Z [36;1mbun run update-readme[0m
-2026-08-01T06:01:14.2284912Z [36;1mbun run lint-fix[0m
-2026-08-01T06:01:14.2285274Z [36;1mbun run check:encoding[0m
-2026-08-01T06:01:14.2285612Z [36;1mbun run typecheck[0m
-2026-08-01T06:01:14.2285898Z [36;1mbun run build:publish[0m
-2026-08-01T06:01:14.2286268Z [36;1mbun run lint[0m
-2026-08-01T06:01:14.2286612Z [36;1mbun run benchmark:tools -- --check[0m
-2026-08-01T06:01:14.2287007Z [36;1mgit diff --check[0m
-2026-08-01T06:01:14.2319447Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:01:14.2320015Z ##[endgroup]
-2026-08-01T06:01:14.2381900Z $ ultracite format
-2026-08-01T06:01:15.5088221Z Checked 282 files in 583ms. Fixed 9 files.
-2026-08-01T06:01:15.5321437Z $ bun scripts/check-encoding.ts
-2026-08-01T06:01:15.5647256Z 90 | }
-2026-08-01T06:01:15.5647552Z 91 | 
-2026-08-01T06:01:15.5647980Z 92 | if (import.meta.main) {
-2026-08-01T06:01:15.5648509Z 93 |   const failures = await validateRepositoryEncoding();
-2026-08-01T06:01:15.5648914Z 94 |   if (failures.length) {
-2026-08-01T06:01:15.5649478Z 95 |     throw new Error(`Source encoding check failed:\n${failures.join('\n')}`);
-2026-08-01T06:01:15.5651493Z                    ^
-2026-08-01T06:01:15.5651918Z error: Source encoding check failed:
-2026-08-01T06:01:15.5652518Z scripts/__pycache__/apply-pr31-final.cpython-312.pyc: contains NUL bytes but is not declared as a binary file
-2026-08-01T06:01:15.5653425Z       at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/scripts/check-encoding.ts:95:15
-2026-08-01T06:01:15.5653987Z 
-2026-08-01T06:01:15.5654126Z Bun v1.3.5 (Linux x64)
-2026-08-01T06:01:15.5654545Z error: script "check:encoding" exited with code 1
-2026-08-01T06:01:15.5662815Z ##[error]Process completed with exit code 1.
-2026-08-01T06:01:15.5764791Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-2026-08-01T06:01:15.5765889Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-2026-08-01T06:01:15.5766424Z with:
-2026-08-01T06:01:15.5766952Z   name: finalize-pr31-failure
-2026-08-01T06:01:15.5768172Z   path: /tmp/pr31-red.log
+2026-08-01T06:20:12.4010302Z   tools/evaluate.js                            4.76 KB    (entry point)
+2026-08-01T06:20:12.4010721Z   tools/files.js                               1.93 KB    (entry point)
+2026-08-01T06:20:12.4011735Z   tools/find-elements.js                       13.13 KB   (entry point)
+2026-08-01T06:20:12.4012604Z   mcp/proxy-backend.js                         3.87 KB    (entry point)
+2026-08-01T06:20:12.4013285Z   mcp/server.js                                5.1 KB     (entry point)
+2026-08-01T06:20:12.4013700Z   mcp/tool.js                                  3.52 KB    (entry point)
+2026-08-01T06:20:12.4014116Z   mcp/transport.js                             5.73 KB    (entry point)
+2026-08-01T06:20:12.4014535Z   mcp/types.js                                 0 KB       (entry point)
+2026-08-01T06:20:12.4014978Z   schemas/expectation.js                       5.22 KB    (entry point)
+2026-08-01T06:20:12.4015457Z   services/selector-resolver.js                18.91 KB   (entry point)
+2026-08-01T06:20:12.4015934Z   tools/base-tool-handler.js                   4.15 KB    (entry point)
+2026-08-01T06:20:12.4016389Z   loop/loop.js                                 6.77 KB    (entry point)
+2026-08-01T06:20:12.4016800Z   loop/main.js                                 1.43 KB    (entry point)
+2026-08-01T06:20:12.4017226Z   loopTools/context.js                         2.81 KB    (entry point)
+2026-08-01T06:20:12.4017669Z   loopTools/main.js                            2.1 KB     (entry point)
+2026-08-01T06:20:12.4018376Z   loopTools/perform.js                         1.36 KB    (entry point)
+2026-08-01T06:20:12.4018832Z   loopTools/snapshot.js                        1.23 KB    (entry point)
+2026-08-01T06:20:12.4019279Z   loopTools/tool.js                            0.84 KB    (entry point)
+2026-08-01T06:20:12.4019733Z   mcp/in-process-transport.js                  2.38 KB    (entry point)
+2026-08-01T06:20:12.4020219Z   diagnostics/unified-system.js                27.94 KB   (entry point)
+2026-08-01T06:20:12.4020699Z   extension/cdp-relay.js                       16.53 KB   (entry point)
+2026-08-01T06:20:12.4021178Z   extension/connect-url.js                     1.57 KB    (entry point)
+2026-08-01T06:20:12.4021680Z   extension/extension-context-factory.js       3.36 KB    (entry point)
+2026-08-01T06:20:12.4022153Z   extension/main.js                            1.74 KB    (entry point)
+2026-08-01T06:20:12.4022593Z   extension/profile.js                         2.56 KB    (entry point)
+2026-08-01T06:20:12.4023044Z   loop/loop-claude.js                          7.41 KB    (entry point)
+2026-08-01T06:20:12.4023493Z   loop/loop-open-ai.js                         6.68 KB    (entry point)
+2026-08-01T06:20:12.4023962Z   diagnostics/enhanced-error-handler.js        15.23 KB   (entry point)
+2026-08-01T06:20:12.4024452Z   diagnostics/error-enrichment.js              6.64 KB    (entry point)
+2026-08-01T06:20:12.4024948Z   diagnostics/frame-reference-manager.js       5.42 KB    (entry point)
+2026-08-01T06:20:12.4025609Z   diagnostics/page-analyzer.js                 23.97 KB   (entry point)
+2026-08-01T06:20:12.4026106Z   diagnostics/parallel-page-analyzer.js        4.43 KB    (entry point)
+2026-08-01T06:20:12.4026602Z   diagnostics/resource-manager.js              4.0 KB     (entry point)
+2026-08-01T06:20:12.4027090Z   diagnostics/smart-config.js                  18.0 KB    (entry point)
+2026-08-01T06:20:12.4027561Z   diagnostics/smart-handle.js                  3.21 KB    (entry point)
+2026-08-01T06:20:12.4028282Z   tools/diagnose/diagnose-config-handler.js    5.37 KB    (entry point)
+2026-08-01T06:20:12.4028809Z   tools/diagnose/diagnose-report-builder.js    17.80 KB   (entry point)
+2026-08-01T06:20:12.4029301Z   batch/batch-executor.js                      5.78 KB    (entry point)
+2026-08-01T06:20:12.4029767Z   config/constants.js                          2.17 KB    (entry point)
+2026-08-01T06:20:12.4030241Z   diagnostics/diagnostic-error.js              4.53 KB    (entry point)
+2026-08-01T06:20:12.4030732Z   diagnostics/diagnostic-level.js              3.81 KB    (entry point)
+2026-08-01T06:20:12.4031219Z   diagnostics/diagnostic-thresholds.js         12.75 KB   (entry point)
+2026-08-01T06:20:12.4031707Z   diagnostics/element-discovery.js             18.20 KB   (entry point)
+2026-08-01T06:20:12.4032342Z   diagnostics/common/initialization-manager.js  6.27 KB    (entry point)
+2026-08-01T06:20:12.4032863Z   diagnostics/common/performance-tracker.js    4.81 KB    (entry point)
+2026-08-01T06:20:12.4033351Z   tools/catalog/gateways.js                    5.73 KB    (entry point)
+2026-08-01T06:20:12.4033816Z   tools/catalog/registry.js                    5.0 KB     (entry point)
+2026-08-01T06:20:12.4034353Z   tools/catalog/search.js                      2.40 KB    (entry point)
+2026-08-01T06:20:12.4035236Z   tools/catalog/types.js                       0 KB       (entry point)
+2026-08-01T06:20:12.4035972Z   tools/catalog/visibility.js                  2.93 KB    (entry point)
+2026-08-01T06:20:12.4036470Z   tools/diagnose/diagnose-analysis-runner.js   4.0 KB     (entry point)
+2026-08-01T06:20:12.4036954Z   apps/dashboard/client.js                     2.84 KB    (entry point)
+2026-08-01T06:20:12.4037419Z   apps/dashboard/render.js                     3.15 KB    (entry point)
+2026-08-01T06:20:12.4038164Z   apps/dashboard/resource.js                   1.55 KB    (entry point)
+2026-08-01T06:20:12.4038686Z   apps/dashboard/tool.js                       1.44 KB    (entry point)
+2026-08-01T06:20:12.4039154Z   apps/generated/dashboard.js                  0.46 MB    (entry point)
+2026-08-01T06:20:12.4039642Z   diagnostics/common/diagnostic-base.js        1.58 KB    (entry point)
+2026-08-01T06:20:12.4040155Z   diagnostics/common/error-enrichment-utils.js  7.31 KB    (entry point)
+2026-08-01T06:20:12.4040672Z   diagnostics/common/index.js                  205 bytes  (entry point)
+2026-08-01T06:20:12.4040956Z 
+2026-08-01T06:20:12.4041078Z $ ultracite lint
+2026-08-01T06:20:13.5343143Z Checked 282 files in 554ms. No fixes applied.
+2026-08-01T06:20:13.5571328Z $ bun benchmark/tool-catalog.ts --check
+2026-08-01T06:20:14.2337339Z profile	tools	bytes	estimated tokens
+2026-08-01T06:20:14.2338379Z adaptive	7	10540	2635
+2026-08-01T06:20:14.2339033Z minimal	3	2378	595
+2026-08-01T06:20:14.2339415Z full	32	58825	14707
+2026-08-01T06:20:14.2339655Z 
+2026-08-01T06:20:14.2339853Z Largest full-profile tools:
+2026-08-01T06:20:14.2340297Z browser_inspect_html	3019
+2026-08-01T06:20:14.2340701Z browser_diagnose	3011
+2026-08-01T06:20:14.2341113Z browser_take_screenshot	2586
+2026-08-01T06:20:14.2341518Z browser_drag	2527
+2026-08-01T06:20:14.2341855Z browser_click	2483
+2026-08-01T06:20:14.2342201Z browser_find_elements	2467
+2026-08-01T06:20:14.2342585Z browser_type	2467
+2026-08-01T06:20:14.2342937Z browser_evaluate	2458
+2026-08-01T06:20:14.2343310Z browser_select_option	2447
+2026-08-01T06:20:14.2343671Z browser_hover	2378
+2026-08-01T06:20:14.2984683Z ##[group]Run set -euo pipefail
+2026-08-01T06:20:14.2985185Z [36;1mset -euo pipefail[0m
+2026-08-01T06:20:14.2985432Z [36;1mbunx playwright test \[0m
+2026-08-01T06:20:14.2985725Z [36;1m  tests/upstream-runtime.spec.ts \[0m
+2026-08-01T06:20:14.2986036Z [36;1m  tests/upstream-config.spec.ts \[0m
+2026-08-01T06:20:14.2986347Z [36;1m  tests/http-allowed-hosts.spec.ts \[0m
+2026-08-01T06:20:14.2986686Z [36;1m  tests/mcp-server-initialize.spec.ts \[0m
+2026-08-01T06:20:14.2987010Z [36;1m  tests/network-origin-filter.spec.ts \[0m
+2026-08-01T06:20:14.2987313Z [36;1m  tests/output-manager.spec.ts \[0m
+2026-08-01T06:20:14.2987615Z [36;1m  tests/partial-snapshot-css.spec.ts \[0m
+2026-08-01T06:20:14.2988252Z [36;1m  tests/dialog-lifecycle.spec.ts \[0m
+2026-08-01T06:20:14.2988558Z [36;1m  tests/readme-contract.spec.ts \[0m
+2026-08-01T06:20:14.2988850Z [36;1m  tests/secret-redaction.spec.ts \[0m
+2026-08-01T06:20:14.2989175Z [36;1m  tests/session-log-redaction.spec.ts \[0m
+2026-08-01T06:20:14.2989511Z [36;1m  tests/tool-gateways.spec.ts \[0m
+2026-08-01T06:20:14.2989796Z [36;1m  tests/upstream-check.spec.ts \[0m
+2026-08-01T06:20:14.2990073Z [36;1m  --project=chromium \[0m
+2026-08-01T06:20:14.2990314Z [36;1m  --workers=1[0m
+2026-08-01T06:20:14.3033661Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-01T06:20:14.3034266Z ##[endgroup]
+2026-08-01T06:20:16.8183512Z 
+2026-08-01T06:20:16.8184511Z Running 42 tests using 1 worker
+2026-08-01T06:20:16.8186016Z 
+2026-08-01T06:20:17.6143876Z   ✘   1 [chromium] › tests/dialog-lifecycle.spec.ts:10:1 › dialog modal state clears when a side-channel client closes the dialog (12ms)
+2026-08-01T06:20:19.2800137Z   ✘   2 [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin (824ms)
+2026-08-01T06:20:20.9391614Z   ✓   3 [chromium] › tests/network-origin-filter.spec.ts:38:1 › blockedOrigins wins when an origin is both allowed and blocked (826ms)
+2026-08-01T06:20:21.8043590Z   ✘   4 [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector (805ms)
+2026-08-01T06:20:22.2949473Z   ✓   5 [chromium] › tests/http-allowed-hosts.spec.ts:4:1 › normalizes valid Host headers and strips ports and IPv6 brackets (10ms)
+2026-08-01T06:20:22.3204442Z   ✓   6 [chromium] › tests/http-allowed-hosts.spec.ts:10:1 › rejects malformed and credential-bearing Host headers (5ms)
+2026-08-01T06:20:22.3497477Z   ✓   7 [chromium] › tests/http-allowed-hosts.spec.ts:16:1 › allows IPv4 and IPv6 loopback defaults and configured hosts (14ms)
+2026-08-01T06:20:22.5272681Z   ✓   8 [chromium] › tests/mcp-server-initialize.spec.ts:49:1 › tool calls proceed when the backend has no initialize hook (17ms)
+2026-08-01T06:20:22.5673894Z   ✓   9 [chromium] › tests/mcp-server-initialize.spec.ts:63:1 › backend initialization failures reject pending tool calls (23ms)
+2026-08-01T06:20:22.6024887Z   ✘  10 [chromium] › tests/output-manager.spec.ts:6:1 › evicts oldest completed files while preserving the finalized target (2ms)
+2026-08-01T06:20:23.1095664Z   ✘  11 [chromium] › tests/output-manager.spec.ts:22:1 › does not follow file symlinks and rejects lexical path traversal (4ms)
+2026-08-01T06:20:23.6090526Z   ✘  12 [chromium] › tests/output-manager.spec.ts:38:1 › rejects a symlinked parent that escapes the output directory (4ms)
+2026-08-01T06:20:24.1095310Z   ✘  13 [chromium] › tests/output-manager.spec.ts:55:1 › rejects finalization targets outside the output directory (5ms)
+2026-08-01T06:20:24.5905507Z   ✓  14 [chromium] › tests/readme-contract.spec.ts:8:1 › README contains one generated tool catalog with current batch schema (11ms)
+2026-08-01T06:20:24.6164198Z   ✓  15 [chromium] › tests/readme-contract.spec.ts:19:1 › README programmatic example uses the returned MCP server directly (5ms)
+2026-08-01T06:20:24.6461219Z   ✓  16 [chromium] › tests/secret-redaction.spec.ts:4:1 › redacts longest configured literals first (3ms)
+2026-08-01T06:20:24.6653605Z   ✓  17 [chromium] › tests/secret-redaction.spec.ts:11:1 › ignores empty values and leaves unrelated text unchanged (2ms)
+2026-08-01T06:20:24.8025425Z   ✘  18 [chromium] › tests/session-log-redaction.spec.ts:28:1 › saved session logs redact configured secrets and await snapshots (1ms)
+2026-08-01T06:20:25.7114881Z   ✓  19 [chromium] › tests/tool-gateways.spec.ts:41:1 › adaptive catalog exposes seven bootstrap tools and can enable more (43ms)
+2026-08-01T06:20:25.7325640Z   ✓  20 [chromium] › tests/tool-gateways.spec.ts:66:1 › gateway effects distinguish reads from browser interactions (4ms)
+2026-08-01T06:20:25.7614625Z   ✓  21 [chromium] › tests/tool-gateways.spec.ts:74:1 › hidden tools resolve directly and gateways enforce effects (16ms)
+2026-08-01T06:20:25.7878474Z   ✓  22 [chromium] › tests/upstream-check.spec.ts:11:1 › loads the pinned upstream manifest (8ms)
+2026-08-01T06:20:25.8050760Z   ✓  23 [chromium] › tests/upstream-check.spec.ts:22:1 › classifies upstream paths deterministically (3ms)
+2026-08-01T06:20:25.8278491Z   ✓  24 [chromium] › tests/upstream-check.spec.ts:35:1 › GitHub API URLs keep validated repositories on the fixed origin (8ms)
+2026-08-01T06:20:25.8435895Z   ✓  25 [chromium] › tests/upstream-check.spec.ts:57:1 › fixture report is stable and read-only (3ms)
+2026-08-01T06:20:25.8630519Z   ✓  26 [chromium] › tests/upstream-config.spec.ts:12:1 › resolves upstream-compatible configuration fields (2ms)
+2026-08-01T06:20:25.8760608Z   ✓  27 [chromium] › tests/upstream-config.spec.ts:39:1 › CLI and environment parsing preserve headers and timeouts (3ms)
+2026-08-01T06:20:25.8942162Z   ✓  28 [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks (5ms)
+2026-08-01T06:20:25.9039309Z   ✓  29 [chromium] › tests/upstream-config.spec.ts:76:1 › Commander-shaped CDP header option reaches the browser config (1ms)
+2026-08-01T06:20:25.9248302Z   ✘  30 [chromium] › tests/upstream-config.spec.ts:90:1 › Commander-shaped secrets option parses dotenv values for redaction (1ms)
+2026-08-01T06:20:26.7201993Z   ✘  31 [chromium] › tests/upstream-config.spec.ts:108:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values (4ms)
+2026-08-01T06:20:27.4894564Z   ✘  32 [chromium] › tests/upstream-config.spec.ts:122:1 › PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides (4ms)
+2026-08-01T06:20:28.2689190Z   ✓  33 [chromium] › tests/upstream-config.spec.ts:152:1 › keeps Chromium-only launch flags out of Firefox and WebKit (13ms)
+2026-08-01T06:20:28.2991178Z   ✓  34 [chromium] › tests/upstream-config.spec.ts:170:1 › numeric and heartbeat parsers reject or default invalid values (12ms)
+2026-08-01T06:20:28.3430931Z   ✓  35 [chromium] › tests/upstream-runtime.spec.ts:26:1 › generated code escapes user-controlled strings (3ms)
+2026-08-01T06:20:28.3667540Z   ✓  36 [chromium] › tests/upstream-runtime.spec.ts:36:1 › settle timeout resolves from defaults, CLI, and environment (3ms)
+2026-08-01T06:20:28.3837708Z   ✓  37 [chromium] › tests/upstream-runtime.spec.ts:47:1 › all CDP header sources reject invalid names and line breaks (7ms)
+2026-08-01T06:20:28.3985172Z   ✓  38 [chromium] › tests/upstream-runtime.spec.ts:60:1 › navigation errors classify only explicit downloads as downloads (1ms)
+2026-08-01T06:20:28.4091707Z   ✓  39 [chromium] › tests/upstream-runtime.spec.ts:67:1 › missing browser diagnostics preserve the executable path (1ms)
+2026-08-01T06:20:28.4381550Z   ✘  40 [chromium] › tests/upstream-runtime.spec.ts:77:1 › extension profile discovery prefers the browser last-used profile (1ms)
+2026-08-01T06:20:29.1006272Z   ✓  41 [chromium] › tests/upstream-runtime.spec.ts:100:1 › upstream manifest and package record the reviewed current state (15ms)
+2026-08-01T06:20:29.1293421Z   ✓  42 [chromium] › tests/upstream-runtime.spec.ts:124:1 › workflows use current action runtimes (7ms)
+2026-08-01T06:20:29.1470597Z 
+2026-08-01T06:20:29.1478151Z 
+2026-08-01T06:20:29.1487332Z   1) [chromium] › tests/dialog-lifecycle.spec.ts:10:1 › dialog modal state clears when a side-channel client closes the dialog 
+2026-08-01T06:20:29.1488779Z 
+2026-08-01T06:20:29.1489835Z     Error: browserType.launchPersistentContext: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium-1237/chrome-linux64/chrome
+2026-08-01T06:20:29.1491555Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1492411Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1493330Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1494118Z     ║                                                            ║
+2026-08-01T06:20:29.1494875Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1495623Z     ║                                                            ║
+2026-08-01T06:20:29.1496377Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1497221Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1497603Z 
+2026-08-01T06:20:29.1497782Z        at fixtures.ts:276
+2026-08-01T06:20:29.1498233Z 
+2026-08-01T06:20:29.1498552Z       274 |       endpoint: `http://localhost:${port}`,
+2026-08-01T06:20:29.1499099Z       275 |       start: async () => {
+2026-08-01T06:20:29.1499765Z     > 276 |         browserContext = await chromium.launchPersistentContext(
+2026-08-01T06:20:29.1500433Z           |                          ^
+2026-08-01T06:20:29.1501007Z       277 |           testInfo.outputPath('cdp-user-data-dir'),
+2026-08-01T06:20:29.1501546Z       278 |           {
+2026-08-01T06:20:29.1501968Z       279 |             channel: mcpBrowser,
+2026-08-01T06:20:29.1502946Z         at Object.start (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/fixtures.ts:276:26)
+2026-08-01T06:20:29.1504314Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/dialog-lifecycle.spec.ts:20:26
+2026-08-01T06:20:29.1505036Z 
+2026-08-01T06:20:29.1505871Z     Error Context: test-results/dialog-lifecycle-dialog-mo-b597f-el-client-closes-the-dialog-chromium/error-context.md
+2026-08-01T06:20:29.1506764Z 
+2026-08-01T06:20:29.1507485Z   2) [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin 
+2026-08-01T06:20:29.1508189Z 
+2026-08-01T06:20:29.1508531Z     Error: expect(received).not.toBe(expected) // Object.is equality
+2026-08-01T06:20:29.1508811Z 
+2026-08-01T06:20:29.1508907Z     Expected: not true
+2026-08-01T06:20:29.1509038Z 
+2026-08-01T06:20:29.1509122Z       33 |   });
+2026-08-01T06:20:29.1509312Z       34 |
+2026-08-01T06:20:29.1509562Z     > 35 |   expect(result.isError).not.toBe(true);
+2026-08-01T06:20:29.1509878Z          |                              ^
+2026-08-01T06:20:29.1510120Z       36 | });
+2026-08-01T06:20:29.1510295Z       37 |
+2026-08-01T06:20:29.1510673Z       38 | test('blockedOrigins wins when an origin is both allowed and blocked', async ({
+2026-08-01T06:20:29.1511398Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/network-origin-filter.spec.ts:35:30
+2026-08-01T06:20:29.1511833Z 
+2026-08-01T06:20:29.1512304Z     Error Context: test-results/network-origin-filter-allo-71edb-s-accepts-a-full-URL-origin-chromium/error-context.md
+2026-08-01T06:20:29.1512968Z 
+2026-08-01T06:20:29.1513539Z   3) [chromium] › tests/output-manager.spec.ts:6:1 › evicts oldest completed files while preserving the finalized target 
+2026-08-01T06:20:29.1513986Z 
+2026-08-01T06:20:29.1514632Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1516049Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1516960Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1518217Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1518980Z     ║                                                            ║
+2026-08-01T06:20:29.1519796Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1520416Z     ║                                                            ║
+2026-08-01T06:20:29.1520846Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1521315Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1521526Z 
+2026-08-01T06:20:29.1521992Z     Error Context: test-results/output-manager-evicts-olde-1cd16-erving-the-finalized-target-chromium/error-context.md
+2026-08-01T06:20:29.1522489Z 
+2026-08-01T06:20:29.1522978Z   4) [chromium] › tests/output-manager.spec.ts:22:1 › does not follow file symlinks and rejects lexical path traversal 
+2026-08-01T06:20:29.1523419Z 
+2026-08-01T06:20:29.1524059Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1524945Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1525412Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1525913Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1526353Z     ║                                                            ║
+2026-08-01T06:20:29.1526768Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1527181Z     ║                                                            ║
+2026-08-01T06:20:29.1527595Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1528381Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1528601Z 
+2026-08-01T06:20:29.1529094Z     Error Context: test-results/output-manager-does-not-fo-8c2bc-ects-lexical-path-traversal-chromium/error-context.md
+2026-08-01T06:20:29.1529591Z 
+2026-08-01T06:20:29.1530068Z   5) [chromium] › tests/output-manager.spec.ts:38:1 › rejects a symlinked parent that escapes the output directory 
+2026-08-01T06:20:29.1530497Z 
+2026-08-01T06:20:29.1531138Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1532022Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1532499Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1532990Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1533420Z     ║                                                            ║
+2026-08-01T06:20:29.1533831Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1534253Z     ║                                                            ║
+2026-08-01T06:20:29.1534668Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1535125Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1535337Z 
+2026-08-01T06:20:29.1535973Z     Error Context: test-results/output-manager-rejects-a-s-a652c-scapes-the-output-directory-chromium/error-context.md
+2026-08-01T06:20:29.1536931Z 
+2026-08-01T06:20:29.1537656Z   6) [chromium] › tests/output-manager.spec.ts:55:1 › rejects finalization targets outside the output directory 
+2026-08-01T06:20:29.1538619Z 
+2026-08-01T06:20:29.1539824Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1541453Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1542277Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1543176Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1543972Z     ║                                                            ║
+2026-08-01T06:20:29.1544717Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1545479Z     ║                                                            ║
+2026-08-01T06:20:29.1546242Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1547079Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1547455Z 
+2026-08-01T06:20:29.1548481Z     Error Context: test-results/output-manager-rejects-fin-34332-utside-the-output-directory-chromium/error-context.md
+2026-08-01T06:20:29.1549396Z 
+2026-08-01T06:20:29.1550352Z   7) [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
+2026-08-01T06:20:29.1551213Z 
+2026-08-01T06:20:29.1551523Z     Error: expect(received).toContain(expected) // indexOf
+2026-08-01T06:20:29.1551939Z 
+2026-08-01T06:20:29.1552206Z     Expected substring: "Target content"
+2026-08-01T06:20:29.1552839Z     Received string:    "### Result
+2026-08-01T06:20:29.1555152Z     Error: Browser \"chromium\" is not installed. Expected executable at /home/runner/.cache/ms-playwright/chromium-1237/chrome-linux64/chrome. Install the pinned Playwright browser or configure --executable-path.·
+2026-08-01T06:20:29.1573714Z     ### Open tabs
+2026-08-01T06:20:29.1574386Z     No open tabs. Use the \"browser_navigate\" tool to navigate to a page first.
+2026-08-01T06:20:29.1574992Z     "
+2026-08-01T06:20:29.1575151Z 
+2026-08-01T06:20:29.1575396Z       33 |   const text = result.content[0].text;
+2026-08-01T06:20:29.1575868Z       34 |
+2026-08-01T06:20:29.1576307Z     > 35 |   expect(text).toContain('Target content');
+2026-08-01T06:20:29.1576817Z          |                ^
+2026-08-01T06:20:29.1577300Z       36 |   expect(text).not.toContain('Outside header');
+2026-08-01T06:20:29.1578107Z       37 |   expect(text).not.toContain('Outside sibling');
+2026-08-01T06:20:29.1578593Z       38 | });
+2026-08-01T06:20:29.1579496Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/partial-snapshot-css.spec.ts:35:16
+2026-08-01T06:20:29.1580256Z 
+2026-08-01T06:20:29.1581110Z     Error Context: test-results/partial-snapshot-css-snaps-4aa82-napshot-with-a-CSS-selector-chromium/error-context.md
+2026-08-01T06:20:29.1582224Z 
+2026-08-01T06:20:29.1583146Z   8) [chromium] › tests/session-log-redaction.spec.ts:28:1 › saved session logs redact configured secrets and await snapshots 
+2026-08-01T06:20:29.1583927Z 
+2026-08-01T06:20:29.1585086Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1586690Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1587514Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1588596Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1589331Z     ║                                                            ║
+2026-08-01T06:20:29.1590188Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1590936Z     ║                                                            ║
+2026-08-01T06:20:29.1591692Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1592558Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1592933Z 
+2026-08-01T06:20:29.1593771Z     Error Context: test-results/session-log-redaction-save-323ba-secrets-and-await-snapshots-chromium/error-context.md
+2026-08-01T06:20:29.1594616Z 
+2026-08-01T06:20:29.1595453Z   9) [chromium] › tests/upstream-config.spec.ts:90:1 › Commander-shaped secrets option parses dotenv values for redaction 
+2026-08-01T06:20:29.1596222Z 
+2026-08-01T06:20:29.1597402Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1599142Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1599953Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1600808Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1601547Z     ║                                                            ║
+2026-08-01T06:20:29.1602258Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1602949Z     ║                                                            ║
+2026-08-01T06:20:29.1603653Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1604438Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1604794Z 
+2026-08-01T06:20:29.1605588Z     Error Context: test-results/upstream-config-Commander--d2618-dotenv-values-for-redaction-chromium/error-context.md
+2026-08-01T06:20:29.1606434Z 
+2026-08-01T06:20:29.1607274Z   10) [chromium] › tests/upstream-config.spec.ts:108:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values 
+2026-08-01T06:20:29.1608232Z 
+2026-08-01T06:20:29.1609366Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1610898Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1611669Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1612503Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1613241Z     ║                                                            ║
+2026-08-01T06:20:29.1613964Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1614735Z     ║                                                            ║
+2026-08-01T06:20:29.1615483Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1616320Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1616689Z 
+2026-08-01T06:20:29.1617683Z     Error Context: test-results/upstream-config-PLAYWRIGHT-f3f18-ame-dotenv-redaction-values-chromium/error-context.md
+2026-08-01T06:20:29.1618867Z 
+2026-08-01T06:20:29.1619921Z   11) [chromium] › tests/upstream-config.spec.ts:122:1 › PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides 
+2026-08-01T06:20:29.1620818Z 
+2026-08-01T06:20:29.1621982Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1623543Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1624302Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1625168Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1625944Z     ║                                                            ║
+2026-08-01T06:20:29.1626698Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1627439Z     ║                                                            ║
+2026-08-01T06:20:29.1628370Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1629173Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1629516Z 
+2026-08-01T06:20:29.1630300Z     Error Context: test-results/upstream-config-PLAYWRIGHT-cb57f-efore-environment-overrides-chromium/error-context.md
+2026-08-01T06:20:29.1631182Z 
+2026-08-01T06:20:29.1632106Z   12) [chromium] › tests/upstream-runtime.spec.ts:77:1 › extension profile discovery prefers the browser last-used profile 
+2026-08-01T06:20:29.1632918Z 
+2026-08-01T06:20:29.1634075Z     Error: browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1237/chrome-headless-shell-linux64/chrome-headless-shell
+2026-08-01T06:20:29.1635626Z     ╔════════════════════════════════════════════════════════════╗
+2026-08-01T06:20:29.1636442Z     ║ Looks like Playwright was just installed or updated.       ║
+2026-08-01T06:20:29.1637338Z     ║ Please run the following command to download new browsers: ║
+2026-08-01T06:20:29.1638278Z     ║                                                            ║
+2026-08-01T06:20:29.1639020Z     ║     npx playwright install                                 ║
+2026-08-01T06:20:29.1639759Z     ║                                                            ║
+2026-08-01T06:20:29.1640477Z     ║ <3 Playwright Team                                         ║
+2026-08-01T06:20:29.1641277Z     ╚════════════════════════════════════════════════════════════╝
+2026-08-01T06:20:29.1641632Z 
+2026-08-01T06:20:29.1642459Z     Error Context: test-results/upstream-runtime-extension-cee8d-e-browser-last-used-profile-chromium/error-context.md
+2026-08-01T06:20:29.1643351Z 
+2026-08-01T06:20:29.1643480Z   12 failed
+2026-08-01T06:20:29.1644562Z     [chromium] › tests/dialog-lifecycle.spec.ts:10:1 › dialog modal state clears when a side-channel client closes the dialog 
+2026-08-01T06:20:29.1646075Z     [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin 
+2026-08-01T06:20:29.1647774Z     [chromium] › tests/output-manager.spec.ts:6:1 › evicts oldest completed files while preserving the finalized target 
+2026-08-01T06:20:29.1649538Z     [chromium] › tests/output-manager.spec.ts:22:1 › does not follow file symlinks and rejects lexical path traversal 
+2026-08-01T06:20:29.1651066Z     [chromium] › tests/output-manager.spec.ts:38:1 › rejects a symlinked parent that escapes the output directory 
+2026-08-01T06:20:29.1652550Z     [chromium] › tests/output-manager.spec.ts:55:1 › rejects finalization targets outside the output directory 
+2026-08-01T06:20:29.1654156Z     [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
+2026-08-01T06:20:29.1656049Z     [chromium] › tests/session-log-redaction.spec.ts:28:1 › saved session logs redact configured secrets and await snapshots 
+2026-08-01T06:20:29.1657678Z     [chromium] › tests/upstream-config.spec.ts:90:1 › Commander-shaped secrets option parses dotenv values for redaction 
+2026-08-01T06:20:29.1659609Z     [chromium] › tests/upstream-config.spec.ts:108:1 › PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values 
+2026-08-01T06:20:29.1661410Z     [chromium] › tests/upstream-config.spec.ts:122:1 › PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides 
+2026-08-01T06:20:29.1663113Z     [chromium] › tests/upstream-runtime.spec.ts:77:1 › extension profile discovery prefers the browser last-used profile 
+2026-08-01T06:20:29.1664026Z   30 passed (14.2s)
+2026-08-01T06:20:29.1843542Z ##[error]Process completed with exit code 1.
+2026-08-01T06:20:29.1953649Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T06:20:29.1955117Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-08-01T06:20:29.1955493Z with:
+2026-08-01T06:20:29.1955688Z   name: finalize-pr31-failure
+2026-08-01T06:20:29.1956330Z   path: /tmp/pr31-red.log
 test-results/**/error-context.md
 playwright-report/**
 extension/test-results/**/error-context.md
 extension/playwright-report/**
 
-2026-08-01T06:01:15.5769323Z   if-no-files-found: warn
-2026-08-01T06:01:15.5769826Z   retention-days: 3
-2026-08-01T06:01:15.5770239Z   compression-level: 6
-2026-08-01T06:01:15.5770630Z   overwrite: false
-2026-08-01T06:01:15.5770888Z   include-hidden-files: false
-2026-08-01T06:01:15.5771233Z ##[endgroup]
-2026-08-01T06:01:15.6944780Z (node:2967) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-08-01T06:01:15.6945453Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-08-01T06:01:15.7008902Z Multiple search paths detected. Calculating the least common ancestor of all paths
-2026-08-01T06:01:15.7010777Z The least common ancestor is /. This will be the root directory of the artifact
-2026-08-01T06:01:15.7011367Z With the provided path, there will be 1 file uploaded
-2026-08-01T06:01:15.7013776Z Artifact name is valid!
-2026-08-01T06:01:15.7015300Z Root directory input is valid!
-2026-08-01T06:01:15.8942522Z Beginning upload of artifact content to blob storage
-2026-08-01T06:01:15.9061300Z (node:2967) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
-2026-08-01T06:01:16.0577913Z Uploaded bytes 264
-2026-08-01T06:01:16.0999491Z Finished uploading artifact content to blob storage!
-2026-08-01T06:01:16.1000321Z SHA256 digest of uploaded artifact zip is 1837b289ff47589d2abe67643742666ee838b5aa9cd3fd7d9f3f73d64b9c0c02
-2026-08-01T06:01:16.1001653Z Finalizing artifact upload
-2026-08-01T06:01:16.2824259Z Artifact finalize-pr31-failure.zip successfully finalized. Artifact ID 8814250220
-2026-08-01T06:01:16.2825207Z Artifact finalize-pr31-failure has been successfully uploaded! Final size is 264 bytes. Artifact ID is 8814250220
-2026-08-01T06:01:16.2830775Z Artifact download URL: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30686902370/artifacts/8814250220
-2026-08-01T06:01:16.2977249Z Post job cleanup.
-2026-08-01T06:01:16.3580391Z [command]/usr/bin/git version
-2026-08-01T06:01:16.3609373Z git version 2.54.0
-2026-08-01T06:01:16.3665469Z Temporarily overriding HOME='/home/runner/work/_temp/2af44322-1a0b-43b6-862f-f586619bc91a' before making global git config changes
-2026-08-01T06:01:16.3666494Z Adding repository directory to the temporary git global config as a safe directory
-2026-08-01T06:01:16.3669287Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
-2026-08-01T06:01:16.3697195Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-08-01T06:01:16.3722184Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-08-01T06:01:16.3889529Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-08-01T06:01:16.3904296Z http.https://github.com/.extraheader
-2026-08-01T06:01:16.3912105Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-08-01T06:01:16.3934205Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-08-01T06:01:16.4091491Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-08-01T06:01:16.4118752Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-08-01T06:01:16.4373101Z Cleaning up orphan processes
-2026-08-01T06:01:16.4702686Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T06:20:29.1956983Z   if-no-files-found: warn
+2026-08-01T06:20:29.1957198Z   retention-days: 3
+2026-08-01T06:20:29.1957396Z   compression-level: 6
+2026-08-01T06:20:29.1957597Z   overwrite: false
+2026-08-01T06:20:29.1957796Z   include-hidden-files: false
+2026-08-01T06:20:29.1958350Z ##[endgroup]
+2026-08-01T06:20:29.3633299Z (node:3612) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-01T06:20:29.3634778Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-01T06:20:29.3800691Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-08-01T06:20:29.3803703Z The least common ancestor is /. This will be the root directory of the artifact
+2026-08-01T06:20:29.3804687Z With the provided path, there will be 13 files uploaded
+2026-08-01T06:20:29.3810705Z Artifact name is valid!
+2026-08-01T06:20:29.3811252Z Root directory input is valid!
+2026-08-01T06:20:29.6903755Z Beginning upload of artifact content to blob storage
+2026-08-01T06:20:29.7257775Z (node:3612) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-01T06:20:30.0632007Z Uploaded bytes 14360
+2026-08-01T06:20:30.1412977Z Finished uploading artifact content to blob storage!
+2026-08-01T06:20:30.1414025Z SHA256 digest of uploaded artifact zip is 9d7c89a1f2fc855b1bb80ccf4b3175ae4145f6a1278dce002e4cca0ebcb36e84
+2026-08-01T06:20:30.1415958Z Finalizing artifact upload
+2026-08-01T06:20:30.3532915Z Artifact finalize-pr31-failure.zip successfully finalized. Artifact ID 8814475243
+2026-08-01T06:20:30.3534773Z Artifact finalize-pr31-failure has been successfully uploaded! Final size is 14360 bytes. Artifact ID is 8814475243
+2026-08-01T06:20:30.3540893Z Artifact download URL: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30687511693/artifacts/8814475243
+2026-08-01T06:20:30.3724319Z Post job cleanup.
+2026-08-01T06:20:30.4550920Z [command]/usr/bin/git version
+2026-08-01T06:20:30.4594254Z git version 2.54.0
+2026-08-01T06:20:30.4633626Z Temporarily overriding HOME='/home/runner/work/_temp/0efa4d74-55c1-4505-9ef4-31f40724c43d' before making global git config changes
+2026-08-01T06:20:30.4635151Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-01T06:20:30.4640334Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
+2026-08-01T06:20:30.4680687Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-01T06:20:30.4717098Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-01T06:20:30.4978110Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-01T06:20:30.5006048Z http.https://github.com/.extraheader
+2026-08-01T06:20:30.5018748Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-01T06:20:30.5054175Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-01T06:20:30.5301905Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-01T06:20:30.5348862Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-01T06:20:30.5739854Z Cleaning up orphan processes
+2026-08-01T06:20:30.6051197Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
