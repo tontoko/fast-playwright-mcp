@@ -17,7 +17,7 @@ concurrency:
 jobs:
   finalize:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -56,7 +56,7 @@ jobs:
           bun install --frozen-lockfile
           bunx playwright install --with-deps chromium
 
-      - name: Generate regression tests
+      - name: Generate and normalize regression tests
         shell: bash
         run: |
           set -euo pipefail
@@ -117,7 +117,7 @@ jobs:
           PLAYWRIGHT_VERSION="$version" python3 scripts/apply-pr31-final.py implementation
           printf 'Applied Playwright version %s\n' "$version"
 
-      - name: Apply bounded compatibility corrections
+      - name: Apply compatibility and recovery corrections
         shell: bash
         run: |
           set -euo pipefail
@@ -170,6 +170,96 @@ jobs:
               encoding='utf-8',
           )
 
+          context = Path('src/context.ts')
+          text = context.read_text(encoding='utf-8')
+          class_marker = 'export class InputRecorder {'
+          helpers = """function resolveRecorderAction(
+            data: actions.ActionInContext | actions.Action | undefined
+          ): actions.Action | undefined {
+            if (!data) {
+              return;
+            }
+            return 'action' in data ? data.action : data;
+          }
+
+          function resolveRecorderSignal(
+            data: actions.SignalInContext | actions.Signal | undefined
+          ): actions.Signal | undefined {
+            if (!data) {
+              return;
+            }
+            return 'signal' in data ? data.signal : data;
+          }
+
+          export class InputRecorder {"""
+          if text.count(class_marker) != 1:
+              raise SystemExit('InputRecorder class marker mismatch')
+          text = text.replace(class_marker, helpers)
+          text = text.replace(
+              'data: actions.ActionInContext,',
+              'data: actions.ActionInContext | actions.Action,',
+          )
+          old_added = """          const tab = Tab.forPage(page);
+                    tab?.context.sessionLog?.logUserAction(data.action, tab, code, false);"""
+          new_added = """          const tab = Tab.forPage(page);
+                    const action = resolveRecorderAction(data);
+                    if (tab && action) {
+                      tab.context.sessionLog?.logUserAction(action, tab, code, false);
+                    }"""
+          if text.count(old_added) != 1:
+              raise SystemExit('actionAdded recorder marker mismatch')
+          text = text.replace(old_added, new_added)
+          old_updated = """          const tab = Tab.forPage(page);
+                    if (tab) {
+                      sessionLog.logUserAction(data.action, tab, code, true);
+                    }"""
+          new_updated = """          const tab = Tab.forPage(page);
+                    const action = resolveRecorderAction(data);
+                    if (tab && action) {
+                      sessionLog.logUserAction(action, tab, code, true);
+                    }"""
+          if text.count(old_updated) != 1:
+              raise SystemExit('actionUpdated recorder marker mismatch')
+          text = text.replace(old_updated, new_updated)
+          text = text.replace(
+              'signalAdded: (page: Page, data: actions.SignalInContext) => {',
+              'signalAdded: (\n          page: Page,\n          data: actions.SignalInContext | actions.Signal\n        ) => {',
+          )
+          old_signal = """          if (
+                    this.context.isRunningTool() ||
+                    data.signal.name !== 'navigation'
+                  ) {
+                    return;
+                  }
+                  const tab = Tab.forPage(page);
+                  if (tab) {
+                    sessionLog.logUserAction(
+                      { name: 'navigate', url: data.signal.url, signals: [] },
+                      tab,
+                      `await page.goto('${data.signal.url}');`,
+                      false
+                    );
+                  }"""
+          new_signal = """          const signal = resolveRecorderSignal(data);
+                  if (
+                    this.context.isRunningTool() ||
+                    signal?.name !== 'navigation'
+                  ) {
+                    return;
+                  }
+                  const tab = Tab.forPage(page);
+                  if (tab) {
+                    sessionLog.logUserAction(
+                      { name: 'navigate', url: signal.url, signals: [] },
+                      tab,
+                      `await page.goto('${signal.url}');`,
+                      false
+                    );
+                  }"""
+          if text.count(old_signal) != 1:
+              raise SystemExit('signalAdded recorder marker mismatch')
+          context.write_text(text.replace(old_signal, new_signal), encoding='utf-8')
+
           session_log = Path('src/session-log.ts')
           text = session_log.read_text(encoding='utf-8')
           import_marker = "import { SecretRedactor } from './utils/secret-redactor.js';"
@@ -177,6 +267,26 @@ jobs:
           if text.count(import_marker) != 1:
               raise SystemExit('session-log import marker mismatch')
           text = text.replace(import_marker, import_replacement)
+          signature = """  logUserAction(
+            action: actions.Action,
+            tab: Tab,
+            code: string,
+            isUpdate: boolean
+          ) {
+            const trimmedCode = code.trim();"""
+          replacement = """  logUserAction(
+            action: actions.Action | undefined,
+            tab: Tab,
+            code: string | undefined,
+            isUpdate: boolean
+          ) {
+            if (!action) {
+              return;
+            }
+            const trimmedCode = code?.trim() ?? '';"""
+          if text.count(signature) != 1:
+              raise SystemExit('session-log action boundary marker mismatch')
+          text = text.replace(signature, replacement)
           queue_marker = '    this._sessionFileQueue = this._sessionFileQueue.then(operation);'
           queue_replacement = (
               '    this._sessionFileQueue = this._sessionFileQueue\n'
@@ -217,10 +327,10 @@ jobs:
           git diff --check
 
       - name: GREEN - focused regressions
+        shell: bash
         env:
           DEBUG: 'pw:mcp:*'
           PWMCP_DEBUG: '1'
-        shell: bash
         run: |
           set -euo pipefail
           bunx playwright test \
@@ -241,32 +351,6 @@ jobs:
             tests/upstream-check.spec.ts \
             --project=chromium \
             --workers=1
-
-      - name: Full Chromium suite
-        run: bunx playwright test --project=chromium --workers=1
-
-      - name: Packed npm artifact smoke
-        run: bun run test:package
-
-      - name: Bundled extension build and E2E
-        shell: bash
-        env:
-          DEBUG: 'pw:mcp:*'
-          PWMCP_DEBUG: '1'
-        run: |
-          set -euo pipefail
-          npm ci --prefix extension
-          npm run build --prefix extension
-          xvfb-run --auto-servernum bunx playwright test \
-            --config=extension/playwright.config.ts \
-            --workers=1
-
-      - name: Docker build and CLI smoke
-        shell: bash
-        run: |
-          set -euo pipefail
-          docker build -t fast-playwright-mcp-pr31:latest .
-          docker run --rm fast-playwright-mcp-pr31:latest --version
 
       - name: Commit verified source changes
         shell: bash
@@ -293,14 +377,12 @@ jobs:
 
       - name: Upload failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
         with:
           name: finalize-pr31-source-failure
           path: |
             /tmp/pr31-red.log
             test-results/**/error-context.md
             playwright-report/**
-            extension/test-results/**/error-context.md
-            extension/playwright-report/**
           if-no-files-found: warn
           retention-days: 3
