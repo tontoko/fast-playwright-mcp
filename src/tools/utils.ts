@@ -6,6 +6,8 @@ export async function waitForCompletion<R>(
   tab: Tab,
   callback: () => Promise<R>
 ): Promise<R> {
+  const settleTimeout =
+    tab.context.config.timeouts?.settle ?? TIMEOUTS.WAIT_FOR_COMPLETION;
   const requests = new Set<playwright.Request>();
   let frameNavigated = false;
   let navigationCompleted = false;
@@ -83,7 +85,7 @@ export async function waitForCompletion<R>(
     await waitBarrier;
     // Additional stability wait with context verification
     if (frameNavigated) {
-      await tab.waitForTimeout(getNavigationConfig().stabilityWait);
+      await tab.waitForTimeout(settleTimeout);
       // Verify page is still responsive
       try {
         await tab.page.evaluate(() => document.readyState);
@@ -95,7 +97,7 @@ export async function waitForCompletion<R>(
         );
       }
     } else {
-      await tab.waitForTimeout(getNavigationConfig().defaultWait);
+      await tab.waitForTimeout(settleTimeout);
     }
     return result;
   } finally {
@@ -119,7 +121,5 @@ function getNavigationConfig() {
   return {
     networkIdleTimeout: TIMEOUTS.NETWORK_IDLE_TIMEOUT,
     completionTimeout: 15_000,
-    stabilityWait: TIMEOUTS.STABILITY_WAIT,
-    defaultWait: TIMEOUTS.WAIT_FOR_COMPLETION,
   };
 }

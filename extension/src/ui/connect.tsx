@@ -162,19 +162,37 @@ const ConnectApp: React.FC = () => {
     [clientInfo, mcpRelayUrl]
   );
 
-  const handleReject = useCallback(() => {
+  const handleReject = useCallback(async () => {
+    let response: { success?: boolean; error?: string } | undefined;
+    try {
+      response = await chrome.runtime.sendMessage({
+        type: 'rejectConnection',
+      });
+    } catch (error: unknown) {
+      response = {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
     setShowButtons(false);
     setShowTabList(false);
     setStatus({
       type: 'error',
-      message: 'Connection rejected. This tab can be closed.',
+      message: response?.success
+        ? 'Connection rejected. This tab can be closed.'
+        : `Failed to reject connection: ${response?.error ?? 'Unknown error'}`,
     });
   }, []);
 
   useEffect(() => {
     const listener = (message: { type?: string }) => {
-      if (message.type === 'connectionTimeout') {
-        handleReject();
+      if (
+        message.type === 'connectionTimeout' ||
+        message.type === 'pendingConnectionClosed'
+      ) {
+        handleReject().catch(() => {
+          // The relay is already closed; keep the visible rejection state.
+        });
       }
     };
     chrome.runtime.onMessage.addListener(listener);

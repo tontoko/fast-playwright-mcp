@@ -20,6 +20,26 @@ import { outputFile } from './config.js';
 import { createHash } from './utils/guid.js';
 import { browserDebug, logUnhandledError, testDebug } from './utils/log.js';
 
+const MISSING_EXECUTABLE_PATTERN =
+  /Executable doesn't exist at (?<path>[^\r\n]+)/u;
+
+export function formatBrowserLaunchError(
+  error: unknown,
+  config: FullConfig
+): Error {
+  const normalized = error instanceof Error ? error : new Error(String(error));
+  const missing = MISSING_EXECUTABLE_PATTERN.exec(normalized.message);
+  if (!missing?.groups?.path) {
+    return normalized;
+  }
+  const browser =
+    config.browser.launchOptions.channel ?? config.browser.browserName;
+  return new Error(
+    `Browser "${browser}" is not installed. Expected executable at ${missing.groups.path}. ` +
+      'Install the pinned Playwright browser or configure --executable-path.'
+  );
+}
+
 function getBrowserType(browserName: string): BrowserType {
   switch (browserName) {
     case 'chromium':
@@ -143,13 +163,8 @@ class IsolatedContextFactory extends BaseContextFactory {
         handleSIGINT: false,
         handleSIGTERM: false,
       })
-      .catch((error) => {
-        if (error.message.includes("Executable doesn't exist")) {
-          throw new Error(
-            'Browser specified in your config is not installed. Either install it (likely) or change the config.'
-          );
-        }
-        throw error;
+      .catch((error: unknown) => {
+        throw formatBrowserLaunchError(error, this.config);
       });
   }
   protected override _doCreateContext(
@@ -280,9 +295,7 @@ class PersistentContextFactory implements BrowserContextFactory {
           error instanceof Error &&
           error.message.includes("Executable doesn't exist")
         ) {
-          throw new Error(
-            'Browser specified in your config is not installed. Either install it (likely) or change the config.'
-          );
+          throw formatBrowserLaunchError(error, this.config);
         }
         if (
           error instanceof Error &&

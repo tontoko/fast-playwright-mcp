@@ -102,6 +102,8 @@ export type Config = {
     action?: number;
     navigation?: number;
     expect?: number;
+    /** Delay after browser actions before capturing the response, in milliseconds. */
+    settle?: number;
   };
 
   /** Generated Playwright code output mode. */

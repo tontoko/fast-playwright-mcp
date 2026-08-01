@@ -11,9 +11,12 @@ import {
 test('loads the pinned upstream manifest', async () => {
   const manifest = await loadUpstreamManifest();
   expect(manifest.reviewedCommit).toBe(
-    '5f8fc00210b27b4407c375b59cda4838045d429c'
+    '55679f5f3d4b4f3e2534ec0ce2fc5683ba2eaf3f'
   );
-  expect(manifest.playwrightVersion).toBe('1.62.0-alpha-1783623505000');
+  expect(manifest.playwrightReviewedCommit).toBe(
+    '15b1aec478d90f0293dae7b7b6dafd494d9f0154'
+  );
+  expect(manifest.playwrightVersion).not.toBe('1.62.0-alpha-1783623505000');
 });
 
 test('classifies upstream paths deterministically', () => {

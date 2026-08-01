@@ -12,7 +12,7 @@ import {
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { ManualPromise } from '../manual-promise.js';
-import { logUnhandledError, mcpServerDebug } from '../utils/log.js';
+import { mcpServerDebug } from '../utils/log.js';
 import { logRequest } from '../utils/request-logger.js';
 import { toMcpTool } from './tool.js';
 import type { ToolResponse, ToolSchema } from './types.js';
@@ -67,6 +67,7 @@ export function createServer(
   runHeartbeat: boolean
 ): Server {
   const initializedPromise = new ManualPromise<void>();
+  let initializationError: Error | undefined;
   const listResources = backend.resources;
   const readResource = backend.readResource;
   const supportsResources = Boolean(listResources && readResource);
@@ -95,6 +96,9 @@ export function createServer(
   let heartbeatRunning = false;
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     await initializedPromise;
+    if (initializationError) {
+      throw initializationError;
+    }
     if (runHeartbeat && !heartbeatRunning) {
       heartbeatRunning = true;
       startHeartbeat(server);
@@ -126,10 +130,19 @@ export function createServer(
   });
 
   addServerListener(server, 'initialized', () => {
-    backend
-      .initialize?.(server)
-      .then(() => initializedPromise.resolve())
-      .catch(logUnhandledError);
+    if (!backend.initialize) {
+      initializedPromise.resolve();
+      return;
+    }
+    backend.initialize(server).then(
+      () => initializedPromise.resolve(),
+      (error: unknown) => {
+        initializationError =
+          error instanceof Error ? error : new Error(String(error));
+        mcpServerDebug('Backend initialization failed:', initializationError);
+        initializedPromise.resolve();
+      }
+    );
   });
   addServerListener(server, 'close', () => backend.serverClosed?.());
   return server;

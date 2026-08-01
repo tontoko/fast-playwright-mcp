@@ -21,6 +21,7 @@ import {
   buildExtensionConnectUrl,
   DEFAULT_EXTENSION_ID,
 } from './connect-url.js';
+import { findExtensionProfile } from './profile.js';
 
 const { registry } = coreBundle.registry;
 
@@ -47,6 +48,7 @@ type CDPResponse = {
 };
 
 export class CDPRelayServer {
+  private readonly _httpServer: http.Server;
   private readonly _wsHost: string;
   private readonly _browserChannel: string;
   private readonly _userDataDir: string | undefined;
@@ -71,6 +73,7 @@ export class CDPRelayServer {
     userDataDir?: string,
     executablePath?: string
   ) {
+    this._httpServer = server;
     this._wsHost = httpAddressToString(server.address()).replace(
       HTTP_TO_WS_REGEX,
       'ws'
@@ -103,7 +106,7 @@ export class CDPRelayServer {
       return;
     }
 
-    this._connectBrowser(clientInfo);
+    await this._connectBrowser(clientInfo);
     cdpRelayDebug('Waiting for incoming extension connection');
 
     let removeAbortListener: (() => void) | undefined;
@@ -131,13 +134,14 @@ export class CDPRelayServer {
     cdpRelayDebug('Extension connection established');
   }
 
-  private _connectBrowser(clientInfo: ClientInfo) {
+  private async _connectBrowser(clientInfo: ClientInfo) {
     const sanitizedClientInfo = this._sanitizeClientInfo(clientInfo);
+    const extensionId =
+      process.env.PLAYWRIGHT_MCP_EXTENSION_ID ?? DEFAULT_EXTENSION_ID;
     const url = buildExtensionConnectUrl({
       relayEndpoint: this.extensionEndpoint(),
       clientInfo: sanitizedClientInfo,
-      extensionId:
-        process.env.PLAYWRIGHT_MCP_EXTENSION_ID ?? DEFAULT_EXTENSION_ID,
+      extensionId,
       token: process.env.PLAYWRIGHT_MCP_EXTENSION_TOKEN,
     });
 
@@ -145,6 +149,15 @@ export class CDPRelayServer {
     const args: string[] = [];
     if (this._userDataDir) {
       args.push(`--user-data-dir=${this._userDataDir}`);
+      if (!this._executablePath) {
+        const profile = await findExtensionProfile(
+          this._userDataDir,
+          extensionId
+        );
+        if (profile) {
+          args.push(`--profile-directory=${profile}`);
+        }
+      }
     }
     if (platform() === 'linux' && this._browserChannel === 'chromium') {
       args.push('--no-sandbox');
@@ -252,6 +265,9 @@ export class CDPRelayServer {
   stop(): void {
     this._closeConnections('Server stopped');
     this._wss.close();
+    if (this._httpServer.listening) {
+      this._httpServer.close();
+    }
   }
 
   private _closeConnections(reason: string) {

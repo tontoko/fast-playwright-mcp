@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Copyright (c) Microsoft Corporation.
  *
@@ -22,4 +21,4 @@ import type { BrowserContext } from 'playwright';
 export declare function createConnection(
   config?: Config,
   contextGetter?: () => Promise<BrowserContext>
-): Promise<Server>;
+): Server;

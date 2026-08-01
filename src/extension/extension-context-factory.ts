@@ -35,7 +35,16 @@ export class ExtensionContextFactory implements BrowserContextFactory {
   }> {
     // First call will establish the connection to the extension.
     this._browserPromise ??= this._obtainBrowser(clientInfo, abortSignal);
-    const browser = await this._browserPromise;
+    const browserPromise = this._browserPromise;
+    let browser: Browser;
+    try {
+      browser = await browserPromise;
+    } catch (error) {
+      if (this._browserPromise === browserPromise) {
+        this._browserPromise = undefined;
+      }
+      throw error;
+    }
     return {
       browserContext: browser.contexts()[0],
       close: async () => {

@@ -24,6 +24,7 @@ const MCP_PATH = /tools|mcp|browser|backend/u;
 export type UpstreamManifest = {
   repository: string;
   playwrightRepository: string;
+  playwrightReviewedCommit: string;
   reviewedCommit: string;
   packageVersion: string;
   playwrightVersion: string;
@@ -79,6 +80,9 @@ export function githubApiUrl(
 function validateManifest(manifest: UpstreamManifest): void {
   if (!FULL_SHA.test(manifest.reviewedCommit)) {
     throw new Error('reviewedCommit must be a full 40-character SHA');
+  }
+  if (!FULL_SHA.test(manifest.playwrightReviewedCommit)) {
+    throw new Error('playwrightReviewedCommit must be a full 40-character SHA');
   }
   parseRepositorySlug(manifest.repository, 'repository');
   parseRepositorySlug(manifest.playwrightRepository, 'playwrightRepository');
@@ -185,6 +189,8 @@ export function buildUpstreamReport(
     `- Repository: \`${manifest.repository}\``,
     `- Reviewed from: \`${manifest.reviewedCommit}\``,
     `- Compared to: \`${head}\``,
+    `- Playwright repository: \`${manifest.playwrightRepository}\``,
+    `- Playwright reviewed at: \`${manifest.playwrightReviewedCommit}\``,
     `- Commits: ${payload.commits?.length ?? 0}`,
     `- Changed files: ${files.length}`,
     '',
