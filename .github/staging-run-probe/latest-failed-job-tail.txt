@@ -1,400 +1,400 @@
-2026-08-01T05:57:43.6462936Z Installing dependencies...
-2026-08-01T05:57:43.6551599Z Switching to root user to install dependencies...
-2026-08-01T05:57:43.7751677Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-2026-08-01T05:57:43.8190610Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-2026-08-01T05:57:43.8275742Z Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-2026-08-01T05:57:43.8313375Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-2026-08-01T05:57:43.8380514Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
-2026-08-01T05:57:43.8393484Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
-2026-08-01T05:57:43.8433992Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
-2026-08-01T05:57:43.8435314Z Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
-2026-08-01T05:57:44.0259871Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1154 kB]
-2026-08-01T05:57:44.0397735Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [278 kB]
-2026-08-01T05:57:44.0420169Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
-2026-08-01T05:57:44.0438498Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1681 kB]
-2026-08-01T05:57:44.0532993Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [334 kB]
-2026-08-01T05:57:44.0555829Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
-2026-08-01T05:57:44.0587652Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1367 kB]
-2026-08-01T05:57:44.0660857Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [308 kB]
-2026-08-01T05:57:44.0684810Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [45.4 kB]
-2026-08-01T05:57:44.0698977Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.3 kB]
-2026-08-01T05:57:44.1135364Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
-2026-08-01T05:57:44.1151028Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5744 B]
-2026-08-01T05:57:44.1167754Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [32.5 kB]
-2026-08-01T05:57:44.1177446Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
-2026-08-01T05:57:44.1735161Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [897 kB]
-2026-08-01T05:57:44.1820560Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [198 kB]
-2026-08-01T05:57:44.1840741Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
-2026-08-01T05:57:44.1855422Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1199 kB]
-2026-08-01T05:57:44.1930211Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [239 kB]
-2026-08-01T05:57:44.1955044Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
-2026-08-01T05:57:44.1994896Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1273 kB]
-2026-08-01T05:57:44.2085789Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [290 kB]
-2026-08-01T05:57:44.2114289Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [40.3 kB]
-2026-08-01T05:57:44.2125568Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [10.6 kB]
-2026-08-01T05:57:44.2411419Z Get:33 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.7 kB]
-2026-08-01T05:57:44.2449953Z Get:34 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [261 kB]
-2026-08-01T05:57:44.2513238Z Get:35 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [227 kB]
-2026-08-01T05:57:44.3138100Z Get:36 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1411 B]
-2026-08-01T05:57:48.9371710Z Fetched 11.0 MB in 1s (7659 kB/s)
-2026-08-01T05:57:49.8284419Z Reading package lists...
-2026-08-01T05:57:50.1962863Z Reading package lists...
-2026-08-01T05:57:50.4479130Z Building dependency tree...
-2026-08-01T05:57:50.4486889Z Reading state information...
-2026-08-01T05:57:50.6850521Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
-2026-08-01T05:57:50.6851250Z libasound2t64 set to manually installed.
-2026-08-01T05:57:50.6851899Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T05:57:50.6852559Z libatk-bridge2.0-0t64 set to manually installed.
-2026-08-01T05:57:50.6853191Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T05:57:50.6853755Z libatk1.0-0t64 set to manually installed.
-2026-08-01T05:57:50.6854366Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T05:57:50.6855009Z libatspi2.0-0t64 set to manually installed.
-2026-08-01T05:57:50.6855651Z libcairo2 is already the newest version (1.18.0-3build1).
-2026-08-01T05:57:50.6856266Z libcairo2 set to manually installed.
-2026-08-01T05:57:50.6856916Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
-2026-08-01T05:57:50.6857558Z libcups2t64 set to manually installed.
-2026-08-01T05:57:50.6858210Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
-2026-08-01T05:57:50.6859112Z libdbus-1-3 set to manually installed.
-2026-08-01T05:57:50.6859774Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
-2026-08-01T05:57:50.6860390Z libdrm2 set to manually installed.
-2026-08-01T05:57:50.6861020Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.2).
-2026-08-01T05:57:50.6861627Z libgbm1 set to manually installed.
-2026-08-01T05:57:50.6862208Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.8).
-2026-08-01T05:57:50.6863042Z libglib2.0-0t64 set to manually installed.
-2026-08-01T05:57:50.6863613Z libnspr4 is already the newest version (2:4.35-1.1build1).
-2026-08-01T05:57:50.6864011Z libnspr4 set to manually installed.
-2026-08-01T05:57:50.6864387Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
-2026-08-01T05:57:50.6864746Z libnss3 set to manually installed.
-2026-08-01T05:57:50.6865150Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
-2026-08-01T05:57:50.6865565Z libpango-1.0-0 set to manually installed.
-2026-08-01T05:57:50.6865976Z libx11-6 is already the newest version (2:1.8.7-1build1).
-2026-08-01T05:57:50.6866340Z libx11-6 set to manually installed.
-2026-08-01T05:57:50.6866693Z libxcb1 is already the newest version (1.15-1ubuntu2).
-2026-08-01T05:57:50.6867148Z libxcb1 set to manually installed.
-2026-08-01T05:57:50.6867552Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
-2026-08-01T05:57:50.6867954Z libxcomposite1 set to manually installed.
-2026-08-01T05:57:50.6868549Z libxdamage1 is already the newest version (1:1.1.6-1build1).
-2026-08-01T05:57:50.6868968Z libxdamage1 set to manually installed.
-2026-08-01T05:57:50.6869350Z libxext6 is already the newest version (2:1.3.4-1build2).
-2026-08-01T05:57:50.6869943Z libxext6 set to manually installed.
-2026-08-01T05:57:50.6870374Z libxfixes3 is already the newest version (1:6.0.0-2build1).
-2026-08-01T05:57:50.6870758Z libxfixes3 set to manually installed.
-2026-08-01T05:57:50.6871160Z libxkbcommon0 is already the newest version (1.6.0-1build1).
-2026-08-01T05:57:50.6871539Z libxkbcommon0 set to manually installed.
-2026-08-01T05:57:50.6871929Z libxrandr2 is already the newest version (2:1.5.2-2build1).
-2026-08-01T05:57:50.6872301Z libxrandr2 set to manually installed.
-2026-08-01T05:57:50.6872689Z xvfb is already the newest version (2:21.1.12-1ubuntu1.6).
-2026-08-01T05:57:50.6873218Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
-2026-08-01T05:57:50.6873761Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
-2026-08-01T05:57:50.6874178Z libfontconfig1 set to manually installed.
-2026-08-01T05:57:50.6874618Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.1).
-2026-08-01T05:57:50.6875041Z libfreetype6 set to manually installed.
-2026-08-01T05:57:50.6875452Z fonts-liberation is already the newest version (1:2.1.5-3).
-2026-08-01T05:57:50.6875871Z fonts-liberation set to manually installed.
-2026-08-01T05:57:50.6876290Z The following additional packages will be installed:
-2026-08-01T05:57:50.6876655Z   xfonts-encodings xfonts-utils
-2026-08-01T05:57:50.6876943Z Recommended packages:
-2026-08-01T05:57:50.6877227Z   fonts-ipafont-mincho fonts-tlwg-loma
-2026-08-01T05:57:50.7117727Z The following NEW packages will be installed:
-2026-08-01T05:57:50.7124065Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
-2026-08-01T05:57:50.7140106Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
-2026-08-01T05:57:50.7140636Z   xfonts-utils
-2026-08-01T05:57:50.7433262Z 0 upgraded, 9 newly installed, 0 to remove and 79 not upgraded.
-2026-08-01T05:57:50.7434001Z Need to get 21.1 MB of archives.
-2026-08-01T05:57:50.7434678Z After this operation, 79.5 MB of additional disk space will be used.
-2026-08-01T05:57:50.7435477Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-2026-08-01T05:57:50.7730647Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
-2026-08-01T05:57:50.8077019Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
-2026-08-01T05:57:50.8704985Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
-2026-08-01T05:57:50.8759822Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
-2026-08-01T05:57:50.9088512Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
-2026-08-01T05:57:50.9834323Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
-2026-08-01T05:57:50.9914715Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
-2026-08-01T05:57:50.9946961Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
-2026-08-01T05:57:51.0002463Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
-2026-08-01T05:57:51.3123314Z Fetched 21.1 MB in 0s (77.2 MB/s)
-2026-08-01T05:57:51.3389455Z Selecting previously unselected package fonts-ipafont-gothic.
-2026-08-01T05:57:51.3606905Z (Reading database ... 
-2026-08-01T05:57:51.3607355Z (Reading database ... 5%
-2026-08-01T05:57:51.3607963Z (Reading database ... 10%
-2026-08-01T05:57:51.3608545Z (Reading database ... 15%
-2026-08-01T05:57:51.3608873Z (Reading database ... 20%
-2026-08-01T05:57:51.3609118Z (Reading database ... 25%
-2026-08-01T05:57:51.3609387Z (Reading database ... 30%
-2026-08-01T05:57:51.3609624Z (Reading database ... 35%
-2026-08-01T05:57:51.3609860Z (Reading database ... 40%
-2026-08-01T05:57:51.3610399Z (Reading database ... 45%
-2026-08-01T05:57:51.3610636Z (Reading database ... 50%
-2026-08-01T05:57:51.3645278Z (Reading database ... 55%
-2026-08-01T05:57:51.4584859Z (Reading database ... 60%
-2026-08-01T05:57:51.6853198Z (Reading database ... 65%
-2026-08-01T05:57:51.8469499Z (Reading database ... 70%
-2026-08-01T05:57:51.9446323Z (Reading database ... 75%
-2026-08-01T05:57:52.1474583Z (Reading database ... 80%
-2026-08-01T05:57:52.3092411Z (Reading database ... 85%
-2026-08-01T05:57:52.4950496Z (Reading database ... 90%
-2026-08-01T05:57:52.6021867Z (Reading database ... 95%
-2026-08-01T05:57:52.6022401Z (Reading database ... 100%
-2026-08-01T05:57:52.6023104Z (Reading database ... 202954 files and directories currently installed.)
-2026-08-01T05:57:52.6074377Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
-2026-08-01T05:57:52.6174395Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
-2026-08-01T05:57:52.8644961Z Selecting previously unselected package fonts-freefont-ttf.
-2026-08-01T05:57:52.8784784Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
-2026-08-01T05:57:52.8791606Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
-2026-08-01T05:57:52.9722391Z Selecting previously unselected package fonts-tlwg-loma-otf.
-2026-08-01T05:57:52.9866096Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
-2026-08-01T05:57:52.9874164Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
-2026-08-01T05:57:53.0095033Z Selecting previously unselected package fonts-unifont.
-2026-08-01T05:57:53.0233067Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
-2026-08-01T05:57:53.0240225Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
-2026-08-01T05:57:53.1411207Z Selecting previously unselected package fonts-wqy-zenhei.
-2026-08-01T05:57:53.1551057Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
-2026-08-01T05:57:53.1660517Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
-2026-08-01T05:57:53.6508884Z Selecting previously unselected package xfonts-encodings.
-2026-08-01T05:57:53.6647001Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
-2026-08-01T05:57:53.6654342Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
-2026-08-01T05:57:53.6958731Z Selecting previously unselected package xfonts-utils.
-2026-08-01T05:57:53.7099006Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
-2026-08-01T05:57:53.7107143Z Unpacking xfonts-utils (1:7.7+6build3) ...
-2026-08-01T05:57:53.7455001Z Selecting previously unselected package xfonts-cyrillic.
-2026-08-01T05:57:53.7593241Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
-2026-08-01T05:57:53.7601393Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
-2026-08-01T05:57:53.7962982Z Selecting previously unselected package xfonts-scalable.
-2026-08-01T05:57:53.8102251Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
-2026-08-01T05:57:53.8109798Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
-2026-08-01T05:57:53.8560865Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
-2026-08-01T05:57:53.8690273Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
-2026-08-01T05:57:53.8711337Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
-2026-08-01T05:57:53.8727111Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
-2026-08-01T05:57:53.8743551Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
-2026-08-01T05:57:53.8815564Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
-2026-08-01T05:57:53.8832469Z Setting up fonts-unifont (1:15.1.01-1build1) ...
-2026-08-01T05:57:53.8849333Z Setting up xfonts-utils (1:7.7+6build3) ...
-2026-08-01T05:57:53.8892115Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
-2026-08-01T05:57:53.9204027Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
-2026-08-01T05:57:53.9501953Z Processing triggers for man-db (2.12.0-4build2) ...
-2026-08-01T05:57:53.9521042Z Not building database; man-db/auto-update is not 'true'.
-2026-08-01T05:57:53.9533904Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
-2026-08-01T05:57:54.6724822Z 
-2026-08-01T05:57:54.6725500Z Running kernel seems to be up-to-date.
-2026-08-01T05:57:54.6725879Z 
-2026-08-01T05:57:54.6726108Z No services need to be restarted.
-2026-08-01T05:57:54.6726391Z 
-2026-08-01T05:57:54.6726607Z No containers need to be restarted.
-2026-08-01T05:57:54.6726893Z 
-2026-08-01T05:57:54.6727177Z No user sessions are running outdated binaries.
-2026-08-01T05:57:54.6727510Z 
-2026-08-01T05:57:54.6727975Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
-2026-08-01T05:57:55.8464677Z Downloading Chrome for Testing 151.0.7922.10 (playwright chromium v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-linux64.zip
-2026-08-01T05:57:56.8869257Z |                                                                                |   0% of 184.3 MiB
-2026-08-01T05:57:57.1764641Z |■■■■■■■■                                                                        |  10% of 184.3 MiB
-2026-08-01T05:57:57.2639408Z |■■■■■■■■■■■■■■■■                                                                |  20% of 184.3 MiB
-2026-08-01T05:57:57.3321344Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 184.3 MiB
-2026-08-01T05:57:57.3963346Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 184.3 MiB
-2026-08-01T05:57:57.4573374Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 184.3 MiB
-2026-08-01T05:57:57.5189960Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 184.3 MiB
-2026-08-01T05:57:57.5766158Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 184.3 MiB
-2026-08-01T05:57:57.6342845Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 184.3 MiB
-2026-08-01T05:57:57.6893506Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 184.3 MiB
-2026-08-01T05:57:57.7467347Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 184.3 MiB
-2026-08-01T05:58:00.3810531Z Chrome for Testing 151.0.7922.10 (playwright chromium v1232) downloaded to /home/runner/.cache/ms-playwright/chromium-1232
-2026-08-01T05:58:00.3814784Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
-2026-08-01T05:58:01.3856185Z |                                                                                |   0% of 2.3 MiB
-2026-08-01T05:58:01.4003862Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
-2026-08-01T05:58:01.4061007Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
-2026-08-01T05:58:01.4110751Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
-2026-08-01T05:58:01.4156705Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
-2026-08-01T05:58:01.4179356Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
-2026-08-01T05:58:01.4204823Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
-2026-08-01T05:58:01.4241271Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
-2026-08-01T05:58:01.4262918Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
-2026-08-01T05:58:01.4276344Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
-2026-08-01T05:58:01.4284484Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
-2026-08-01T05:58:01.4867176Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
-2026-08-01T05:58:01.4871281Z Downloading Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-headless-shell-linux64.zip
-2026-08-01T05:58:02.5139359Z |                                                                                |   0% of 114.7 MiB
-2026-08-01T05:58:02.6361129Z |■■■■■■■■                                                                        |  10% of 114.7 MiB
-2026-08-01T05:58:02.6960276Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.7 MiB
-2026-08-01T05:58:02.7458551Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.7 MiB
-2026-08-01T05:58:02.7953245Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.7 MiB
-2026-08-01T05:58:02.8407876Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.7 MiB
-2026-08-01T05:58:02.8896551Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.7 MiB
-2026-08-01T05:58:02.9297944Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.7 MiB
-2026-08-01T05:58:02.9724786Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.7 MiB
-2026-08-01T05:58:03.0137691Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.7 MiB
-2026-08-01T05:58:03.0504178Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.7 MiB
-2026-08-01T05:58:04.9429864Z Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1232
-2026-08-01T05:58:04.9665657Z ##[group]Run set -euo pipefail
-2026-08-01T05:58:04.9666206Z [36;1mset -euo pipefail[0m
-2026-08-01T05:58:04.9666683Z [36;1mpython3 scripts/apply-pr31-final.py tests[0m
-2026-08-01T05:58:04.9667496Z [36;1mpython3 - <<'PY'[0m
-2026-08-01T05:58:04.9667885Z [36;1mfrom pathlib import Path[0m
-2026-08-01T05:58:04.9668285Z [36;1m[0m
-2026-08-01T05:58:04.9668887Z [36;1mdialog = Path('tests/dialog-lifecycle.spec.ts')[0m
-2026-08-01T05:58:04.9669433Z [36;1mtext = dialog.read_text(encoding='utf-8')[0m
-2026-08-01T05:58:04.9670023Z [36;1mtext = text.replace(".join('\n');", ".join('\\\\n');")[0m
-2026-08-01T05:58:04.9670577Z [36;1mtext = text.replace([0m
-2026-08-01T05:58:04.9671168Z [36;1m    "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",[0m
-2026-08-01T05:58:04.9672006Z [36;1m    "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",[0m
-2026-08-01T05:58:04.9672632Z [36;1m)[0m
-2026-08-01T05:58:04.9673082Z [36;1mdialog.write_text(text, encoding='utf-8')[0m
-2026-08-01T05:58:04.9673573Z [36;1m[0m
-2026-08-01T05:58:04.9673992Z [36;1mruntime = Path('tests/upstream-runtime.spec.ts')[0m
-2026-08-01T05:58:04.9674619Z [36;1mtext = runtime.read_text(encoding='utf-8')[0m
-2026-08-01T05:58:04.9675123Z [36;1mtext = text.replace([0m
-2026-08-01T05:58:04.9675550Z [36;1m    "async (_fixtures, testInfo) => {",[0m
-2026-08-01T05:58:04.9676073Z [36;1m    "async ({ page: _page }, testInfo) => {",[0m
-2026-08-01T05:58:04.9676492Z [36;1m)[0m
-2026-08-01T05:58:04.9676862Z [36;1mruntime.write_text(text, encoding='utf-8')[0m
-2026-08-01T05:58:04.9677336Z [36;1mPY[0m
-2026-08-01T05:58:04.9677925Z [36;1mbunx biome check tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts[0m
-2026-08-01T05:58:04.9737486Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T05:58:04.9737882Z ##[endgroup]
-2026-08-01T05:58:05.1593411Z tests/upstream-runtime.spec.ts:1:1 assist/source/organizeImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-08-01T05:58:05.1594165Z 
-2026-08-01T05:58:05.1594478Z   × The imports and exports are not sorted.
-2026-08-01T05:58:05.1594926Z   
-2026-08-01T05:58:05.1595604Z   > 1 │ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
-2026-08-01T05:58:05.1596219Z       │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2026-08-01T05:58:05.1596629Z     2 │ import { join } from 'node:path';
-2026-08-01T05:58:05.1597251Z     3 │ import { expect, test } from '@playwright/test';
-2026-08-01T05:58:05.1597732Z   
-2026-08-01T05:58:05.1598072Z   i Safe fix: Organize Imports (Biome)
-2026-08-01T05:58:05.1598623Z   
-2026-08-01T05:58:05.1599747Z       1     │ - import·{·mkdir,·readFile,·readdir,·writeFile·}·from·'node:fs/promises';
-2026-08-01T05:58:05.1600814Z           1 │ + import·{·mkdir,·readdir,·readFile,·writeFile·}·from·'node:fs/promises';
-2026-08-01T05:58:05.1601599Z       2   2 │   import { join } from 'node:path';
-2026-08-01T05:58:05.1602283Z       3   3 │   import { expect, test } from '@playwright/test';
-2026-08-01T05:58:05.1602599Z   
-2026-08-01T05:58:05.1602707Z 
-2026-08-01T05:58:05.1603185Z tests/upstream-runtime.spec.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-08-01T05:58:05.1603556Z 
-2026-08-01T05:58:05.1610378Z   × Formatter would have printed the following content:
-2026-08-01T05:58:05.1610945Z   
-2026-08-01T05:58:05.1616753Z      24  24 │   ];
-2026-08-01T05:58:05.1617146Z      25  25 │   
-2026-08-01T05:58:05.1617505Z      26     │ - 
-2026-08-01T05:58:05.1618195Z      27  26 │   test('generated code escapes user-controlled strings', () => {
-2026-08-01T05:58:05.1619720Z      28  27 │     expect(quote("it's\nC:\\temp")).toBe("'it\\'s\\nC:\\\\temp'");
-2026-08-01T05:58:05.1620548Z     ······· │ 
-2026-08-01T05:58:05.1620904Z      34  33 │     );
-2026-08-01T05:58:05.1621283Z      35  34 │   });
-2026-08-01T05:58:05.1621734Z      36     │ - 
-2026-08-01T05:58:05.1622060Z      37  35 │   
-2026-08-01T05:58:05.1623538Z      38  36 │   test('settle timeout resolves from defaults, CLI, and environment', async () => {
-2026-08-01T05:58:05.1624651Z      39  37 │     expect(resolveConfig({}).timeouts.settle).toBe(500);
-2026-08-01T05:58:05.1625730Z      40     │ - ··expect((await·resolveCLIConfig({·timeoutSettle:·125·},·{})).timeouts.settle).toBe(
-2026-08-01T05:58:05.1626745Z      41     │ - ····125
-2026-08-01T05:58:05.1627116Z      42     │ - ··);
-2026-08-01T05:58:05.1627485Z          38 │ + ··expect(
-2026-08-01T05:58:05.1628239Z          39 │ + ····(await·resolveCLIConfig({·timeoutSettle:·125·},·{})).timeouts.settle
-2026-08-01T05:58:05.1629128Z          40 │ + ··).toBe(125);
-2026-08-01T05:58:05.1629534Z      43  41 │     expect(
-2026-08-01T05:58:05.1629908Z      44     │ - ····(
-2026-08-01T05:58:05.1630510Z      45     │ - ······await·resolveCLIConfig(
-2026-08-01T05:58:05.1631136Z      46     │ - ········{},
-2026-08-01T05:58:05.1631795Z      47     │ - ········{·PLAYWRIGHT_MCP_TIMEOUT_SETTLE:·'250'·}
-2026-08-01T05:58:05.1632515Z      48     │ - ······)
-2026-08-01T05:58:05.1633011Z      49     │ - ····).timeouts.settle
-2026-08-01T05:58:05.1633838Z          42 │ + ····(await·resolveCLIConfig({},·{·PLAYWRIGHT_MCP_TIMEOUT_SETTLE:·'250'·}))
-2026-08-01T05:58:05.1634596Z          43 │ + ······.timeouts.settle
-2026-08-01T05:58:05.1635102Z      50  44 │     ).toBe(250);
-2026-08-01T05:58:05.1635489Z      51  45 │   });
-2026-08-01T05:58:05.1635830Z      52     │ - 
-2026-08-01T05:58:05.1636158Z      53  46 │   
-2026-08-01T05:58:05.1636963Z      54  47 │   test('all CDP header sources reject invalid names and line breaks', () => {
-2026-08-01T05:58:05.1637703Z     ······· │ 
-2026-08-01T05:58:05.1638195Z      64  57 │     ).toThrow('Invalid header');
-2026-08-01T05:58:05.1638988Z      65  58 │   });
-2026-08-01T05:58:05.1639319Z      66     │ - 
-2026-08-01T05:58:05.1639649Z      67  59 │   
-2026-08-01T05:58:05.1640409Z      68  60 │   test('navigation errors classify only explicit downloads as downloads', () => {
-2026-08-01T05:58:05.1641867Z      69  61 │     expect(isDownloadNavigationError(new Error('net::ERR_ABORTED'))).toBe(false);
-2026-08-01T05:58:05.1643066Z      70     │ - ··expect(isDownloadNavigationError(new·Error('Download·is·starting'))).toBe(true);
-2026-08-01T05:58:05.1644242Z          62 │ + ··expect(isDownloadNavigationError(new·Error('Download·is·starting'))).toBe(
-2026-08-01T05:58:05.1644991Z          63 │ + ····true
-2026-08-01T05:58:05.1645363Z          64 │ + ··);
-2026-08-01T05:58:05.1645708Z      71  65 │   });
-2026-08-01T05:58:05.1646043Z      72     │ - 
-2026-08-01T05:58:05.1646370Z      73  66 │   
-2026-08-01T05:58:05.1647074Z      74  67 │   test('missing browser diagnostics preserve the executable path', () => {
-2026-08-01T05:58:05.1647929Z     ······· │ 
-2026-08-01T05:58:05.1648735Z      81  74 │     expect(error.message).toContain('is not installed');
-2026-08-01T05:58:05.1649302Z      82  75 │   });
-2026-08-01T05:58:05.1649645Z      83     │ - 
-2026-08-01T05:58:05.1649967Z      84  76 │   
-2026-08-01T05:58:05.1651070Z      85     │ - test('extension·profile·discovery·prefers·the·browser·last-used·profile',·async·({·page:·_page·},·testInfo)·=>·{
-2026-08-01T05:58:05.1652465Z          77 │ + test('extension·profile·discovery·prefers·the·browser·last-used·profile',·async·({
-2026-08-01T05:58:05.1653495Z          78 │ + ··page:·_page,
-2026-08-01T05:58:05.1653959Z          79 │ + },·testInfo)·=>·{
-2026-08-01T05:58:05.1654620Z      86  80 │     const userDataDir = testInfo.outputPath('user-data');
-2026-08-01T05:58:05.1655264Z      87  81 │     await Promise.all([
-2026-08-01T05:58:05.1655697Z     ······· │ 
-2026-08-01T05:58:05.1656030Z      99  93 │     );
-2026-08-01T05:58:05.1656373Z     100  94 │   
-2026-08-01T05:58:05.1657213Z     101     │ - ··expect(await·findExtensionProfile(userDataDir,·EXTENSION_ID)).toBe('Profile·2');
-2026-08-01T05:58:05.1658631Z          95 │ + ··expect(await·findExtensionProfile(userDataDir,·EXTENSION_ID)).toBe(
-2026-08-01T05:58:05.1659338Z          96 │ + ····'Profile·2'
-2026-08-01T05:58:05.1659741Z          97 │ + ··);
-2026-08-01T05:58:05.1660310Z     102  98 │   });
-2026-08-01T05:58:05.1660648Z     103  99 │   
-2026-08-01T05:58:05.1660982Z     104     │ - 
-2026-08-01T05:58:05.1661792Z     105 100 │   test('upstream manifest and package record the reviewed current state', async () => {
-2026-08-01T05:58:05.1662950Z     106 101 │     const manifest = JSON.parse(await readFile('upstream.json', 'utf8')) as {
-2026-08-01T05:58:05.1663619Z     ······· │ 
-2026-08-01T05:58:05.1664294Z     126 121 │     expect(declaration).not.toContain('): Promise<Server>;');
-2026-08-01T05:58:05.1664865Z     127 122 │   });
-2026-08-01T05:58:05.1665215Z     128     │ - 
-2026-08-01T05:58:05.1665540Z     129 123 │   
-2026-08-01T05:58:05.1666170Z     130 124 │   test('workflows use current action runtimes', async () => {
-2026-08-01T05:58:05.1666688Z   
-2026-08-01T05:58:05.1666789Z 
-2026-08-01T05:58:05.1667216Z check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2026-08-01T05:58:05.1667505Z 
-2026-08-01T05:58:05.1667734Z   × Some errors were emitted while running checks.
-2026-08-01T05:58:05.1668030Z   
-2026-08-01T05:58:05.1668127Z 
-2026-08-01T05:58:05.1668663Z Checked 2 files in 10ms. No fixes applied.
-2026-08-01T05:58:05.1669127Z Found 2 errors.
-2026-08-01T05:58:05.1738922Z ##[error]Process completed with exit code 1.
-2026-08-01T05:58:05.1866734Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-2026-08-01T05:58:05.1868093Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-2026-08-01T05:58:05.1868753Z with:
-2026-08-01T05:58:05.1868970Z   name: finalize-pr31-failure
-2026-08-01T05:58:05.1869619Z   path: /tmp/pr31-red.log
+2026-08-01T06:00:42.6960847Z + @modelcontextprotocol/sdk@1.25.2
+2026-08-01T06:00:42.6961205Z + @types/sharp@0.31.1
+2026-08-01T06:00:42.6961471Z + commander@13.1.0
+2026-08-01T06:00:42.6961724Z + debug@4.4.3
+2026-08-01T06:00:42.6962083Z + dotenv@17.4.2
+2026-08-01T06:00:42.6962388Z + fast-diff@1.3.0
+2026-08-01T06:00:42.6962672Z + mime@4.1.0
+2026-08-01T06:00:42.6963003Z + playwright@1.62.0-alpha-1783623505000
+2026-08-01T06:00:42.6963455Z + playwright-core@1.62.0-alpha-1783623505000
+2026-08-01T06:00:42.6964036Z + sharp@0.34.5
+2026-08-01T06:00:42.6964337Z + ws@8.21.1
+2026-08-01T06:00:42.6964594Z + zod@3.25.76
+2026-08-01T06:00:42.6964884Z + zod-to-json-schema@3.25.2
+2026-08-01T06:00:42.6965074Z 
+2026-08-01T06:00:42.6965279Z 191 packages installed [1275.00ms]
+2026-08-01T06:00:43.0366582Z Installing dependencies...
+2026-08-01T06:00:43.0407097Z Switching to root user to install dependencies...
+2026-08-01T06:00:43.1094856Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-08-01T06:00:43.1338024Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-08-01T06:00:43.1357684Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-08-01T06:00:43.1391817Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-08-01T06:00:43.1415496Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-08-01T06:00:43.1479930Z Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+2026-08-01T06:00:43.1544589Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-08-01T06:00:43.2160734Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1154 kB]
+2026-08-01T06:00:43.2265144Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [278 kB]
+2026-08-01T06:00:43.2281565Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+2026-08-01T06:00:43.2298988Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1681 kB]
+2026-08-01T06:00:43.2362958Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [334 kB]
+2026-08-01T06:00:43.2398989Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+2026-08-01T06:00:43.2405401Z Get:19 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
+2026-08-01T06:00:43.2425464Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1367 kB]
+2026-08-01T06:00:43.2490344Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [308 kB]
+2026-08-01T06:00:43.2518620Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [45.4 kB]
+2026-08-01T06:00:43.2528488Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.3 kB]
+2026-08-01T06:00:43.2976453Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+2026-08-01T06:00:43.2990154Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5744 B]
+2026-08-01T06:00:43.2998872Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [32.5 kB]
+2026-08-01T06:00:43.3008507Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+2026-08-01T06:00:43.3017628Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [897 kB]
+2026-08-01T06:00:43.3058135Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [198 kB]
+2026-08-01T06:00:43.3075088Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
+2026-08-01T06:00:43.3085218Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1199 kB]
+2026-08-01T06:00:43.3145191Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [239 kB]
+2026-08-01T06:00:43.3155653Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
+2026-08-01T06:00:43.3173365Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1273 kB]
+2026-08-01T06:00:43.3233260Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [290 kB]
+2026-08-01T06:00:43.3252343Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [40.3 kB]
+2026-08-01T06:00:43.3262251Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [10.6 kB]
+2026-08-01T06:00:43.3509965Z Get:33 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [227 kB]
+2026-08-01T06:00:43.3563286Z Get:34 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.7 kB]
+2026-08-01T06:00:43.3584903Z Get:35 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [261 kB]
+2026-08-01T06:00:43.5235420Z Get:36 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1411 B]
+2026-08-01T06:00:49.3097406Z Fetched 11.0 MB in 1s (11.6 MB/s)
+2026-08-01T06:00:49.8491488Z Reading package lists...
+2026-08-01T06:00:49.8733570Z Reading package lists...
+2026-08-01T06:00:49.9858660Z Building dependency tree...
+2026-08-01T06:00:49.9864103Z Reading state information...
+2026-08-01T06:00:50.1316785Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+2026-08-01T06:00:50.1317634Z libasound2t64 set to manually installed.
+2026-08-01T06:00:50.1318266Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-08-01T06:00:50.1318794Z libatk-bridge2.0-0t64 set to manually installed.
+2026-08-01T06:00:50.1319446Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+2026-08-01T06:00:50.1319958Z libatk1.0-0t64 set to manually installed.
+2026-08-01T06:00:50.1320560Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-08-01T06:00:50.1321077Z libatspi2.0-0t64 set to manually installed.
+2026-08-01T06:00:50.1321588Z libcairo2 is already the newest version (1.18.0-3build1).
+2026-08-01T06:00:50.1322085Z libcairo2 set to manually installed.
+2026-08-01T06:00:50.1322603Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+2026-08-01T06:00:50.1323166Z libcups2t64 set to manually installed.
+2026-08-01T06:00:50.1323674Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+2026-08-01T06:00:50.1324296Z libdbus-1-3 set to manually installed.
+2026-08-01T06:00:50.1324748Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+2026-08-01T06:00:50.1325148Z libdrm2 set to manually installed.
+2026-08-01T06:00:50.1325544Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.2).
+2026-08-01T06:00:50.1325922Z libgbm1 set to manually installed.
+2026-08-01T06:00:50.1326275Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.8).
+2026-08-01T06:00:50.1326936Z libglib2.0-0t64 set to manually installed.
+2026-08-01T06:00:50.1327332Z libnspr4 is already the newest version (2:4.35-1.1build1).
+2026-08-01T06:00:50.1327707Z libnspr4 set to manually installed.
+2026-08-01T06:00:50.1328103Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
+2026-08-01T06:00:50.1328450Z libnss3 set to manually installed.
+2026-08-01T06:00:50.1328849Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+2026-08-01T06:00:50.1329225Z libpango-1.0-0 set to manually installed.
+2026-08-01T06:00:50.1329627Z libx11-6 is already the newest version (2:1.8.7-1build1).
+2026-08-01T06:00:50.1329996Z libx11-6 set to manually installed.
+2026-08-01T06:00:50.1330347Z libxcb1 is already the newest version (1.15-1ubuntu2).
+2026-08-01T06:00:50.1330706Z libxcb1 set to manually installed.
+2026-08-01T06:00:50.1331075Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+2026-08-01T06:00:50.1331437Z libxcomposite1 set to manually installed.
+2026-08-01T06:00:50.1331874Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+2026-08-01T06:00:50.1332229Z libxdamage1 set to manually installed.
+2026-08-01T06:00:50.1332716Z libxext6 is already the newest version (2:1.3.4-1build2).
+2026-08-01T06:00:50.1333074Z libxext6 set to manually installed.
+2026-08-01T06:00:50.1333452Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+2026-08-01T06:00:50.1334021Z libxfixes3 set to manually installed.
+2026-08-01T06:00:50.1334413Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+2026-08-01T06:00:50.1334794Z libxkbcommon0 set to manually installed.
+2026-08-01T06:00:50.1335180Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+2026-08-01T06:00:50.1335559Z libxrandr2 set to manually installed.
+2026-08-01T06:00:50.1335952Z xvfb is already the newest version (2:21.1.12-1ubuntu1.6).
+2026-08-01T06:00:50.1336422Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+2026-08-01T06:00:50.1336976Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+2026-08-01T06:00:50.1337410Z libfontconfig1 set to manually installed.
+2026-08-01T06:00:50.1337875Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.1).
+2026-08-01T06:00:50.1338276Z libfreetype6 set to manually installed.
+2026-08-01T06:00:50.1338697Z fonts-liberation is already the newest version (1:2.1.5-3).
+2026-08-01T06:00:50.1339053Z fonts-liberation set to manually installed.
+2026-08-01T06:00:50.1339462Z The following additional packages will be installed:
+2026-08-01T06:00:50.1339821Z   xfonts-encodings xfonts-utils
+2026-08-01T06:00:50.1340137Z Recommended packages:
+2026-08-01T06:00:50.1340434Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-08-01T06:00:50.1481141Z The following NEW packages will be installed:
+2026-08-01T06:00:50.1482163Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-08-01T06:00:50.1488088Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-08-01T06:00:50.1489588Z   xfonts-utils
+2026-08-01T06:00:50.1628587Z 0 upgraded, 9 newly installed, 0 to remove and 79 not upgraded.
+2026-08-01T06:00:50.1629096Z Need to get 21.1 MB of archives.
+2026-08-01T06:00:50.1629665Z After this operation, 79.5 MB of additional disk space will be used.
+2026-08-01T06:00:50.1630058Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-08-01T06:00:50.2887157Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+2026-08-01T06:00:50.5618935Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+2026-08-01T06:00:50.6195182Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+2026-08-01T06:00:50.6480276Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+2026-08-01T06:00:50.6925156Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+2026-08-01T06:00:50.7598063Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+2026-08-01T06:00:50.7904271Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+2026-08-01T06:00:50.8188166Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+2026-08-01T06:00:50.8486194Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+2026-08-01T06:00:51.0394911Z Fetched 21.1 MB in 1s (30.4 MB/s)
+2026-08-01T06:00:51.0593289Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-08-01T06:00:51.0789149Z (Reading database ... 
+2026-08-01T06:00:51.0789420Z (Reading database ... 5%
+2026-08-01T06:00:51.0789814Z (Reading database ... 10%
+2026-08-01T06:00:51.0790051Z (Reading database ... 15%
+2026-08-01T06:00:51.0790297Z (Reading database ... 20%
+2026-08-01T06:00:51.0790550Z (Reading database ... 25%
+2026-08-01T06:00:51.0790832Z (Reading database ... 30%
+2026-08-01T06:00:51.0791210Z (Reading database ... 35%
+2026-08-01T06:00:51.0791465Z (Reading database ... 40%
+2026-08-01T06:00:51.0791868Z (Reading database ... 45%
+2026-08-01T06:00:51.0792098Z (Reading database ... 50%
+2026-08-01T06:00:51.1871470Z (Reading database ... 55%
+2026-08-01T06:00:51.3022934Z (Reading database ... 60%
+2026-08-01T06:00:51.7445484Z (Reading database ... 65%
+2026-08-01T06:00:52.0944024Z (Reading database ... 70%
+2026-08-01T06:00:52.3832511Z (Reading database ... 75%
+2026-08-01T06:00:52.6791497Z (Reading database ... 80%
+2026-08-01T06:00:53.0896525Z (Reading database ... 85%
+2026-08-01T06:00:53.3492239Z (Reading database ... 90%
+2026-08-01T06:00:53.7584366Z (Reading database ... 95%
+2026-08-01T06:00:53.7584742Z (Reading database ... 100%
+2026-08-01T06:00:53.7585086Z (Reading database ... 202954 files and directories currently installed.)
+2026-08-01T06:00:53.7620896Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+2026-08-01T06:00:53.8158845Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-08-01T06:00:54.2939598Z Selecting previously unselected package fonts-freefont-ttf.
+2026-08-01T06:00:54.3031037Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+2026-08-01T06:00:54.3404036Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-08-01T06:00:54.8601406Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-08-01T06:00:54.8709871Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+2026-08-01T06:00:54.8819215Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-08-01T06:00:55.3520935Z Selecting previously unselected package fonts-unifont.
+2026-08-01T06:00:55.3638727Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+2026-08-01T06:00:55.4613124Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+2026-08-01T06:00:57.7640892Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-08-01T06:00:57.7751351Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+2026-08-01T06:00:57.7839092Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+2026-08-01T06:00:58.2614022Z Selecting previously unselected package xfonts-encodings.
+2026-08-01T06:00:58.2724303Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+2026-08-01T06:00:58.2738234Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-08-01T06:00:58.3882342Z Selecting previously unselected package xfonts-utils.
+2026-08-01T06:00:58.3992561Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+2026-08-01T06:00:58.4010411Z Unpacking xfonts-utils (1:7.7+6build3) ...
+2026-08-01T06:00:58.6416368Z Selecting previously unselected package xfonts-cyrillic.
+2026-08-01T06:00:58.6516285Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+2026-08-01T06:00:58.6538715Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-08-01T06:00:58.7145417Z Selecting previously unselected package xfonts-scalable.
+2026-08-01T06:00:58.7249048Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+2026-08-01T06:00:58.7579648Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+2026-08-01T06:00:58.7912988Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+2026-08-01T06:00:58.8350309Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-08-01T06:00:58.8383152Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-08-01T06:00:58.8417727Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-08-01T06:00:58.8452340Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-08-01T06:00:58.8516293Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-08-01T06:00:58.8538532Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+2026-08-01T06:00:58.8573273Z Setting up xfonts-utils (1:7.7+6build3) ...
+2026-08-01T06:00:58.8625243Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-08-01T06:00:58.9168830Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+2026-08-01T06:00:58.9377340Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-08-01T06:00:58.9401457Z Not building database; man-db/auto-update is not 'true'.
+2026-08-01T06:00:58.9418955Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+2026-08-01T06:00:59.6799101Z 
+2026-08-01T06:00:59.6800006Z Running kernel seems to be up-to-date.
+2026-08-01T06:00:59.6800348Z 
+2026-08-01T06:00:59.6800699Z No services need to be restarted.
+2026-08-01T06:00:59.6800964Z 
+2026-08-01T06:00:59.6801151Z No containers need to be restarted.
+2026-08-01T06:00:59.6801336Z 
+2026-08-01T06:00:59.6801553Z No user sessions are running outdated binaries.
+2026-08-01T06:00:59.6801849Z 
+2026-08-01T06:00:59.6802149Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-08-01T06:01:00.3577187Z Downloading Chrome for Testing 151.0.7922.10 (playwright chromium v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-linux64.zip
+2026-08-01T06:01:01.3931605Z |                                                                                |   0% of 184.3 MiB
+2026-08-01T06:01:01.7221330Z |■■■■■■■■                                                                        |  10% of 184.3 MiB
+2026-08-01T06:01:02.0012958Z |■■■■■■■■■■■■■■■■                                                                |  20% of 184.3 MiB
+2026-08-01T06:01:02.2027886Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 184.3 MiB
+2026-08-01T06:01:02.3842238Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 184.3 MiB
+2026-08-01T06:01:02.5665388Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 184.3 MiB
+2026-08-01T06:01:02.7022062Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 184.3 MiB
+2026-08-01T06:01:02.8299209Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 184.3 MiB
+2026-08-01T06:01:02.9632116Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 184.3 MiB
+2026-08-01T06:01:03.1150263Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 184.3 MiB
+2026-08-01T06:01:03.2044714Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 184.3 MiB
+2026-08-01T06:01:05.8652468Z Chrome for Testing 151.0.7922.10 (playwright chromium v1232) downloaded to /home/runner/.cache/ms-playwright/chromium-1232
+2026-08-01T06:01:05.8653711Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+2026-08-01T06:01:06.8135907Z |                                                                                |   0% of 2.3 MiB
+2026-08-01T06:01:06.8434693Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+2026-08-01T06:01:06.8632790Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+2026-08-01T06:01:06.8751790Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+2026-08-01T06:01:06.8860124Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+2026-08-01T06:01:06.8920110Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+2026-08-01T06:01:06.8953203Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+2026-08-01T06:01:06.9050257Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+2026-08-01T06:01:06.9086328Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+2026-08-01T06:01:06.9150426Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+2026-08-01T06:01:06.9177259Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+2026-08-01T06:01:06.9640500Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+2026-08-01T06:01:06.9643020Z Downloading Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-headless-shell-linux64.zip
+2026-08-01T06:01:07.9270543Z |                                                                                |   0% of 114.7 MiB
+2026-08-01T06:01:08.1380952Z |■■■■■■■■                                                                        |  10% of 114.7 MiB
+2026-08-01T06:01:08.2682507Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.7 MiB
+2026-08-01T06:01:08.3695621Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.7 MiB
+2026-08-01T06:01:08.4414072Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.7 MiB
+2026-08-01T06:01:08.5243260Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.7 MiB
+2026-08-01T06:01:08.5757434Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.7 MiB
+2026-08-01T06:01:08.6393663Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.7 MiB
+2026-08-01T06:01:08.6992980Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.7 MiB
+2026-08-01T06:01:08.7500775Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.7 MiB
+2026-08-01T06:01:08.7930000Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.7 MiB
+2026-08-01T06:01:10.6904472Z Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1232
+2026-08-01T06:01:10.7013067Z ##[group]Run set -euo pipefail
+2026-08-01T06:01:10.7013401Z [36;1mset -euo pipefail[0m
+2026-08-01T06:01:10.7013666Z [36;1mpython3 scripts/apply-pr31-final.py tests[0m
+2026-08-01T06:01:10.7014417Z [36;1mpython3 - <<'PY'[0m
+2026-08-01T06:01:10.7014716Z [36;1mfrom pathlib import Path[0m
+2026-08-01T06:01:10.7015051Z [36;1m[0m
+2026-08-01T06:01:10.7015319Z [36;1mdialog = Path('tests/dialog-lifecycle.spec.ts')[0m
+2026-08-01T06:01:10.7015642Z [36;1mtext = dialog.read_text(encoding='utf-8')[0m
+2026-08-01T06:01:10.7015952Z [36;1mtext = text.replace(".join('\n');", ".join('\\\\n');")[0m
+2026-08-01T06:01:10.7016288Z [36;1mtext = text.replace([0m
+2026-08-01T06:01:10.7016598Z [36;1m    "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",[0m
+2026-08-01T06:01:10.7016972Z [36;1m    "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",[0m
+2026-08-01T06:01:10.7017316Z [36;1m)[0m
+2026-08-01T06:01:10.7017624Z [36;1mdialog.write_text(text, encoding='utf-8')[0m
+2026-08-01T06:01:10.7017939Z [36;1m[0m
+2026-08-01T06:01:10.7018182Z [36;1mruntime = Path('tests/upstream-runtime.spec.ts')[0m
+2026-08-01T06:01:10.7018506Z [36;1mtext = runtime.read_text(encoding='utf-8')[0m
+2026-08-01T06:01:10.7018787Z [36;1mtext = text.replace([0m
+2026-08-01T06:01:10.7019034Z [36;1m    "async (_fixtures, testInfo) => {",[0m
+2026-08-01T06:01:10.7019359Z [36;1m    "async ({ page: _page }, testInfo) => {",[0m
+2026-08-01T06:01:10.7019612Z [36;1m)[0m
+2026-08-01T06:01:10.7019825Z [36;1mruntime.write_text(text, encoding='utf-8')[0m
+2026-08-01T06:01:10.7020145Z [36;1mPY[0m
+2026-08-01T06:01:10.7020489Z [36;1mbunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts[0m
+2026-08-01T06:01:10.7044921Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-01T06:01:10.7045346Z ##[endgroup]
+2026-08-01T06:01:10.8186110Z Checked 2 files in 12ms. Fixed 1 file.
+2026-08-01T06:01:10.8238577Z ##[group]Run set -euo pipefail
+2026-08-01T06:01:10.8238882Z [36;1mset -euo pipefail[0m
+2026-08-01T06:01:10.8239128Z [36;1mset +e[0m
+2026-08-01T06:01:10.8239326Z [36;1mbunx playwright test \[0m
+2026-08-01T06:01:10.8239586Z [36;1m  tests/upstream-runtime.spec.ts \[0m
+2026-08-01T06:01:10.8239904Z [36;1m  tests/dialog-lifecycle.spec.ts \[0m
+2026-08-01T06:01:10.8240158Z [36;1m  tests/upstream-config.spec.ts \[0m
+2026-08-01T06:01:10.8240443Z [36;1m  tests/network-origin-filter.spec.ts \[0m
+2026-08-01T06:01:10.8240776Z [36;1m  tests/partial-snapshot-css.spec.ts \[0m
+2026-08-01T06:01:10.8241057Z [36;1m  --project=chromium \[0m
+2026-08-01T06:01:10.8241321Z [36;1m  --workers=1 > /tmp/pr31-red.log 2>&1[0m
+2026-08-01T06:01:10.8241563Z [36;1mstatus=$?[0m
+2026-08-01T06:01:10.8241749Z [36;1mset -e[0m
+2026-08-01T06:01:10.8241986Z [36;1mcat /tmp/pr31-red.log[0m
+2026-08-01T06:01:10.8242215Z [36;1mif [ "$status" -eq 0 ]; then[0m
+2026-08-01T06:01:10.8242650Z [36;1m  echo 'Expected the regression suite to be red before implementation.' >&2[0m
+2026-08-01T06:01:10.8242967Z [36;1m  exit 1[0m
+2026-08-01T06:01:10.8243168Z [36;1mfi[0m
+2026-08-01T06:01:10.8267478Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-01T06:01:10.8267860Z ##[endgroup]
+2026-08-01T06:01:11.8426571Z Error: Cannot find module '/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/src/extension/profile.js' imported from /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/upstream-runtime.spec.ts
+2026-08-01T06:01:11.8427594Z 
+2026-08-01T06:01:11.8451376Z ##[group]Run set -euo pipefail
+2026-08-01T06:01:11.8451680Z [36;1mset -euo pipefail[0m
+2026-08-01T06:01:11.8451972Z [36;1mversion="$(npm view playwright@next version)"[0m
+2026-08-01T06:01:11.8452252Z [36;1mcase "$version" in[0m
+2026-08-01T06:01:11.8452488Z [36;1m  1.63.0-alpha-*) ;;[0m
+2026-08-01T06:01:11.8452737Z [36;1m  *)[0m
+2026-08-01T06:01:11.8452968Z [36;1m    echo "Unexpected playwright@next version: $version" >&2[0m
+2026-08-01T06:01:11.8453259Z [36;1m    exit 1[0m
+2026-08-01T06:01:11.8453447Z [36;1m    ;;[0m
+2026-08-01T06:01:11.8453635Z [36;1mesac[0m
+2026-08-01T06:01:11.8454149Z [36;1mPLAYWRIGHT_VERSION="$version" python3 scripts/apply-pr31-final.py implementation[0m
+2026-08-01T06:01:11.8454757Z [36;1mprintf 'Applied Playwright version %s\n' "$version"[0m
+2026-08-01T06:01:11.8479724Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-01T06:01:11.8480437Z ##[endgroup]
+2026-08-01T06:01:13.7414702Z Applied Playwright version 1.63.0-alpha-2026-07-31
+2026-08-01T06:01:13.7437749Z ##[group]Run bun install
+2026-08-01T06:01:13.7438029Z [36;1mbun install[0m
+2026-08-01T06:01:13.7462588Z shell: /usr/bin/bash -e {0}
+2026-08-01T06:01:13.7462890Z ##[endgroup]
+2026-08-01T06:01:13.7519746Z bun install v1.3.5 (1e86cebd)
+2026-08-01T06:01:13.7569127Z Resolving dependencies
+2026-08-01T06:01:14.2146011Z Resolved, downloaded and extracted [14]
+2026-08-01T06:01:14.2190597Z Saved lockfile
+2026-08-01T06:01:14.2190934Z 
+2026-08-01T06:01:14.2194443Z + @playwright/test@1.63.0-alpha-2026-07-31
+2026-08-01T06:01:14.2195021Z + playwright@1.63.0-alpha-2026-07-31
+2026-08-01T06:01:14.2195669Z + playwright-core@1.63.0-alpha-2026-07-31
+2026-08-01T06:01:14.2196014Z 
+2026-08-01T06:01:14.2196290Z 3 packages installed [467.00ms]
+2026-08-01T06:01:14.2282221Z ##[group]Run set -euo pipefail
+2026-08-01T06:01:14.2282632Z [36;1mset -euo pipefail[0m
+2026-08-01T06:01:14.2282921Z [36;1mbun run lint-fix[0m
+2026-08-01T06:01:14.2283279Z [36;1mbun run check:encoding[0m
+2026-08-01T06:01:14.2283634Z [36;1mbun run typecheck[0m
+2026-08-01T06:01:14.2284230Z [36;1mbun run build:publish[0m
+2026-08-01T06:01:14.2284594Z [36;1mbun run update-readme[0m
+2026-08-01T06:01:14.2284912Z [36;1mbun run lint-fix[0m
+2026-08-01T06:01:14.2285274Z [36;1mbun run check:encoding[0m
+2026-08-01T06:01:14.2285612Z [36;1mbun run typecheck[0m
+2026-08-01T06:01:14.2285898Z [36;1mbun run build:publish[0m
+2026-08-01T06:01:14.2286268Z [36;1mbun run lint[0m
+2026-08-01T06:01:14.2286612Z [36;1mbun run benchmark:tools -- --check[0m
+2026-08-01T06:01:14.2287007Z [36;1mgit diff --check[0m
+2026-08-01T06:01:14.2319447Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-01T06:01:14.2320015Z ##[endgroup]
+2026-08-01T06:01:14.2381900Z $ ultracite format
+2026-08-01T06:01:15.5088221Z Checked 282 files in 583ms. Fixed 9 files.
+2026-08-01T06:01:15.5321437Z $ bun scripts/check-encoding.ts
+2026-08-01T06:01:15.5647256Z 90 | }
+2026-08-01T06:01:15.5647552Z 91 | 
+2026-08-01T06:01:15.5647980Z 92 | if (import.meta.main) {
+2026-08-01T06:01:15.5648509Z 93 |   const failures = await validateRepositoryEncoding();
+2026-08-01T06:01:15.5648914Z 94 |   if (failures.length) {
+2026-08-01T06:01:15.5649478Z 95 |     throw new Error(`Source encoding check failed:\n${failures.join('\n')}`);
+2026-08-01T06:01:15.5651493Z                    ^
+2026-08-01T06:01:15.5651918Z error: Source encoding check failed:
+2026-08-01T06:01:15.5652518Z scripts/__pycache__/apply-pr31-final.cpython-312.pyc: contains NUL bytes but is not declared as a binary file
+2026-08-01T06:01:15.5653425Z       at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/scripts/check-encoding.ts:95:15
+2026-08-01T06:01:15.5653987Z 
+2026-08-01T06:01:15.5654126Z Bun v1.3.5 (Linux x64)
+2026-08-01T06:01:15.5654545Z error: script "check:encoding" exited with code 1
+2026-08-01T06:01:15.5662815Z ##[error]Process completed with exit code 1.
+2026-08-01T06:01:15.5764791Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T06:01:15.5765889Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-08-01T06:01:15.5766424Z with:
+2026-08-01T06:01:15.5766952Z   name: finalize-pr31-failure
+2026-08-01T06:01:15.5768172Z   path: /tmp/pr31-red.log
 test-results/**/error-context.md
 playwright-report/**
 extension/test-results/**/error-context.md
 extension/playwright-report/**
 
-2026-08-01T05:58:05.1870280Z   if-no-files-found: warn
-2026-08-01T05:58:05.1870512Z   retention-days: 3
-2026-08-01T05:58:05.1870728Z   compression-level: 6
-2026-08-01T05:58:05.1870951Z   overwrite: false
-2026-08-01T05:58:05.1871190Z   include-hidden-files: false
-2026-08-01T05:58:05.1871475Z ##[endgroup]
-2026-08-01T05:58:05.3605761Z (node:3052) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-08-01T05:58:05.3607103Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-08-01T05:58:05.3670806Z Multiple search paths detected. Calculating the least common ancestor of all paths
-2026-08-01T05:58:05.3672287Z The least common ancestor is /. This will be the root directory of the artifact
-2026-08-01T05:58:05.3686594Z ##[warning]No files were found with the provided path: /tmp/pr31-red.log
-test-results/**/error-context.md
-playwright-report/**
-extension/test-results/**/error-context.md
-extension/playwright-report/**. No artifacts will be uploaded.
-2026-08-01T05:58:05.3890605Z Post job cleanup.
-2026-08-01T05:58:05.4859422Z [command]/usr/bin/git version
-2026-08-01T05:58:05.4936540Z git version 2.54.0
-2026-08-01T05:58:05.4976082Z Temporarily overriding HOME='/home/runner/work/_temp/640acbe5-57c7-4c74-a3fd-a923fd0d73e2' before making global git config changes
-2026-08-01T05:58:05.4978112Z Adding repository directory to the temporary git global config as a safe directory
-2026-08-01T05:58:05.4982118Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
-2026-08-01T05:58:05.5031890Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-08-01T05:58:05.5069348Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-08-01T05:58:05.5343764Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-08-01T05:58:05.5375330Z http.https://github.com/.extraheader
-2026-08-01T05:58:05.5387810Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-08-01T05:58:05.5429915Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-08-01T05:58:05.5700033Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-08-01T05:58:05.5750892Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-08-01T05:58:05.6177226Z Cleaning up orphan processes
-2026-08-01T05:58:05.6493555Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T06:01:15.5769323Z   if-no-files-found: warn
+2026-08-01T06:01:15.5769826Z   retention-days: 3
+2026-08-01T06:01:15.5770239Z   compression-level: 6
+2026-08-01T06:01:15.5770630Z   overwrite: false
+2026-08-01T06:01:15.5770888Z   include-hidden-files: false
+2026-08-01T06:01:15.5771233Z ##[endgroup]
+2026-08-01T06:01:15.6944780Z (node:2967) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-01T06:01:15.6945453Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-01T06:01:15.7008902Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-08-01T06:01:15.7010777Z The least common ancestor is /. This will be the root directory of the artifact
+2026-08-01T06:01:15.7011367Z With the provided path, there will be 1 file uploaded
+2026-08-01T06:01:15.7013776Z Artifact name is valid!
+2026-08-01T06:01:15.7015300Z Root directory input is valid!
+2026-08-01T06:01:15.8942522Z Beginning upload of artifact content to blob storage
+2026-08-01T06:01:15.9061300Z (node:2967) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-01T06:01:16.0577913Z Uploaded bytes 264
+2026-08-01T06:01:16.0999491Z Finished uploading artifact content to blob storage!
+2026-08-01T06:01:16.1000321Z SHA256 digest of uploaded artifact zip is 1837b289ff47589d2abe67643742666ee838b5aa9cd3fd7d9f3f73d64b9c0c02
+2026-08-01T06:01:16.1001653Z Finalizing artifact upload
+2026-08-01T06:01:16.2824259Z Artifact finalize-pr31-failure.zip successfully finalized. Artifact ID 8814250220
+2026-08-01T06:01:16.2825207Z Artifact finalize-pr31-failure has been successfully uploaded! Final size is 264 bytes. Artifact ID is 8814250220
+2026-08-01T06:01:16.2830775Z Artifact download URL: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30686902370/artifacts/8814250220
+2026-08-01T06:01:16.2977249Z Post job cleanup.
+2026-08-01T06:01:16.3580391Z [command]/usr/bin/git version
+2026-08-01T06:01:16.3609373Z git version 2.54.0
+2026-08-01T06:01:16.3665469Z Temporarily overriding HOME='/home/runner/work/_temp/2af44322-1a0b-43b6-862f-f586619bc91a' before making global git config changes
+2026-08-01T06:01:16.3666494Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-01T06:01:16.3669287Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
+2026-08-01T06:01:16.3697195Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-01T06:01:16.3722184Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-01T06:01:16.3889529Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-01T06:01:16.3904296Z http.https://github.com/.extraheader
+2026-08-01T06:01:16.3912105Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-01T06:01:16.3934205Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-01T06:01:16.4091491Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-01T06:01:16.4118752Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-01T06:01:16.4373101Z Cleaning up orphan processes
+2026-08-01T06:01:16.4702686Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
