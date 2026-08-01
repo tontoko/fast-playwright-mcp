@@ -121,6 +121,30 @@ jobs:
           PLAYWRIGHT_VERSION="$version" python3 scripts/apply-pr31-final.py implementation
           printf 'Applied Playwright version %s\n' "$version"
 
+      - name: Make README generation terminate deterministically
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('utils/update-readme.js')
+          text = path.read_text(encoding='utf-8')
+          old = """updateReadme().catch(() => {
+            // Update readme failed - exit with error code
+            process.exit(1);
+          });
+          """
+          new = """updateReadme().then(
+            () => process.exit(0),
+            () => process.exit(1)
+          );
+          """
+          if text.count(old) != 1:
+              raise SystemExit('README generator completion marker was not found exactly once')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+
       - name: Install refreshed dependency graph
         run: bun install
 
@@ -140,7 +164,7 @@ jobs:
         run: timeout 10m bun run build:publish
 
       - name: Regenerate README
-        run: timeout 10m bun run update-readme
+        run: timeout 2m bun run update-readme
 
       - name: Reformat generated output
         run: timeout 5m bun run lint-fix
