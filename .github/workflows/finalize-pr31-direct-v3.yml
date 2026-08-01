@@ -1,0 +1,286 @@
+name: Finalize PR 31 corrected source
+
+on:
+  push:
+    branches:
+      - agent/pr31-final-review
+    paths:
+      - '.github/workflows/finalize-pr31-direct-v3.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-pr31-direct
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+
+      - name: Reconstruct and verify prepared patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin agent/pr31-review-fixes:refs/remotes/origin/agent/pr31-review-fixes
+          cat scripts/apply-pr31-final.py.gz.b64.* > /tmp/pr31-payload.b64
+          printf '%s  %s\n' \
+            '6248edd96a856f8a59b05b8ac5cc8294ff3d8219eb13c20b2a4d23e6858b0022' \
+            /tmp/pr31-payload.b64 | sha256sum --check
+          base64 --decode /tmp/pr31-payload.b64 | gzip --decompress \
+            > scripts/apply-pr31-final.py
+          printf '%s  %s\n' \
+            '6a95d924a4d0051c3db738f1e126776a51f3ab8185231cc24c49a7d7fa3a0d0d' \
+            scripts/apply-pr31-final.py | sha256sum --check
+          python3 -m py_compile scripts/apply-pr31-final.py
+          chmod +x scripts/apply-pr31-final.py
+
+      - name: Install reviewed baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+
+      - name: Generate regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-pr31-final.py tests
+          python3 - <<'PY'
+          from pathlib import Path
+
+          dialog = Path('tests/dialog-lifecycle.spec.ts')
+          text = dialog.read_text(encoding='utf-8')
+          text = text.replace(".join('\n');", r".join('\n');")
+          old_click = "  await page.getByRole('button', { name: 'Open dialog' }).click();\n"
+          new_click = """  const clickPromise = page
+            .getByRole('button', { name: 'Open dialog' })
+            .click();
+          """
+          if text.count(old_click) != 1:
+              raise SystemExit(f'dialog trigger marker count: {text.count(old_click)}')
+          text = text.replace(old_click, new_click)
+          old_dismiss = "  await dialog.dismiss();\n"
+          new_dismiss = "  await dialog.dismiss();\n  await clickPromise;\n"
+          if text.count(old_dismiss) != 1:
+              raise SystemExit(f'dialog completion marker count: {text.count(old_dismiss)}')
+          dialog.write_text(text.replace(old_dismiss, new_dismiss), encoding='utf-8')
+          PY
+          bunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts
+
+      - name: RED - verify selected regressions fail before implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          bunx playwright test \
+            tests/upstream-runtime.spec.ts \
+            tests/dialog-lifecycle.spec.ts \
+            tests/upstream-config.spec.ts \
+            tests/network-origin-filter.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
+            --project=chromium --workers=1 > /tmp/pr31-red.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/pr31-red.log
+          test "$status" -ne 0
+
+      - name: Apply review fixes and current Microsoft upstream ports
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(npm view playwright@next version)"
+          case "$version" in
+            1.63.0-alpha-*) ;;
+            *) echo "Unexpected playwright@next version: $version" >&2; exit 1 ;;
+          esac
+          PLAYWRIGHT_VERSION="$version" python3 scripts/apply-pr31-final.py implementation
+          printf 'Applied Playwright version %s\n' "$version"
+
+      - name: Apply bounded compatibility and recovery corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          readme = Path('utils/update-readme.js')
+          text = readme.read_text(encoding='utf-8')
+          old = """updateReadme().catch(() => {
+            // Update readme failed - exit with error code
+            process.exit(1);
+          });
+          """
+          new = """updateReadme().then(
+            () => process.exit(0),
+            () => process.exit(1)
+          );
+          """
+          if text.count(old) != 1:
+              raise SystemExit('README generator completion marker mismatch')
+          readme.write_text(text.replace(old, new), encoding='utf-8')
+
+          utils = Path('src/tools/utils.ts')
+          text = utils.read_text(encoding='utf-8')
+          marker = "): Promise<R> {\n  const requests = new Set<playwright.Request>();"
+          replacement = "): Promise<R> {\n  const settleTimeout =\n    tab.context.config.timeouts?.settle ?? TIMEOUTS.WAIT_FOR_COMPLETION;\n  const requests = new Set<playwright.Request>();"
+          if text.count(marker) != 1:
+              raise SystemExit('waitForCompletion insertion marker mismatch')
+          text = text.replace(marker, replacement)
+          if text.count('tab.context.config.timeouts.settle') != 2:
+              raise SystemExit('settle access marker mismatch')
+          utils.write_text(
+              text.replace('tab.context.config.timeouts.settle', 'settleTimeout'),
+              encoding='utf-8',
+          )
+
+          tab = Path('src/tab.ts')
+          text = tab.read_text(encoding='utf-8')
+          count = text.count('this.context.config.timeouts.navigation')
+          if count != 2:
+              raise SystemExit(f'navigation timeout access count: {count}')
+          tab.write_text(
+              text.replace(
+                  'this.context.config.timeouts.navigation',
+                  '(this.context.config.timeouts?.navigation ?? 60_000)',
+              ),
+              encoding='utf-8',
+          )
+
+          session = Path('src/session-log.ts')
+          text = session.read_text(encoding='utf-8')
+          import_marker = "import { SecretRedactor } from './utils/secret-redactor.js';"
+          import_replacement = "import { logUnhandledError } from './utils/log.js';\nimport { SecretRedactor } from './utils/secret-redactor.js';"
+          if text.count(import_marker) != 1:
+              raise SystemExit('session log import marker mismatch')
+          text = text.replace(import_marker, import_replacement)
+          queue_marker = '    this._sessionFileQueue = this._sessionFileQueue.then(operation);'
+          queue_replacement = """    this._sessionFileQueue = this._sessionFileQueue
+      .then(operation)
+      .catch((error) => logUnhandledError(error));"""
+          if text.count(queue_marker) != 1:
+              raise SystemExit('session log queue marker mismatch')
+          session.write_text(text.replace(queue_marker, queue_replacement), encoding='utf-8')
+          PY
+
+      - name: Install refreshed dependencies and browser revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun install
+          bunx playwright install --with-deps chromium
+          rm -rf scripts/__pycache__
+
+      - name: Format, encode, typecheck, build, generate, and lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 5m bun run lint-fix
+          bun run check:encoding
+          timeout 10m bun run typecheck
+          timeout 10m bun run build:publish
+          timeout 2m bun run update-readme
+          timeout 5m bun run lint-fix
+          bun run check:encoding
+          timeout 10m bun run typecheck
+          timeout 10m bun run build:publish
+          bun run lint
+          bun run benchmark:tools -- --check
+          git diff --check
+
+      - name: GREEN - focused regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          bunx playwright test \
+            tests/upstream-runtime.spec.ts \
+            tests/upstream-config.spec.ts \
+            tests/http-allowed-hosts.spec.ts \
+            tests/mcp-server-initialize.spec.ts \
+            tests/network-origin-filter.spec.ts \
+            tests/output-manager.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
+            tests/dialog-lifecycle.spec.ts \
+            tests/navigation-context.spec.ts \
+            tests/readme-contract.spec.ts \
+            tests/secret-redaction.spec.ts \
+            tests/session-log-redaction.spec.ts \
+            tests/session-log.spec.ts \
+            tests/tool-gateways.spec.ts \
+            tests/upstream-check.spec.ts \
+            --project=chromium --workers=1
+
+      - name: Full Chromium suite
+        run: bunx playwright test --project=chromium --workers=1
+
+      - name: Packed npm artifact smoke
+        run: bun run test:package
+
+      - name: Bundled extension build and E2E
+        shell: bash
+        env:
+          DEBUG: 'pw:mcp:*'
+          PWMCP_DEBUG: '1'
+        run: |
+          set -euo pipefail
+          npm ci --prefix extension
+          npm run build --prefix extension
+          xvfb-run --auto-servernum bunx playwright test \
+            --config=extension/playwright.config.ts --workers=1
+
+      - name: Docker build and CLI smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build -t fast-playwright-mcp-pr31:latest .
+          docker run --rm fast-playwright-mcp-pr31:latest --version
+
+      - name: Commit verified source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf lib test-results playwright-report scripts/__pycache__
+          rm -rf extension/dist extension/test-results extension/playwright-report
+          rm -f -- *.tgz tsconfig.tsbuildinfo
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git reset -- .github/workflows
+          git reset -- \
+            scripts/apply-pr31-final.py \
+            scripts/apply-pr31-final.py.gz.b64 \
+            scripts/apply-pr31-final.py.gz.b64.* \
+            scripts/materialize-pr31-final.sh
+          if git diff --cached --quiet; then
+            echo 'No source changes were produced.' >&2
+            exit 1
+          fi
+          git commit -m 'fix: address PR review and refresh Playwright upstream'
+          git push origin HEAD:agent/pr31-final-review
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
+        with:
+          name: finalize-pr31-corrected-source-failure
+          path: |
+            /tmp/pr31-red.log
+            test-results/**/error-context.md
+            playwright-report/**
+            extension/test-results/**/error-context.md
+            extension/playwright-report/**
+          if-no-files-found: warn
+          retention-days: 3
