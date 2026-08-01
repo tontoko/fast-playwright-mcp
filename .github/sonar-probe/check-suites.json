@@ -2,15 +2,15 @@
   "total_count": 13,
   "check_suites": [
     {
-      "id": 80236192563,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMjMw",
+      "id": 83234352123,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdr-w",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192563",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352123",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -18,7 +18,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -100,17 +100,17 @@
           "team"
         ]
       },
-      "created_at": "2026-07-18T02:32:33Z",
-      "updated_at": "2026-07-18T02:32:33Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192563/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352123/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -190,15 +190,15 @@
       }
     },
     {
-      "id": 80236192652,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMjjA",
+      "id": 83234352189,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdsPQ",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192652",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352189",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -206,7 +206,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -255,7 +255,7 @@
         "external_url": "https://cloud.google.com/cloud-build/",
         "html_url": "https://github.com/apps/google-cloud-build",
         "created_at": "2018-03-29T13:50:34Z",
-        "updated_at": "2026-04-30T14:55:01Z",
+        "updated_at": "2026-07-21T18:51:02Z",
         "permissions": {
           "checks": "write",
           "contents": "read",
@@ -274,17 +274,17 @@
           "push"
         ]
       },
-      "created_at": "2026-07-18T02:32:33Z",
-      "updated_at": "2026-07-18T02:32:33Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192652/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352189/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -364,15 +364,15 @@
       }
     },
     {
-      "id": 80236192709,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMjxQ",
+      "id": 83234352243,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdscw",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192709",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352243",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -380,7 +380,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -476,17 +476,17 @@
           "workflow_run"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192709/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352243/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -566,15 +566,15 @@
       }
     },
     {
-      "id": 80236192768,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMkAA",
+      "id": 83234352301,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdsrQ",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192768",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352301",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -582,7 +582,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -680,17 +680,17 @@
           "workflow_run"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192768/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352301/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -770,15 +770,15 @@
       }
     },
     {
-      "id": 80236192842,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMkSg",
+      "id": 83234352363,
+      "node_id": "CS_kwDOPYDXK88AAAATYSds6w",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "completed",
-      "conclusion": "failure",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192842",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "conclusion": "success",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352363",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -786,7 +786,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -855,17 +855,17 @@
           "repository"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:33:19Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:22:11Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 1,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192842/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352363/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -945,15 +945,15 @@
       }
     },
     {
-      "id": 80236192891,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMkew",
+      "id": 83234352423,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdtJw",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192891",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352423",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -961,7 +961,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1045,17 +1045,17 @@
           "repository"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192891/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352423/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -1135,15 +1135,15 @@
       }
     },
     {
-      "id": 80236192935,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMkpw",
+      "id": 83234352488,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdtaA",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192935",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352488",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -1151,7 +1151,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1217,17 +1217,17 @@
           "push"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192935/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352488/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -1307,15 +1307,15 @@
       }
     },
     {
-      "id": 80236192983,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMk1w",
+      "id": 83234352533,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdtlQ",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192983",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352533",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -1323,7 +1323,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1402,17 +1402,17 @@
           "repository"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236192983/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352533/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -1492,15 +1492,15 @@
       }
     },
     {
-      "id": 80236193024,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMlAA",
+      "id": 83234352571,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdtuw",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236193024",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352571",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -1508,7 +1508,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1584,17 +1584,17 @@
           "team_add"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236193024/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352571/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -1674,15 +1674,15 @@
       }
     },
     {
-      "id": 80236193059,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMlIw",
+      "id": 83234352638,
+      "node_id": "CS_kwDOPYDXK88AAAATYSdt_g",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236193059",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352638",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -1690,7 +1690,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1776,17 +1776,17 @@
           "team_add"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236193059/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352638/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -1866,15 +1866,15 @@
       }
     },
     {
-      "id": 80236193104,
-      "node_id": "CS_kwDOPYDXK88AAAASrnMlUA",
+      "id": 83234352711,
+      "node_id": "CS_kwDOPYDXK88AAAATYSduRw",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "queued",
       "conclusion": null,
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236193104",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352711",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -1882,7 +1882,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1975,17 +1975,17 @@
           "workflow_run"
         ]
       },
-      "created_at": "2026-07-18T02:32:34Z",
-      "updated_at": "2026-07-18T02:32:34Z",
+      "created_at": "2026-08-01T08:21:23Z",
+      "updated_at": "2026-08-01T08:21:23Z",
       "rerequestable": true,
       "runs_rerequestable": true,
       "latest_check_runs_count": 0,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236193104/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234352711/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -2065,15 +2065,15 @@
       }
     },
     {
-      "id": 80236199646,
-      "node_id": "CS_kwDOPYDXK88AAAASrnM-3g",
+      "id": 83234357620,
+      "node_id": "CS_kwDOPYDXK88AAAATYSeBdA",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "completed",
       "conclusion": "success",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236199646",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234357620",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -2081,7 +2081,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -2189,17 +2189,17 @@
           "workflow_run"
         ]
       },
-      "created_at": "2026-07-18T02:32:39Z",
-      "updated_at": "2026-07-18T02:33:33Z",
+      "created_at": "2026-08-01T08:21:27Z",
+      "updated_at": "2026-08-01T08:22:26Z",
       "rerequestable": true,
       "runs_rerequestable": false,
       "latest_check_runs_count": 1,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236199646/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234357620/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"
@@ -2279,15 +2279,15 @@
       }
     },
     {
-      "id": 80236199722,
-      "node_id": "CS_kwDOPYDXK88AAAASrnM_Kg",
+      "id": 83234357634,
+      "node_id": "CS_kwDOPYDXK88AAAATYSeBgg",
       "head_branch": "agent/adaptive-tool-discovery",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "status": "completed",
-      "conclusion": "success",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236199722",
-      "before": "b39ed6f459a3d1fbb47de1fb47e2686d3fa55b90",
-      "after": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "conclusion": "failure",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234357634",
+      "before": "7aa9a2e41193b257624e2603fc84384ea6acbfa6",
+      "after": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "pull_requests": [
         {
           "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
@@ -2295,7 +2295,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -2403,17 +2403,17 @@
           "workflow_run"
         ]
       },
-      "created_at": "2026-07-18T02:32:39Z",
-      "updated_at": "2026-07-18T02:41:11Z",
+      "created_at": "2026-08-01T08:21:27Z",
+      "updated_at": "2026-08-01T08:30:13Z",
       "rerequestable": true,
       "runs_rerequestable": false,
       "latest_check_runs_count": 9,
-      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/80236199722/check-runs",
+      "check_runs_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-suites/83234357634/check-runs",
       "head_commit": {
-        "id": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-        "tree_id": "f2ac8dadb49d336438aa683a477c5a3348000be0",
-        "message": "fix: preserve explicit Sonar generated-file exclusion",
-        "timestamp": "2026-07-18T02:32:32Z",
+        "id": "3795262331742b87fc04d604a62e5282a0fd1afc",
+        "tree_id": "436ee18334de71c7a65a053d4b0952c69439bde7",
+        "message": "ci: update upstream audit action runtimes",
+        "timestamp": "2026-08-01T08:21:21Z",
         "author": {
           "name": "Tomohiko Hiraki",
           "email": "31890263+tontoko@users.noreply.github.com"

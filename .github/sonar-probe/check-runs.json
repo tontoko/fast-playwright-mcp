@@ -2,27 +2,27 @@
   "total_count": 11,
   "check_runs": [
     {
-      "id": 88033976096,
+      "id": 91347267785,
       "name": "SonarCloud Code Analysis",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzvfIA",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLiwyQ",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
       "external_id": "",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033976096",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/runs/88033976096",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347267785",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/runs/91347267785",
       "details_url": "https://sonarcloud.io/dashboard?id=tontoko_fast-playwright-mcp&pullRequest=31",
       "status": "completed",
-      "conclusion": "failure",
-      "started_at": "2026-07-18T02:32:44Z",
-      "completed_at": "2026-07-18T02:33:18Z",
+      "conclusion": "success",
+      "started_at": "2026-08-01T08:21:34Z",
+      "completed_at": "2026-08-01T08:22:09Z",
       "output": {
-        "title": "Quality Gate failed",
-        "summary": "Failed conditions  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/failed.svg '') [D Reliability Rating on New Code](https://sonarcloud.io/dashboard?id=tontoko_fast-playwright-mcp&pullRequest=31) (required ≥ A)  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/failed.svg '') [D Security Rating on New Code](https://sonarcloud.io/dashboard?id=tontoko_fast-playwright-mcp&pullRequest=31) (required ≥ A)  \n  \n[See analysis details on SonarQube Cloud](https://sonarcloud.io/dashboard?id=tontoko_fast-playwright-mcp&pullRequest=31)\n\n##   \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/light_bulb.svg '') Catch issues before they fail your Quality Gate with our IDE extension ![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/sonarlint.svg '') [SonarQube for IDE](https://www.sonarsource.com/products/sonarlint/features/connected-mode/?referrer=pull-request)\n\n",
+        "title": "Quality Gate passed",
+        "summary": "Issues  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/passed.svg '') [5 New issues](https://sonarcloud.io/project/issues?id=tontoko_fast-playwright-mcp&pullRequest=31&issueStatuses=OPEN,CONFIRMED&sinceLeakPeriod=true)  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/accepted.svg '') [0 Accepted issues](https://sonarcloud.io/project/issues?id=tontoko_fast-playwright-mcp&pullRequest=31&issueStatuses=ACCEPTED)\n\nMeasures  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/passed.svg '') [0 Security Hotspots](https://sonarcloud.io/project/security_hotspots?id=tontoko_fast-playwright-mcp&pullRequest=31&issueStatuses=OPEN,CONFIRMED&sinceLeakPeriod=true)  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/passed.svg '') [0.0% Coverage on New Code](https://sonarcloud.io/component_measures?id=tontoko_fast-playwright-mcp&pullRequest=31&metric=new_coverage&view=list)  \n![](https://sonarsource.github.io/sonarcloud-github-static-resources/v2/common/passed.svg '') [0.0% Duplication on New Code](https://sonarcloud.io/component_measures?id=tontoko_fast-playwright-mcp&pullRequest=31&metric=new_duplicated_lines_density&view=list)  \n  \n[See analysis details on SonarQube Cloud](https://sonarcloud.io/dashboard?id=tontoko_fast-playwright-mcp&pullRequest=31)\n\n",
         "text": null,
-        "annotations_count": 29,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033976096/annotations"
+        "annotations_count": 5,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347267785/annotations"
       },
       "check_suite": {
-        "id": 80236192842
+        "id": 83234352363
       },
       "app": {
         "id": 12526,
@@ -82,7 +82,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -102,722 +102,27 @@
       ]
     },
     {
-      "id": 88033922999,
-      "name": "Browser extension build and E2E",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPtw",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "bdba0e0a-09e6-565b-a3d8-f1569e92dce7",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922999",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922999",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922999",
-      "status": "completed",
-      "conclusion": "success",
-      "started_at": "2026-07-18T02:32:42Z",
-      "completed_at": "2026-07-18T02:33:41Z",
-      "output": {
-        "title": null,
-        "summary": null,
-        "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922999/annotations"
-      },
-      "check_suite": {
-        "id": 80236199722
-      },
-      "app": {
-        "id": 15368,
-        "client_id": "Iv1.05c79e9ad1f6bdfa",
-        "slug": "github-actions",
-        "node_id": "MDM6QXBwMTUzNjg=",
-        "owner": {
-          "login": "github",
-          "id": 9919,
-          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
-          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
-          "gravatar_id": "",
-          "url": "https://api.github.com/users/github",
-          "html_url": "https://github.com/github",
-          "followers_url": "https://api.github.com/users/github/followers",
-          "following_url": "https://api.github.com/users/github/following{/other_user}",
-          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
-          "organizations_url": "https://api.github.com/users/github/orgs",
-          "repos_url": "https://api.github.com/users/github/repos",
-          "events_url": "https://api.github.com/users/github/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/github/received_events",
-          "type": "Organization",
-          "user_view_type": "public",
-          "site_admin": false
-        },
-        "name": "GitHub Actions",
-        "description": "Automate your workflow from idea to production",
-        "external_url": "https://help.github.com/en/actions",
-        "html_url": "https://github.com/apps/github-actions",
-        "created_at": "2018-07-30T09:30:17Z",
-        "updated_at": "2026-06-18T16:17:48Z",
-        "permissions": {
-          "actions": "write",
-          "administration": "read",
-          "artifact_metadata": "write",
-          "attestations": "write",
-          "checks": "write",
-          "code_quality": "write",
-          "contents": "write",
-          "copilot_requests": "write",
-          "deployments": "write",
-          "discussions": "write",
-          "drives": "write",
-          "issues": "write",
-          "merge_queues": "write",
-          "metadata": "read",
-          "models": "read",
-          "packages": "write",
-          "pages": "write",
-          "pull_requests": "write",
-          "repository_hooks": "write",
-          "repository_projects": "write",
-          "security_events": "write",
-          "statuses": "write",
-          "vulnerability_alerts": "read"
-        },
-        "events": [
-          "branch_protection_rule",
-          "check_run",
-          "check_suite",
-          "create",
-          "delete",
-          "deployment",
-          "deployment_status",
-          "discussion",
-          "discussion_comment",
-          "fork",
-          "gollum",
-          "issues",
-          "issue_comment",
-          "label",
-          "merge_group",
-          "milestone",
-          "page_build",
-          "public",
-          "pull_request",
-          "pull_request_review",
-          "pull_request_review_comment",
-          "push",
-          "registry_package",
-          "release",
-          "repository",
-          "repository_dispatch",
-          "status",
-          "watch",
-          "workflow_dispatch",
-          "workflow_run"
-        ]
-      },
-      "pull_requests": [
-        {
-          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
-          "id": 4038172133,
-          "number": 31,
-          "head": {
-            "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          },
-          "base": {
-            "ref": "main",
-            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "id": 88033922967,
-      "name": "Quality, contracts, and package smoke",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPlw",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "812ecae8-044a-5e39-8e38-910b728c0dff",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922967",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922967",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922967",
-      "status": "completed",
-      "conclusion": "success",
-      "started_at": "2026-07-18T02:32:42Z",
-      "completed_at": "2026-07-18T02:33:37Z",
-      "output": {
-        "title": null,
-        "summary": null,
-        "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922967/annotations"
-      },
-      "check_suite": {
-        "id": 80236199722
-      },
-      "app": {
-        "id": 15368,
-        "client_id": "Iv1.05c79e9ad1f6bdfa",
-        "slug": "github-actions",
-        "node_id": "MDM6QXBwMTUzNjg=",
-        "owner": {
-          "login": "github",
-          "id": 9919,
-          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
-          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
-          "gravatar_id": "",
-          "url": "https://api.github.com/users/github",
-          "html_url": "https://github.com/github",
-          "followers_url": "https://api.github.com/users/github/followers",
-          "following_url": "https://api.github.com/users/github/following{/other_user}",
-          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
-          "organizations_url": "https://api.github.com/users/github/orgs",
-          "repos_url": "https://api.github.com/users/github/repos",
-          "events_url": "https://api.github.com/users/github/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/github/received_events",
-          "type": "Organization",
-          "user_view_type": "public",
-          "site_admin": false
-        },
-        "name": "GitHub Actions",
-        "description": "Automate your workflow from idea to production",
-        "external_url": "https://help.github.com/en/actions",
-        "html_url": "https://github.com/apps/github-actions",
-        "created_at": "2018-07-30T09:30:17Z",
-        "updated_at": "2026-06-18T16:17:48Z",
-        "permissions": {
-          "actions": "write",
-          "administration": "read",
-          "artifact_metadata": "write",
-          "attestations": "write",
-          "checks": "write",
-          "code_quality": "write",
-          "contents": "write",
-          "copilot_requests": "write",
-          "deployments": "write",
-          "discussions": "write",
-          "drives": "write",
-          "issues": "write",
-          "merge_queues": "write",
-          "metadata": "read",
-          "models": "read",
-          "packages": "write",
-          "pages": "write",
-          "pull_requests": "write",
-          "repository_hooks": "write",
-          "repository_projects": "write",
-          "security_events": "write",
-          "statuses": "write",
-          "vulnerability_alerts": "read"
-        },
-        "events": [
-          "branch_protection_rule",
-          "check_run",
-          "check_suite",
-          "create",
-          "delete",
-          "deployment",
-          "deployment_status",
-          "discussion",
-          "discussion_comment",
-          "fork",
-          "gollum",
-          "issues",
-          "issue_comment",
-          "label",
-          "merge_group",
-          "milestone",
-          "page_build",
-          "public",
-          "pull_request",
-          "pull_request_review",
-          "pull_request_review_comment",
-          "push",
-          "registry_package",
-          "release",
-          "repository",
-          "repository_dispatch",
-          "status",
-          "watch",
-          "workflow_dispatch",
-          "workflow_run"
-        ]
-      },
-      "pull_requests": [
-        {
-          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
-          "id": 4038172133,
-          "number": 31,
-          "head": {
-            "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          },
-          "base": {
-            "ref": "main",
-            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "id": 88033922957,
-      "name": "Browser tests (chromium)",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPjQ",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "2b7a0c8a-faad-5fb9-855b-64680b16b4e4",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922957",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922957",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922957",
-      "status": "completed",
-      "conclusion": "success",
-      "started_at": "2026-07-18T02:32:42Z",
-      "completed_at": "2026-07-18T02:37:40Z",
-      "output": {
-        "title": null,
-        "summary": null,
-        "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922957/annotations"
-      },
-      "check_suite": {
-        "id": 80236199722
-      },
-      "app": {
-        "id": 15368,
-        "client_id": "Iv1.05c79e9ad1f6bdfa",
-        "slug": "github-actions",
-        "node_id": "MDM6QXBwMTUzNjg=",
-        "owner": {
-          "login": "github",
-          "id": 9919,
-          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
-          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
-          "gravatar_id": "",
-          "url": "https://api.github.com/users/github",
-          "html_url": "https://github.com/github",
-          "followers_url": "https://api.github.com/users/github/followers",
-          "following_url": "https://api.github.com/users/github/following{/other_user}",
-          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
-          "organizations_url": "https://api.github.com/users/github/orgs",
-          "repos_url": "https://api.github.com/users/github/repos",
-          "events_url": "https://api.github.com/users/github/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/github/received_events",
-          "type": "Organization",
-          "user_view_type": "public",
-          "site_admin": false
-        },
-        "name": "GitHub Actions",
-        "description": "Automate your workflow from idea to production",
-        "external_url": "https://help.github.com/en/actions",
-        "html_url": "https://github.com/apps/github-actions",
-        "created_at": "2018-07-30T09:30:17Z",
-        "updated_at": "2026-06-18T16:17:48Z",
-        "permissions": {
-          "actions": "write",
-          "administration": "read",
-          "artifact_metadata": "write",
-          "attestations": "write",
-          "checks": "write",
-          "code_quality": "write",
-          "contents": "write",
-          "copilot_requests": "write",
-          "deployments": "write",
-          "discussions": "write",
-          "drives": "write",
-          "issues": "write",
-          "merge_queues": "write",
-          "metadata": "read",
-          "models": "read",
-          "packages": "write",
-          "pages": "write",
-          "pull_requests": "write",
-          "repository_hooks": "write",
-          "repository_projects": "write",
-          "security_events": "write",
-          "statuses": "write",
-          "vulnerability_alerts": "read"
-        },
-        "events": [
-          "branch_protection_rule",
-          "check_run",
-          "check_suite",
-          "create",
-          "delete",
-          "deployment",
-          "deployment_status",
-          "discussion",
-          "discussion_comment",
-          "fork",
-          "gollum",
-          "issues",
-          "issue_comment",
-          "label",
-          "merge_group",
-          "milestone",
-          "page_build",
-          "public",
-          "pull_request",
-          "pull_request_review",
-          "pull_request_review_comment",
-          "push",
-          "registry_package",
-          "release",
-          "repository",
-          "repository_dispatch",
-          "status",
-          "watch",
-          "workflow_dispatch",
-          "workflow_run"
-        ]
-      },
-      "pull_requests": [
-        {
-          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
-          "id": 4038172133,
-          "number": 31,
-          "head": {
-            "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          },
-          "base": {
-            "ref": "main",
-            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "id": 88033922950,
-      "name": "Review threads",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPhg",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "65363b5f-c023-5922-9eda-83a331362cbd",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922950",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922950",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922950",
-      "status": "completed",
-      "conclusion": "success",
-      "started_at": "2026-07-18T02:32:42Z",
-      "completed_at": "2026-07-18T02:32:53Z",
-      "output": {
-        "title": null,
-        "summary": null,
-        "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922950/annotations"
-      },
-      "check_suite": {
-        "id": 80236199722
-      },
-      "app": {
-        "id": 15368,
-        "client_id": "Iv1.05c79e9ad1f6bdfa",
-        "slug": "github-actions",
-        "node_id": "MDM6QXBwMTUzNjg=",
-        "owner": {
-          "login": "github",
-          "id": 9919,
-          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
-          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
-          "gravatar_id": "",
-          "url": "https://api.github.com/users/github",
-          "html_url": "https://github.com/github",
-          "followers_url": "https://api.github.com/users/github/followers",
-          "following_url": "https://api.github.com/users/github/following{/other_user}",
-          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
-          "organizations_url": "https://api.github.com/users/github/orgs",
-          "repos_url": "https://api.github.com/users/github/repos",
-          "events_url": "https://api.github.com/users/github/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/github/received_events",
-          "type": "Organization",
-          "user_view_type": "public",
-          "site_admin": false
-        },
-        "name": "GitHub Actions",
-        "description": "Automate your workflow from idea to production",
-        "external_url": "https://help.github.com/en/actions",
-        "html_url": "https://github.com/apps/github-actions",
-        "created_at": "2018-07-30T09:30:17Z",
-        "updated_at": "2026-06-18T16:17:48Z",
-        "permissions": {
-          "actions": "write",
-          "administration": "read",
-          "artifact_metadata": "write",
-          "attestations": "write",
-          "checks": "write",
-          "code_quality": "write",
-          "contents": "write",
-          "copilot_requests": "write",
-          "deployments": "write",
-          "discussions": "write",
-          "drives": "write",
-          "issues": "write",
-          "merge_queues": "write",
-          "metadata": "read",
-          "models": "read",
-          "packages": "write",
-          "pages": "write",
-          "pull_requests": "write",
-          "repository_hooks": "write",
-          "repository_projects": "write",
-          "security_events": "write",
-          "statuses": "write",
-          "vulnerability_alerts": "read"
-        },
-        "events": [
-          "branch_protection_rule",
-          "check_run",
-          "check_suite",
-          "create",
-          "delete",
-          "deployment",
-          "deployment_status",
-          "discussion",
-          "discussion_comment",
-          "fork",
-          "gollum",
-          "issues",
-          "issue_comment",
-          "label",
-          "merge_group",
-          "milestone",
-          "page_build",
-          "public",
-          "pull_request",
-          "pull_request_review",
-          "pull_request_review_comment",
-          "push",
-          "registry_package",
-          "release",
-          "repository",
-          "repository_dispatch",
-          "status",
-          "watch",
-          "workflow_dispatch",
-          "workflow_run"
-        ]
-      },
-      "pull_requests": [
-        {
-          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
-          "id": 4038172133,
-          "number": 31,
-          "head": {
-            "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          },
-          "base": {
-            "ref": "main",
-            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "id": 88033922946,
-      "name": "Browser tests (msedge)",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPgg",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "e3e3d51f-2c56-51c9-bf7e-5a43097c0714",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922946",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922946",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922946",
-      "status": "completed",
-      "conclusion": "success",
-      "started_at": "2026-07-18T02:32:42Z",
-      "completed_at": "2026-07-18T02:38:06Z",
-      "output": {
-        "title": null,
-        "summary": null,
-        "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922946/annotations"
-      },
-      "check_suite": {
-        "id": 80236199722
-      },
-      "app": {
-        "id": 15368,
-        "client_id": "Iv1.05c79e9ad1f6bdfa",
-        "slug": "github-actions",
-        "node_id": "MDM6QXBwMTUzNjg=",
-        "owner": {
-          "login": "github",
-          "id": 9919,
-          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
-          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
-          "gravatar_id": "",
-          "url": "https://api.github.com/users/github",
-          "html_url": "https://github.com/github",
-          "followers_url": "https://api.github.com/users/github/followers",
-          "following_url": "https://api.github.com/users/github/following{/other_user}",
-          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
-          "organizations_url": "https://api.github.com/users/github/orgs",
-          "repos_url": "https://api.github.com/users/github/repos",
-          "events_url": "https://api.github.com/users/github/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/github/received_events",
-          "type": "Organization",
-          "user_view_type": "public",
-          "site_admin": false
-        },
-        "name": "GitHub Actions",
-        "description": "Automate your workflow from idea to production",
-        "external_url": "https://help.github.com/en/actions",
-        "html_url": "https://github.com/apps/github-actions",
-        "created_at": "2018-07-30T09:30:17Z",
-        "updated_at": "2026-06-18T16:17:48Z",
-        "permissions": {
-          "actions": "write",
-          "administration": "read",
-          "artifact_metadata": "write",
-          "attestations": "write",
-          "checks": "write",
-          "code_quality": "write",
-          "contents": "write",
-          "copilot_requests": "write",
-          "deployments": "write",
-          "discussions": "write",
-          "drives": "write",
-          "issues": "write",
-          "merge_queues": "write",
-          "metadata": "read",
-          "models": "read",
-          "packages": "write",
-          "pages": "write",
-          "pull_requests": "write",
-          "repository_hooks": "write",
-          "repository_projects": "write",
-          "security_events": "write",
-          "statuses": "write",
-          "vulnerability_alerts": "read"
-        },
-        "events": [
-          "branch_protection_rule",
-          "check_run",
-          "check_suite",
-          "create",
-          "delete",
-          "deployment",
-          "deployment_status",
-          "discussion",
-          "discussion_comment",
-          "fork",
-          "gollum",
-          "issues",
-          "issue_comment",
-          "label",
-          "merge_group",
-          "milestone",
-          "page_build",
-          "public",
-          "pull_request",
-          "pull_request_review",
-          "pull_request_review_comment",
-          "push",
-          "registry_package",
-          "release",
-          "repository",
-          "repository_dispatch",
-          "status",
-          "watch",
-          "workflow_dispatch",
-          "workflow_run"
-        ]
-      },
-      "pull_requests": [
-        {
-          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
-          "id": 4038172133,
-          "number": 31,
-          "head": {
-            "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          },
-          "base": {
-            "ref": "main",
-            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
-            "repo": {
-              "id": 1031853867,
-              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
-              "name": "fast-playwright-mcp"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "id": 88033922941,
+      "id": 91347221160,
       "name": "Browser tests (chrome)",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPfQ",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "9f835483-6fdf-5b9b-9191-63125ac7b97d",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922941",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922941",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922941",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6qA",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "f7c150ab-659f-53a1-bc62-e91c7ab65bba",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221160",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221160",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221160",
       "status": "completed",
       "conclusion": "success",
-      "started_at": "2026-07-18T02:32:41Z",
-      "completed_at": "2026-07-18T02:37:40Z",
+      "started_at": "2026-08-01T08:21:40Z",
+      "completed_at": "2026-08-01T08:26:35Z",
       "output": {
         "title": null,
         "summary": null,
         "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922941/annotations"
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221160/annotations"
       },
       "check_suite": {
-        "id": 80236199722
+        "id": 83234357634
       },
       "app": {
         "id": 15368,
@@ -916,7 +221,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -936,27 +241,27 @@
       ]
     },
     {
-      "id": 88033922934,
+      "id": 91347221153,
       "name": "Browser tests (webkit)",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPdg",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "b790696f-71cb-51fc-8ed2-804e669a3f32",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922934",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922934",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922934",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6oQ",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "4e440a72-23da-5b7e-a928-c3f8cde69076",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221153",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221153",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221153",
       "status": "completed",
       "conclusion": "success",
-      "started_at": "2026-07-18T02:32:42Z",
-      "completed_at": "2026-07-18T02:37:35Z",
+      "started_at": "2026-08-01T08:21:40Z",
+      "completed_at": "2026-08-01T08:26:27Z",
       "output": {
         "title": null,
         "summary": null,
         "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922934/annotations"
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221153/annotations"
       },
       "check_suite": {
-        "id": 80236199722
+        "id": 83234357634
       },
       "app": {
         "id": 15368,
@@ -1055,7 +360,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1075,27 +380,27 @@
       ]
     },
     {
-      "id": 88033922926,
-      "name": "Docker build and smoke test",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPbg",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "48f864fc-7242-532d-b806-44e08c54945e",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922926",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922926",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922926",
+      "id": 91347221140,
+      "name": "Browser tests (chromium)",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6lA",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "dc3c0f37-6100-56a6-9f94-c7c950053e38",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221140",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221140",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221140",
       "status": "completed",
       "conclusion": "success",
-      "started_at": "2026-07-18T02:32:43Z",
-      "completed_at": "2026-07-18T02:33:32Z",
+      "started_at": "2026-08-01T08:21:40Z",
+      "completed_at": "2026-08-01T08:26:42Z",
       "output": {
         "title": null,
         "summary": null,
         "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922926/annotations"
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221140/annotations"
       },
       "check_suite": {
-        "id": 80236199722
+        "id": 83234357634
       },
       "app": {
         "id": 15368,
@@ -1194,7 +499,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1214,27 +519,27 @@
       ]
     },
     {
-      "id": 88033922924,
+      "id": 91347221138,
       "name": "Browser tests (firefox)",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsPbA",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "4fb7eff6-de11-5f34-877b-06d171c7b215",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922924",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922924",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230173/job/88033922924",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6kg",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "73783195-b308-5b6e-8d63-7528a35b2e91",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221138",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221138",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221138",
       "status": "completed",
       "conclusion": "success",
-      "started_at": "2026-07-18T02:32:41Z",
-      "completed_at": "2026-07-18T02:41:11Z",
+      "started_at": "2026-08-01T08:21:41Z",
+      "completed_at": "2026-08-01T08:30:12Z",
       "output": {
         "title": null,
         "summary": null,
         "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922924/annotations"
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221138/annotations"
       },
       "check_suite": {
-        "id": 80236199722
+        "id": 83234357634
       },
       "app": {
         "id": 15368,
@@ -1333,7 +638,7 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
@@ -1353,27 +658,27 @@
       ]
     },
     {
-      "id": 88033922735,
-      "name": "copilot-setup-steps",
-      "node_id": "CR_kwDOPYDXK88AAAAUfzsOrw",
-      "head_sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
-      "external_id": "f5869ce2-e56e-54ce-a51a-a00849f5dd8b",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922735",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230155/job/88033922735",
-      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/29627230155/job/88033922735",
+      "id": 91347221128,
+      "name": "Browser tests (msedge)",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6iA",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "e9064977-54ee-533d-965b-a4cfdff928c7",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221128",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221128",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221128",
       "status": "completed",
       "conclusion": "success",
-      "started_at": "2026-07-18T02:32:41Z",
-      "completed_at": "2026-07-18T02:33:32Z",
+      "started_at": "2026-08-01T08:21:40Z",
+      "completed_at": "2026-08-01T08:27:00Z",
       "output": {
         "title": null,
         "summary": null,
         "text": null,
-        "annotations_count": 1,
-        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/88033922735/annotations"
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221128/annotations"
       },
       "check_suite": {
-        "id": 80236199646
+        "id": 83234357634
       },
       "app": {
         "id": 15368,
@@ -1472,7 +777,702 @@
           "number": 31,
           "head": {
             "ref": "agent/adaptive-tool-discovery",
-            "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 91347221119,
+      "name": "Browser extension build and E2E",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6fw",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "bad3ed74-4164-5f8c-b5c9-144ebcf51ce6",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221119",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221119",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221119",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-08-01T08:21:40Z",
+      "completed_at": "2026-08-01T08:22:40Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221119/annotations"
+      },
+      "check_suite": {
+        "id": 83234357634
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
+          "id": 4038172133,
+          "number": 31,
+          "head": {
+            "ref": "agent/adaptive-tool-discovery",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 91347221097,
+      "name": "Docker build and smoke test",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6aQ",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "887c60fe-f793-5cf3-a3cb-5b413840269c",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221097",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221097",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221097",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-08-01T08:21:46Z",
+      "completed_at": "2026-08-01T08:22:27Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221097/annotations"
+      },
+      "check_suite": {
+        "id": 83234357634
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
+          "id": 4038172133,
+          "number": 31,
+          "head": {
+            "ref": "agent/adaptive-tool-discovery",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 91347221095,
+      "name": "Quality, contracts, and package smoke",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6Zw",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "30f4f81c-2be9-5a1c-93af-f68872d06a9e",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221095",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221095",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221095",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-08-01T08:21:40Z",
+      "completed_at": "2026-08-01T08:22:36Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221095/annotations"
+      },
+      "check_suite": {
+        "id": 83234357634
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
+          "id": 4038172133,
+          "number": 31,
+          "head": {
+            "ref": "agent/adaptive-tool-discovery",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 91347221075,
+      "name": "Review threads",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLf6Uw",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "91150f33-5550-55d8-a9ca-da25b9aef07c",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221075",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221075",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604689/job/91347221075",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-08-01T08:21:46Z",
+      "completed_at": "2026-08-01T08:21:52Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 1,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347221075/annotations"
+      },
+      "check_suite": {
+        "id": 83234357634
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
+          "id": 4038172133,
+          "number": 31,
+          "head": {
+            "ref": "agent/adaptive-tool-discovery",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          },
+          "base": {
+            "ref": "main",
+            "sha": "9293d26f6aa9fbe817c21326b2a5072eaabbb5ed",
+            "repo": {
+              "id": 1031853867,
+              "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",
+              "name": "fast-playwright-mcp"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 91347206114,
+      "name": "copilot-setup-steps",
+      "node_id": "CR_kwDOPYDXK88AAAAVRLe_4g",
+      "head_sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
+      "external_id": "9bce86b3-2b53-5789-bdad-e9c008ba81e3",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347206114",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604687/job/91347206114",
+      "details_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30691604687/job/91347206114",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-08-01T08:21:29Z",
+      "completed_at": "2026-08-01T08:22:25Z",
+      "output": {
+        "title": null,
+        "summary": null,
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91347206114/annotations"
+      },
+      "check_suite": {
+        "id": 83234357620
+      },
+      "app": {
+        "id": 15368,
+        "client_id": "Iv1.05c79e9ad1f6bdfa",
+        "slug": "github-actions",
+        "node_id": "MDM6QXBwMTUzNjg=",
+        "owner": {
+          "login": "github",
+          "id": 9919,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/github",
+          "html_url": "https://github.com/github",
+          "followers_url": "https://api.github.com/users/github/followers",
+          "following_url": "https://api.github.com/users/github/following{/other_user}",
+          "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+          "organizations_url": "https://api.github.com/users/github/orgs",
+          "repos_url": "https://api.github.com/users/github/repos",
+          "events_url": "https://api.github.com/users/github/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/github/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "name": "GitHub Actions",
+        "description": "Automate your workflow from idea to production",
+        "external_url": "https://help.github.com/en/actions",
+        "html_url": "https://github.com/apps/github-actions",
+        "created_at": "2018-07-30T09:30:17Z",
+        "updated_at": "2026-06-18T16:17:48Z",
+        "permissions": {
+          "actions": "write",
+          "administration": "read",
+          "artifact_metadata": "write",
+          "attestations": "write",
+          "checks": "write",
+          "code_quality": "write",
+          "contents": "write",
+          "copilot_requests": "write",
+          "deployments": "write",
+          "discussions": "write",
+          "drives": "write",
+          "issues": "write",
+          "merge_queues": "write",
+          "metadata": "read",
+          "models": "read",
+          "packages": "write",
+          "pages": "write",
+          "pull_requests": "write",
+          "repository_hooks": "write",
+          "repository_projects": "write",
+          "security_events": "write",
+          "statuses": "write",
+          "vulnerability_alerts": "read"
+        },
+        "events": [
+          "branch_protection_rule",
+          "check_run",
+          "check_suite",
+          "create",
+          "delete",
+          "deployment",
+          "deployment_status",
+          "discussion",
+          "discussion_comment",
+          "fork",
+          "gollum",
+          "issues",
+          "issue_comment",
+          "label",
+          "merge_group",
+          "milestone",
+          "page_build",
+          "public",
+          "pull_request",
+          "pull_request_review",
+          "pull_request_review_comment",
+          "push",
+          "registry_package",
+          "release",
+          "repository",
+          "repository_dispatch",
+          "status",
+          "watch",
+          "workflow_dispatch",
+          "workflow_run"
+        ]
+      },
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/pulls/31",
+          "id": 4038172133,
+          "number": 31,
+          "head": {
+            "ref": "agent/adaptive-tool-discovery",
+            "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
             "repo": {
               "id": 1031853867,
               "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp",

@@ -3,7 +3,7 @@
   "statuses": [
 
   ],
-  "sha": "13e9a6d403d43a89baade43f96cd5a497bed0efd",
+  "sha": "3795262331742b87fc04d604a62e5282a0fd1afc",
   "total_count": 0,
   "repository": {
     "id": 1031853867,
@@ -73,6 +73,6 @@
     "releases_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/releases{/id}",
     "deployments_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/deployments"
   },
-  "commit_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/commits/13e9a6d403d43a89baade43f96cd5a497bed0efd",
-  "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/commits/13e9a6d403d43a89baade43f96cd5a497bed0efd/status"
+  "commit_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/commits/3795262331742b87fc04d604a62e5282a0fd1afc",
+  "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/commits/3795262331742b87fc04d604a62e5282a0fd1afc/status"
 }
