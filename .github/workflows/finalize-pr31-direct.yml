@@ -68,20 +68,42 @@ jobs:
 
           dialog = Path('tests/dialog-lifecycle.spec.ts')
           text = dialog.read_text(encoding='utf-8')
-          text = text.replace(".join('\n');", ".join('\\\\n');")
-          text = text.replace(
-              "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",
-              "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",
-          )
+          replacements = [
+              (
+                  ".join('\n');",
+                  ".join('\\\\n');",
+                  'dialog response separator',
+              ),
+              (
+                  "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",
+                  "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",
+                  'dialog fixture quoting',
+              ),
+              (
+                  "  await page.getByRole('button', { name: 'Open dialog' }).click();\n",
+                  """  void page
+                    .getByRole('button', { name: 'Open dialog' })
+                    .click()
+                    .catch(() => {});
+          """,
+                  'non-blocking dialog trigger',
+              ),
+          ]
+          for old, new, label in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f'{label}: expected one marker, found {text.count(old)}')
+              text = text.replace(old, new)
           dialog.write_text(text, encoding='utf-8')
 
           runtime = Path('tests/upstream-runtime.spec.ts')
           text = runtime.read_text(encoding='utf-8')
-          text = text.replace(
-              "async (_fixtures, testInfo) => {",
-              "async ({ page: _page }, testInfo) => {",
-          )
-          runtime.write_text(text, encoding='utf-8')
+          old = "async (_fixtures, testInfo) => {"
+          new = "async ({ page: _page }, testInfo) => {"
+          if text.count(old) != 1:
+              raise SystemExit(
+                  f'fixture replacement: expected one marker, found {text.count(old)}'
+              )
+          runtime.write_text(text.replace(old, new), encoding='utf-8')
           PY
           bunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts
 
