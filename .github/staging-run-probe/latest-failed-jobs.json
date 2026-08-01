@@ -2,21 +2,21 @@
   "total_count": 1,
   "jobs": [
     {
-      "id": 91338502017,
-      "run_id": 30688370158,
+      "id": 91339018814,
+      "run_id": 30688549608,
       "workflow_name": "Finalize PR 31 directly",
       "head_branch": "agent/pr31-final-review",
-      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30688370158",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30688549608",
       "run_attempt": 1,
-      "node_id": "CR_kwDOPYDXK88AAAAVRDLvgQ",
-      "head_sha": "9e9f70aab3cacae705ab3b757d91b05f94f1b426",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91338502017",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30688370158/job/91338502017",
+      "node_id": "CR_kwDOPYDXK88AAAAVRDrSPg",
+      "head_sha": "f209ac414a461b9c5dfee120f9baa94d641d27cb",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91339018814",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30688549608/job/91339018814",
       "status": "completed",
       "conclusion": "failure",
-      "created_at": "2026-08-01T06:45:54Z",
-      "started_at": "2026-08-01T06:46:02Z",
-      "completed_at": "2026-08-01T06:46:44Z",
+      "created_at": "2026-08-01T06:51:29Z",
+      "started_at": "2026-08-01T06:51:38Z",
+      "completed_at": "2026-08-01T06:57:10Z",
       "name": "finalize",
       "steps": [
         {
@@ -24,288 +24,288 @@
           "status": "completed",
           "conclusion": "success",
           "number": 1,
-          "started_at": "2026-08-01T06:46:02Z",
-          "completed_at": "2026-08-01T06:46:04Z"
+          "started_at": "2026-08-01T06:51:39Z",
+          "completed_at": "2026-08-01T06:51:41Z"
         },
         {
           "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
           "status": "completed",
           "conclusion": "success",
           "number": 2,
-          "started_at": "2026-08-01T06:46:04Z",
-          "completed_at": "2026-08-01T06:46:06Z"
+          "started_at": "2026-08-01T06:51:41Z",
+          "completed_at": "2026-08-01T06:51:42Z"
         },
         {
           "name": "Setup Bun",
           "status": "completed",
           "conclusion": "success",
           "number": 3,
-          "started_at": "2026-08-01T06:46:06Z",
-          "completed_at": "2026-08-01T06:46:07Z"
+          "started_at": "2026-08-01T06:51:42Z",
+          "completed_at": "2026-08-01T06:51:44Z"
         },
         {
           "name": "Use Node.js 22",
           "status": "completed",
           "conclusion": "success",
           "number": 4,
-          "started_at": "2026-08-01T06:46:07Z",
-          "completed_at": "2026-08-01T06:46:11Z"
+          "started_at": "2026-08-01T06:51:44Z",
+          "completed_at": "2026-08-01T06:51:47Z"
         },
         {
           "name": "Reconstruct and verify the prepared patch",
           "status": "completed",
           "conclusion": "success",
           "number": 5,
-          "started_at": "2026-08-01T06:46:11Z",
-          "completed_at": "2026-08-01T06:46:11Z"
+          "started_at": "2026-08-01T06:51:47Z",
+          "completed_at": "2026-08-01T06:51:47Z"
         },
         {
           "name": "Install the reviewed baseline",
           "status": "completed",
           "conclusion": "success",
           "number": 6,
-          "started_at": "2026-08-01T06:46:11Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:51:47Z",
+          "completed_at": "2026-08-01T06:52:12Z"
         },
         {
           "name": "Generate corrected regression tests",
           "status": "completed",
-          "conclusion": "failure",
+          "conclusion": "success",
           "number": 7,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:12Z",
+          "completed_at": "2026-08-01T06:52:12Z"
         },
         {
           "name": "RED - prove the selected regressions fail before implementation",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 8,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:12Z",
+          "completed_at": "2026-08-01T06:52:14Z"
         },
         {
           "name": "Apply review fixes and current Microsoft upstream ports",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 9,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:14Z",
+          "completed_at": "2026-08-01T06:52:16Z"
         },
         {
           "name": "Make README generation terminate deterministically",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 10,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:16Z",
+          "completed_at": "2026-08-01T06:52:16Z"
         },
         {
           "name": "Install refreshed dependency graph and browser revision",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 11,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:16Z",
+          "completed_at": "2026-08-01T06:52:28Z"
         },
         {
           "name": "Remove generated Python bytecode",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 12,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:28Z",
+          "completed_at": "2026-08-01T06:52:28Z"
         },
         {
           "name": "Format source",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 13,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:28Z",
+          "completed_at": "2026-08-01T06:52:30Z"
         },
         {
           "name": "Verify source encoding",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 14,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:30Z",
+          "completed_at": "2026-08-01T06:52:30Z"
         },
         {
           "name": "Typecheck",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 15,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:30Z",
+          "completed_at": "2026-08-01T06:52:31Z"
         },
         {
           "name": "Build package",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 16,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:31Z",
+          "completed_at": "2026-08-01T06:52:31Z"
         },
         {
           "name": "Regenerate README",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 17,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:31Z",
+          "completed_at": "2026-08-01T06:52:32Z"
         },
         {
           "name": "Reformat generated output",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 18,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:32Z",
+          "completed_at": "2026-08-01T06:52:34Z"
         },
         {
           "name": "Verify generated output",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 19,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:34Z",
+          "completed_at": "2026-08-01T06:52:37Z"
         },
         {
           "name": "GREEN - focused review and upstream regressions",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "success",
           "number": 20,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:37Z",
+          "completed_at": "2026-08-01T06:52:49Z"
         },
         {
           "name": "Full Chromium suite",
           "status": "completed",
-          "conclusion": "skipped",
+          "conclusion": "failure",
           "number": 21,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:52:49Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Packed npm artifact smoke",
           "status": "completed",
           "conclusion": "skipped",
           "number": 22,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Install all browser projects",
           "status": "completed",
           "conclusion": "skipped",
           "number": 23,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Full Chrome suite",
           "status": "completed",
           "conclusion": "skipped",
           "number": 24,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Full Microsoft Edge suite",
           "status": "completed",
           "conclusion": "skipped",
           "number": 25,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Full Firefox suite",
           "status": "completed",
           "conclusion": "skipped",
           "number": 26,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Full WebKit suite",
           "status": "completed",
           "conclusion": "skipped",
           "number": 27,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Build and test the bundled extension",
           "status": "completed",
           "conclusion": "skipped",
           "number": 28,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Docker build and CLI smoke",
           "status": "completed",
           "conclusion": "skipped",
           "number": 29,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Commit verified source changes",
           "status": "completed",
           "conclusion": "skipped",
           "number": 30,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:02Z"
         },
         {
           "name": "Upload failure diagnostics",
           "status": "completed",
           "conclusion": "success",
           "number": 31,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:02Z",
+          "completed_at": "2026-08-01T06:57:08Z"
         },
         {
           "name": "Post Use Node.js 22",
           "status": "completed",
           "conclusion": "skipped",
           "number": 60,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:08Z",
+          "completed_at": "2026-08-01T06:57:08Z"
         },
         {
           "name": "Post Setup Bun",
           "status": "completed",
           "conclusion": "skipped",
           "number": 61,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:08Z",
+          "completed_at": "2026-08-01T06:57:08Z"
         },
         {
           "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
           "status": "completed",
           "conclusion": "success",
           "number": 62,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:42Z"
+          "started_at": "2026-08-01T06:57:08Z",
+          "completed_at": "2026-08-01T06:57:08Z"
         },
         {
           "name": "Complete job",
           "status": "completed",
           "conclusion": "success",
           "number": 63,
-          "started_at": "2026-08-01T06:46:42Z",
-          "completed_at": "2026-08-01T06:46:43Z"
+          "started_at": "2026-08-01T06:57:08Z",
+          "completed_at": "2026-08-01T06:57:08Z"
         }
       ],
-      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91338502017",
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91339018814",
       "labels": [
         "ubuntu-latest"
       ],
-      "runner_id": 1000019497,
-      "runner_name": "GitHub Actions 1000019497",
+      "runner_id": 1000019501,
+      "runner_name": "GitHub Actions 1000019501",
       "runner_group_id": 0,
       "runner_group_name": "GitHub Actions"
     }

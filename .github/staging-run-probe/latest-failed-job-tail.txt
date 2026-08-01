@@ -1,400 +1,400 @@
-2026-08-01T06:46:06.1974094Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
-2026-08-01T06:46:06.2013576Z ##[group]Checking out the ref
-2026-08-01T06:46:06.2018768Z [command]/usr/bin/git checkout --progress --force -B agent/pr31-final-review refs/remotes/origin/agent/pr31-final-review
-2026-08-01T06:46:06.2385702Z Switched to a new branch 'agent/pr31-final-review'
-2026-08-01T06:46:06.2388083Z branch 'agent/pr31-final-review' set up to track 'origin/agent/pr31-final-review'.
-2026-08-01T06:46:06.2398339Z ##[endgroup]
-2026-08-01T06:46:06.2445323Z [command]/usr/bin/git log -1 --format=%H
-2026-08-01T06:46:06.2478251Z 9e9f70aab3cacae705ab3b757d91b05f94f1b426
-2026-08-01T06:46:06.2737681Z ##[group]Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
-2026-08-01T06:46:06.2738291Z with:
-2026-08-01T06:46:06.2738661Z   bun-version: 1.3.5
-2026-08-01T06:46:06.2739233Z   no-cache: false
-2026-08-01T06:46:06.2742269Z   token: ***
-2026-08-01T06:46:06.2742643Z ##[endgroup]
-2026-08-01T06:46:06.5532057Z Downloading a new version of Bun: https://github.com/oven-sh/bun/releases/download/bun-v1.3.5/bun-linux-x64.zip
-2026-08-01T06:46:06.9430201Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/d48e9739-a850-4fe3-89a1-3d8800487045.zip
-2026-08-01T06:46:07.7779693Z [command]/home/runner/.bun/bin/bun --revision
-2026-08-01T06:46:07.7823515Z 1.3.5+1e86cebd7
-2026-08-01T06:46:07.7995273Z ##[group]Run actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-2026-08-01T06:46:07.7995671Z with:
-2026-08-01T06:46:07.7995880Z   node-version: 22
-2026-08-01T06:46:07.7996098Z   always-auth: false
-2026-08-01T06:46:07.7996324Z   check-latest: false
-2026-08-01T06:46:07.7998665Z   token: ***
-2026-08-01T06:46:07.7998892Z   package-manager-cache: true
-2026-08-01T06:46:07.7999147Z ##[endgroup]
-2026-08-01T06:46:07.9506095Z Found in cache @ /opt/hostedtoolcache/node/22.23.1/x64
-2026-08-01T06:46:07.9510430Z (node:2266) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-08-01T06:46:07.9511125Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-08-01T06:46:07.9513543Z ##[group]Environment details
-2026-08-01T06:46:10.9905194Z node: v22.23.1
-2026-08-01T06:46:10.9905758Z npm: 10.9.8
-2026-08-01T06:46:10.9906042Z yarn: 1.22.22
-2026-08-01T06:46:10.9906745Z ##[endgroup]
-2026-08-01T06:46:11.0038327Z ##[group]Run set -euo pipefail
-2026-08-01T06:46:11.0038711Z [36;1mset -euo pipefail[0m
-2026-08-01T06:46:11.0039165Z [36;1mgit fetch origin agent/pr31-review-fixes:refs/remotes/origin/agent/pr31-review-fixes[0m
-2026-08-01T06:46:11.0039738Z [36;1mcat scripts/apply-pr31-final.py.gz.b64.* > /tmp/pr31-payload.b64[0m
-2026-08-01T06:46:11.0040425Z [36;1mprintf '%s  %s\n' \[0m
-2026-08-01T06:46:11.0040926Z [36;1m  '6248edd96a856f8a59b05b8ac5cc8294ff3d8219eb13c20b2a4d23e6858b0022' \[0m
-2026-08-01T06:46:11.0041366Z [36;1m  /tmp/pr31-payload.b64 | sha256sum --check[0m
-2026-08-01T06:46:11.0041785Z [36;1mbase64 --decode /tmp/pr31-payload.b64 | gzip --decompress \[0m
-2026-08-01T06:46:11.0042167Z [36;1m  > scripts/apply-pr31-final.py[0m
-2026-08-01T06:46:11.0042442Z [36;1mprintf '%s  %s\n' \[0m
-2026-08-01T06:46:11.0042827Z [36;1m  '6a95d924a4d0051c3db738f1e126776a51f3ab8185231cc24c49a7d7fa3a0d0d' \[0m
-2026-08-01T06:46:11.0043366Z [36;1m  scripts/apply-pr31-final.py | sha256sum --check[0m
-2026-08-01T06:46:11.0043740Z [36;1mpython3 -m py_compile scripts/apply-pr31-final.py[0m
-2026-08-01T06:46:11.0044085Z [36;1mchmod +x scripts/apply-pr31-final.py[0m
-2026-08-01T06:46:11.0203557Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:46:11.0203925Z ##[endgroup]
-2026-08-01T06:46:11.1817342Z /tmp/pr31-payload.b64: OK
-2026-08-01T06:46:11.1849772Z scripts/apply-pr31-final.py: OK
-2026-08-01T06:46:11.2272626Z ##[group]Run set -euo pipefail
-2026-08-01T06:46:11.2272970Z [36;1mset -euo pipefail[0m
-2026-08-01T06:46:11.2297550Z [36;1mbun install --frozen-lockfile[0m
-2026-08-01T06:46:11.2297993Z [36;1mbunx playwright install --with-deps chromium[0m
-2026-08-01T06:46:11.2347277Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:46:11.2347621Z ##[endgroup]
-2026-08-01T06:46:11.2443931Z bun install v1.3.5 (1e86cebd)
-2026-08-01T06:46:12.8628023Z 
-2026-08-01T06:46:12.8629589Z + @anthropic-ai/sdk@0.57.0
-2026-08-01T06:46:12.8631199Z + @biomejs/biome@2.1.2
-2026-08-01T06:46:12.8631638Z + @modelcontextprotocol/ext-apps@1.0.1
-2026-08-01T06:46:12.8632011Z + @playwright/test@1.62.0-alpha-1783623505000
-2026-08-01T06:46:12.8632372Z + @types/debug@4.1.13
-2026-08-01T06:46:12.8632628Z + @types/node@22.20.1
-2026-08-01T06:46:12.8632870Z + @types/ws@8.18.1
-2026-08-01T06:46:12.8633178Z + @typescript/native-preview@7.0.0-dev.20260707.2
-2026-08-01T06:46:12.8633484Z + esbuild@0.20.2
-2026-08-01T06:46:12.8633784Z + lefthook@1.13.6
-2026-08-01T06:46:12.8634002Z + openai@5.23.2
-2026-08-01T06:46:12.8634216Z + ultracite@5.1.2
-2026-08-01T06:46:12.8634832Z + @modelcontextprotocol/sdk@1.25.2
-2026-08-01T06:46:12.8635114Z + @types/sharp@0.31.1
-2026-08-01T06:46:12.8635343Z + commander@13.1.0
-2026-08-01T06:46:12.8635548Z + debug@4.4.3
-2026-08-01T06:46:12.8635753Z + dotenv@17.4.2
-2026-08-01T06:46:12.8635973Z + fast-diff@1.3.0
-2026-08-01T06:46:12.8636176Z + mime@4.1.0
-2026-08-01T06:46:12.8636437Z + playwright@1.62.0-alpha-1783623505000
-2026-08-01T06:46:12.8636822Z + playwright-core@1.62.0-alpha-1783623505000
-2026-08-01T06:46:12.8637102Z + sharp@0.34.5
-2026-08-01T06:46:12.8637303Z + ws@8.21.1
-2026-08-01T06:46:12.8637491Z + zod@3.25.76
-2026-08-01T06:46:12.8637714Z + zod-to-json-schema@3.25.2
-2026-08-01T06:46:12.8637867Z 
-2026-08-01T06:46:12.8638013Z 191 packages installed [1.62s]
-2026-08-01T06:46:13.6925144Z Installing dependencies...
-2026-08-01T06:46:13.7093410Z Switching to root user to install dependencies...
-2026-08-01T06:46:13.8543618Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-2026-08-01T06:46:13.8889750Z Hit:3 https://packages.microsoft.com/repos/azure-cli noble InRelease
-2026-08-01T06:46:13.8931362Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-2026-08-01T06:46:13.8932271Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
-2026-08-01T06:46:13.8959692Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-2026-08-01T06:46:13.9023908Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
-2026-08-01T06:46:13.9050897Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
-2026-08-01T06:46:13.9104192Z Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
-2026-08-01T06:46:14.1370048Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [261 kB]
-2026-08-01T06:46:14.1988474Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1154 kB]
-2026-08-01T06:46:14.2011179Z Get:21 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.7 kB]
-2026-08-01T06:46:14.2036850Z Get:22 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [227 kB]
-2026-08-01T06:46:14.2053024Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [278 kB]
-2026-08-01T06:46:14.2080352Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
-2026-08-01T06:46:14.2089698Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1681 kB]
-2026-08-01T06:46:14.2176847Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [334 kB]
-2026-08-01T06:46:14.2202795Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
-2026-08-01T06:46:14.2231478Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1367 kB]
-2026-08-01T06:46:14.2302298Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [308 kB]
-2026-08-01T06:46:14.2326441Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [45.4 kB]
-2026-08-01T06:46:14.2339629Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.3 kB]
-2026-08-01T06:46:14.2754509Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
-2026-08-01T06:46:14.2770410Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5744 B]
-2026-08-01T06:46:14.2801955Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [32.5 kB]
-2026-08-01T06:46:14.2811900Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
-2026-08-01T06:46:14.3172578Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [897 kB]
-2026-08-01T06:46:14.3236132Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [198 kB]
-2026-08-01T06:46:14.3247174Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
-2026-08-01T06:46:14.3281380Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1199 kB]
-2026-08-01T06:46:14.3323417Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [239 kB]
-2026-08-01T06:46:14.3343442Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
-2026-08-01T06:46:14.3365825Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1273 kB]
-2026-08-01T06:46:14.3451366Z Get:33 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [290 kB]
-2026-08-01T06:46:14.3473314Z Get:34 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [40.3 kB]
-2026-08-01T06:46:14.3484319Z Get:35 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [10.6 kB]
-2026-08-01T06:46:14.4098033Z Get:36 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1411 B]
-2026-08-01T06:46:23.2049104Z Fetched 11.0 MB in 2s (7288 kB/s)
-2026-08-01T06:46:24.0184252Z Reading package lists...
-2026-08-01T06:46:24.0520948Z Reading package lists...
-2026-08-01T06:46:24.2704091Z Building dependency tree...
-2026-08-01T06:46:24.2711579Z Reading state information...
-2026-08-01T06:46:24.4417427Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
-2026-08-01T06:46:24.4418163Z libasound2t64 set to manually installed.
-2026-08-01T06:46:24.4418863Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T06:46:24.4419559Z libatk-bridge2.0-0t64 set to manually installed.
-2026-08-01T06:46:24.4420459Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T06:46:24.4421062Z libatk1.0-0t64 set to manually installed.
-2026-08-01T06:46:24.4421589Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
-2026-08-01T06:46:24.4422003Z libatspi2.0-0t64 set to manually installed.
-2026-08-01T06:46:24.4422461Z libcairo2 is already the newest version (1.18.0-3build1).
-2026-08-01T06:46:24.4423056Z libcairo2 set to manually installed.
-2026-08-01T06:46:24.4423695Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
-2026-08-01T06:46:24.4424317Z libcups2t64 set to manually installed.
-2026-08-01T06:46:24.4424936Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
-2026-08-01T06:46:24.4425774Z libdbus-1-3 set to manually installed.
-2026-08-01T06:46:24.4426413Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
-2026-08-01T06:46:24.4427079Z libdrm2 set to manually installed.
-2026-08-01T06:46:24.4427465Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.2).
-2026-08-01T06:46:24.4427843Z libgbm1 set to manually installed.
-2026-08-01T06:46:24.4428223Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.8).
-2026-08-01T06:46:24.4428991Z libglib2.0-0t64 set to manually installed.
-2026-08-01T06:46:24.4429402Z libnspr4 is already the newest version (2:4.35-1.1build1).
-2026-08-01T06:46:24.4429780Z libnspr4 set to manually installed.
-2026-08-01T06:46:24.4430366Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
-2026-08-01T06:46:24.4430726Z libnss3 set to manually installed.
-2026-08-01T06:46:24.4431125Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
-2026-08-01T06:46:24.4431518Z libpango-1.0-0 set to manually installed.
-2026-08-01T06:46:24.4431917Z libx11-6 is already the newest version (2:1.8.7-1build1).
-2026-08-01T06:46:24.4432268Z libx11-6 set to manually installed.
-2026-08-01T06:46:24.4432626Z libxcb1 is already the newest version (1.15-1ubuntu2).
-2026-08-01T06:46:24.4432969Z libxcb1 set to manually installed.
-2026-08-01T06:46:24.4433356Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
-2026-08-01T06:46:24.4433750Z libxcomposite1 set to manually installed.
-2026-08-01T06:46:24.4434148Z libxdamage1 is already the newest version (1:1.1.6-1build1).
-2026-08-01T06:46:24.4434521Z libxdamage1 set to manually installed.
-2026-08-01T06:46:24.4434885Z libxext6 is already the newest version (2:1.3.4-1build2).
-2026-08-01T06:46:24.4435419Z libxext6 set to manually installed.
-2026-08-01T06:46:24.4435785Z libxfixes3 is already the newest version (1:6.0.0-2build1).
-2026-08-01T06:46:24.4436155Z libxfixes3 set to manually installed.
-2026-08-01T06:46:24.4436533Z libxkbcommon0 is already the newest version (1.6.0-1build1).
-2026-08-01T06:46:24.4436904Z libxkbcommon0 set to manually installed.
-2026-08-01T06:46:24.4437278Z libxrandr2 is already the newest version (2:1.5.2-2build1).
-2026-08-01T06:46:24.4437639Z libxrandr2 set to manually installed.
-2026-08-01T06:46:24.4438013Z xvfb is already the newest version (2:21.1.12-1ubuntu1.6).
-2026-08-01T06:46:24.4438530Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
-2026-08-01T06:46:24.4439063Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
-2026-08-01T06:46:24.4439470Z libfontconfig1 set to manually installed.
-2026-08-01T06:46:24.4440024Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.1).
-2026-08-01T06:46:24.4440455Z libfreetype6 set to manually installed.
-2026-08-01T06:46:24.4440861Z fonts-liberation is already the newest version (1:2.1.5-3).
-2026-08-01T06:46:24.4441260Z fonts-liberation set to manually installed.
-2026-08-01T06:46:24.4441651Z The following additional packages will be installed:
-2026-08-01T06:46:24.4442001Z   xfonts-encodings xfonts-utils
-2026-08-01T06:46:24.4442291Z Recommended packages:
-2026-08-01T06:46:24.4442566Z   fonts-ipafont-mincho fonts-tlwg-loma
-2026-08-01T06:46:24.4956273Z The following NEW packages will be installed:
-2026-08-01T06:46:24.4956809Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
-2026-08-01T06:46:24.4967286Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
-2026-08-01T06:46:24.4967698Z   xfonts-utils
-2026-08-01T06:46:24.5176298Z 0 upgraded, 9 newly installed, 0 to remove and 79 not upgraded.
-2026-08-01T06:46:24.5176972Z Need to get 21.1 MB of archives.
-2026-08-01T06:46:24.5177662Z After this operation, 79.5 MB of additional disk space will be used.
-2026-08-01T06:46:24.5178459Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-2026-08-01T06:46:24.5403538Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
-2026-08-01T06:46:24.5678935Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
-2026-08-01T06:46:24.6133975Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
-2026-08-01T06:46:24.6159782Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
-2026-08-01T06:46:24.6393978Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
-2026-08-01T06:46:24.6936136Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
-2026-08-01T06:46:24.6997295Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
-2026-08-01T06:46:24.7024713Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
-2026-08-01T06:46:24.7075470Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
-2026-08-01T06:46:24.9914348Z Fetched 21.1 MB in 0s (103 MB/s)
-2026-08-01T06:46:25.0449432Z Selecting previously unselected package fonts-ipafont-gothic.
-2026-08-01T06:46:25.1397942Z (Reading database ... 
-2026-08-01T06:46:25.1398312Z (Reading database ... 5%
-2026-08-01T06:46:25.1398833Z (Reading database ... 10%
-2026-08-01T06:46:25.1399449Z (Reading database ... 15%
-2026-08-01T06:46:25.1399773Z (Reading database ... 20%
-2026-08-01T06:46:25.1400394Z (Reading database ... 25%
-2026-08-01T06:46:25.1400679Z (Reading database ... 30%
-2026-08-01T06:46:25.1400914Z (Reading database ... 35%
-2026-08-01T06:46:25.1401159Z (Reading database ... 40%
-2026-08-01T06:46:25.1401680Z (Reading database ... 45%
-2026-08-01T06:46:25.1401911Z (Reading database ... 50%
-2026-08-01T06:46:25.1707894Z (Reading database ... 55%
-2026-08-01T06:46:25.6425398Z (Reading database ... 60%
-2026-08-01T06:46:25.9954646Z (Reading database ... 65%
-2026-08-01T06:46:26.3069126Z (Reading database ... 70%
-2026-08-01T06:46:26.5581293Z (Reading database ... 75%
-2026-08-01T06:46:27.1126392Z (Reading database ... 80%
-2026-08-01T06:46:27.9144291Z (Reading database ... 85%
-2026-08-01T06:46:28.7242656Z (Reading database ... 90%
-2026-08-01T06:46:29.4730515Z (Reading database ... 95%
-2026-08-01T06:46:29.4730967Z (Reading database ... 100%
-2026-08-01T06:46:29.4731547Z (Reading database ... 202954 files and directories currently installed.)
-2026-08-01T06:46:29.4779740Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
-2026-08-01T06:46:29.4874192Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
-2026-08-01T06:46:29.7279505Z Selecting previously unselected package fonts-freefont-ttf.
-2026-08-01T06:46:29.7412244Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
-2026-08-01T06:46:29.7418281Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
-2026-08-01T06:46:29.8310151Z Selecting previously unselected package fonts-tlwg-loma-otf.
-2026-08-01T06:46:29.8444961Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
-2026-08-01T06:46:29.8451768Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
-2026-08-01T06:46:29.8671582Z Selecting previously unselected package fonts-unifont.
-2026-08-01T06:46:29.8803988Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
-2026-08-01T06:46:29.8811350Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
-2026-08-01T06:46:29.9998965Z Selecting previously unselected package fonts-wqy-zenhei.
-2026-08-01T06:46:30.0132058Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
-2026-08-01T06:46:30.0238177Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
-2026-08-01T06:46:30.5063840Z Selecting previously unselected package xfonts-encodings.
-2026-08-01T06:46:30.5196337Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
-2026-08-01T06:46:30.5204182Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
-2026-08-01T06:46:30.5500558Z Selecting previously unselected package xfonts-utils.
-2026-08-01T06:46:30.5634838Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
-2026-08-01T06:46:30.5641529Z Unpacking xfonts-utils (1:7.7+6build3) ...
-2026-08-01T06:46:30.6471420Z Selecting previously unselected package xfonts-cyrillic.
-2026-08-01T06:46:30.6604686Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
-2026-08-01T06:46:30.6612281Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
-2026-08-01T06:46:30.6963735Z Selecting previously unselected package xfonts-scalable.
-2026-08-01T06:46:30.7096603Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
-2026-08-01T06:46:30.7104201Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
-2026-08-01T06:46:30.7539374Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
-2026-08-01T06:46:30.7657563Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
-2026-08-01T06:46:30.7673442Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
-2026-08-01T06:46:30.7690767Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
-2026-08-01T06:46:30.7707101Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
-2026-08-01T06:46:30.7775265Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
-2026-08-01T06:46:30.7790149Z Setting up fonts-unifont (1:15.1.01-1build1) ...
-2026-08-01T06:46:30.7806714Z Setting up xfonts-utils (1:7.7+6build3) ...
-2026-08-01T06:46:30.7845564Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
-2026-08-01T06:46:30.8196383Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
-2026-08-01T06:46:30.8489643Z Processing triggers for man-db (2.12.0-4build2) ...
-2026-08-01T06:46:30.8580066Z Not building database; man-db/auto-update is not 'true'.
-2026-08-01T06:46:30.8593976Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
-2026-08-01T06:46:32.2928843Z 
-2026-08-01T06:46:32.2929465Z Running kernel seems to be up-to-date.
-2026-08-01T06:46:32.2929840Z 
-2026-08-01T06:46:32.2930227Z No services need to be restarted.
-2026-08-01T06:46:32.2930506Z 
-2026-08-01T06:46:32.2930718Z No containers need to be restarted.
-2026-08-01T06:46:32.2930992Z 
-2026-08-01T06:46:32.2931257Z No user sessions are running outdated binaries.
-2026-08-01T06:46:32.2931587Z 
-2026-08-01T06:46:32.2932021Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
-2026-08-01T06:46:33.2547814Z Downloading Chrome for Testing 151.0.7922.10 (playwright chromium v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-linux64.zip
-2026-08-01T06:46:34.3092442Z |                                                                                |   0% of 184.3 MiB
-2026-08-01T06:46:34.4718908Z |■■■■■■■■                                                                        |  10% of 184.3 MiB
-2026-08-01T06:46:34.5612829Z |■■■■■■■■■■■■■■■■                                                                |  20% of 184.3 MiB
-2026-08-01T06:46:34.6310897Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 184.3 MiB
-2026-08-01T06:46:34.6994050Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 184.3 MiB
-2026-08-01T06:46:34.7656879Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 184.3 MiB
-2026-08-01T06:46:34.8282111Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 184.3 MiB
-2026-08-01T06:46:34.8909722Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 184.3 MiB
-2026-08-01T06:46:34.9526014Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 184.3 MiB
-2026-08-01T06:46:35.0119495Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 184.3 MiB
-2026-08-01T06:46:35.0666202Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 184.3 MiB
-2026-08-01T06:46:37.6337631Z Chrome for Testing 151.0.7922.10 (playwright chromium v1232) downloaded to /home/runner/.cache/ms-playwright/chromium-1232
-2026-08-01T06:46:37.6340433Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
-2026-08-01T06:46:38.8477134Z |                                                                                |   0% of 2.3 MiB
-2026-08-01T06:46:38.8587893Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
-2026-08-01T06:46:38.8686225Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
-2026-08-01T06:46:38.8738466Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
-2026-08-01T06:46:38.8763506Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
-2026-08-01T06:46:38.8806308Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
-2026-08-01T06:46:38.8832046Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
-2026-08-01T06:46:38.8868487Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
-2026-08-01T06:46:38.8881958Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
-2026-08-01T06:46:38.8897581Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
-2026-08-01T06:46:38.8919665Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
-2026-08-01T06:46:38.9465634Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
-2026-08-01T06:46:38.9468707Z Downloading Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) from https://cdn.playwright.dev/builds/cft/151.0.7922.10/linux64/chrome-headless-shell-linux64.zip
-2026-08-01T06:46:39.9495141Z |                                                                                |   0% of 114.7 MiB
-2026-08-01T06:46:40.0694919Z |■■■■■■■■                                                                        |  10% of 114.7 MiB
-2026-08-01T06:46:40.1185555Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.7 MiB
-2026-08-01T06:46:40.1582227Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.7 MiB
-2026-08-01T06:46:40.2046715Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.7 MiB
-2026-08-01T06:46:40.2417758Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.7 MiB
-2026-08-01T06:46:40.2780915Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.7 MiB
-2026-08-01T06:46:40.3142137Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.7 MiB
-2026-08-01T06:46:40.3482257Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.7 MiB
-2026-08-01T06:46:40.3863276Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.7 MiB
-2026-08-01T06:46:40.4185497Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.7 MiB
-2026-08-01T06:46:42.2415128Z Chrome Headless Shell 151.0.7922.10 (playwright chromium-headless-shell v1232) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1232
-2026-08-01T06:46:42.2631377Z ##[group]Run set -euo pipefail
-2026-08-01T06:46:42.2631737Z [36;1mset -euo pipefail[0m
-2026-08-01T06:46:42.2632032Z [36;1mpython3 scripts/apply-pr31-final.py tests[0m
-2026-08-01T06:46:42.2632548Z [36;1mpython3 - <<'PY'[0m
-2026-08-01T06:46:42.2632798Z [36;1mfrom pathlib import Path[0m
-2026-08-01T06:46:42.2633050Z [36;1m[0m
-2026-08-01T06:46:42.2633304Z [36;1mdialog = Path('tests/dialog-lifecycle.spec.ts')[0m
-2026-08-01T06:46:42.2633656Z [36;1mtext = dialog.read_text(encoding='utf-8')[0m
-2026-08-01T06:46:42.2634015Z [36;1mtext = text.replace(".join('\n');", r".join('\n');")[0m
-2026-08-01T06:46:42.2634339Z [36;1mtext = text.replace([0m
-2026-08-01T06:46:42.2634684Z [36;1m    "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",[0m
-2026-08-01T06:46:42.2635153Z [36;1m    "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",[0m
-2026-08-01T06:46:42.2635514Z [36;1m)[0m
-2026-08-01T06:46:42.2635903Z [36;1mold_click = "  await page.getByRole('button', { name: 'Open dialog' }).click();\n"[0m
-2026-08-01T06:46:42.2636348Z [36;1mnew_click = """  const clickPromise = page[0m
-2026-08-01T06:46:42.2636685Z [36;1m  .getByRole('button', { name: 'Open dialog' })[0m
-2026-08-01T06:46:42.2636984Z [36;1m  .click();[0m
-2026-08-01T06:46:42.2637192Z [36;1m"""[0m
-2026-08-01T06:46:42.2637408Z [36;1mif text.count(old_click) != 1:[0m
-2026-08-01T06:46:42.2637675Z [36;1m    raise SystemExit([0m
-2026-08-01T06:46:42.2638082Z [36;1m        f'non-blocking dialog trigger: expected one marker, found {text.count(old_click)}'[0m
-2026-08-01T06:46:42.2638497Z [36;1m    )[0m
-2026-08-01T06:46:42.2638736Z [36;1mtext = text.replace(old_click, new_click)[0m
-2026-08-01T06:46:42.2639093Z [36;1mold_close = "  await closedPromise;\n"[0m
-2026-08-01T06:46:42.2639469Z [36;1mnew_close = "  await closedPromise;\n  await clickPromise;\n"[0m
-2026-08-01T06:46:42.2639825Z [36;1mif text.count(old_close) != 1:[0m
-2026-08-01T06:46:42.2640431Z [36;1m    raise SystemExit([0m
-2026-08-01T06:46:42.2640879Z [36;1m        f'dialog completion: expected one marker, found {text.count(old_close)}'[0m
-2026-08-01T06:46:42.2641265Z [36;1m    )[0m
-2026-08-01T06:46:42.2641589Z [36;1mdialog.write_text(text.replace(old_close, new_close), encoding='utf-8')[0m
-2026-08-01T06:46:42.2641972Z [36;1m[0m
-2026-08-01T06:46:42.2642224Z [36;1mruntime = Path('tests/upstream-runtime.spec.ts')[0m
-2026-08-01T06:46:42.2642564Z [36;1mtext = runtime.read_text(encoding='utf-8')[0m
-2026-08-01T06:46:42.2642855Z [36;1mruntime.write_text([0m
-2026-08-01T06:46:42.2643095Z [36;1m    text.replace([0m
-2026-08-01T06:46:42.2643348Z [36;1m        "async (_fixtures, testInfo) => {",[0m
-2026-08-01T06:46:42.2643665Z [36;1m        "async ({ page: _page }, testInfo) => {",[0m
-2026-08-01T06:46:42.2643951Z [36;1m    ),[0m
-2026-08-01T06:46:42.2644159Z [36;1m    encoding='utf-8',[0m
-2026-08-01T06:46:42.2644389Z [36;1m)[0m
-2026-08-01T06:46:42.2644575Z [36;1mPY[0m
-2026-08-01T06:46:42.2644961Z [36;1mbunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts[0m
-2026-08-01T06:46:42.2692907Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-2026-08-01T06:46:42.2693247Z ##[endgroup]
-2026-08-01T06:46:42.5563812Z dialog completion: expected one marker, found 0
-2026-08-01T06:46:42.5616668Z ##[error]Process completed with exit code 1.
-2026-08-01T06:46:42.5784370Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-2026-08-01T06:46:42.5785732Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-2026-08-01T06:46:42.5786114Z with:
-2026-08-01T06:46:42.5786331Z   name: finalize-pr31-failure
-2026-08-01T06:46:42.5786964Z   path: /tmp/pr31-red.log
+2026-08-01T06:53:47.0573897Z   ✓  277 [chromium] › tests/browser-find-elements.spec.ts:131:1 › browser_find_elements - unknown role returns no matches without throwing (1.7s)
+2026-08-01T06:53:48.5983440Z   ✓  279 [chromium] › tests/browser-find.spec.ts:42:1 › browser_find reports no match without returning the full snapshot (1.5s)
+2026-08-01T06:53:48.9785713Z   ✓  278 [chromium] › tests/browser-find.spec.ts:17:1 › browser_find returns compact matching snapshot context (2.6s)
+2026-08-01T06:53:49.5047892Z   ✓  280 [chromium] › tests/capabilities.spec.ts:49:1 › default profile exposes the adaptive bootstrap catalog (888ms)
+2026-08-01T06:53:49.9361647Z   ✓  281 [chromium] › tests/capabilities.spec.ts:64:1 › full profile preserves the static tool catalog (935ms)
+2026-08-01T06:53:50.4535534Z   ✓  282 [chromium] › tests/capabilities.spec.ts:81:1 › test tool list proxy mode (934ms)
+2026-08-01T06:53:50.8593690Z   ✓  283 [chromium] › tests/capabilities.spec.ts:89:1 › test capabilities (pdf) (904ms)
+2026-08-01T06:53:51.3686814Z   ✓  284 [chromium] › tests/capabilities.spec.ts:98:1 › test capabilities (vision) (904ms)
+2026-08-01T06:53:51.9226870Z   ✓  285 [chromium] › tests/capabilities.spec.ts:109:1 › support for legacy --vision option (1.0s)
+2026-08-01T06:53:53.4571545Z   ✓  286 [chromium] › tests/cdp.spec.ts:22:1 › cdp server (2.1s)
+2026-08-01T06:53:53.8018387Z   ✓  287 [chromium] › tests/cdp.spec.ts:47:1 › cdp server reuse tab (1.9s)
+2026-08-01T06:53:54.6145217Z   ✓  289 [chromium] › tests/cdp.spec.ts:164:1 › does not support --device (799ms)
+2026-08-01T06:53:56.0263008Z   ✓  288 [chromium] › tests/cdp.spec.ts:103:1 › should throw connection error and allow re-connecting (2.5s)
+2026-08-01T06:53:56.7499878Z   ✓  290 [chromium] › tests/click.spec.ts:45:3 › browser_click (2.1s)
+2026-08-01T06:53:58.2656430Z   ✓  291 [chromium] › tests/click.spec.ts:45:3 › browser_click (double) (2.2s)
+2026-08-01T06:53:58.9227490Z   ✓  292 [chromium] › tests/click.spec.ts:45:3 › browser_click (right) (2.1s)
+2026-08-01T06:53:59.7397348Z   ✓  293 [chromium] › tests/config.spec.ts:22:1 › config user data dir (1.4s)
+2026-08-01T06:54:00.0185762Z   ✓  295 [chromium] › tests/config.spec.ts:116:3 › sandbox configuration › should enable sandbox by default (no --no-sandbox flag) (259ms)
+2026-08-01T06:54:00.0484231Z   ✓  296 [chromium] › tests/config.spec.ts:124:3 › sandbox configuration › should disable sandbox when --no-sandbox flag is passed (2ms)
+2026-08-01T06:54:00.0533718Z   -  294 [chromium] › tests/config.spec.ts:77:3 › browserName
+2026-08-01T06:54:01.5458950Z   ✓  298 [chromium] › tests/console.spec.ts:58:1 › browser_console_messages (page error) (1.4s)
+2026-08-01T06:54:01.6354488Z   ✓  297 [chromium] › tests/console.spec.ts:26:1 › browser_console_messages (1.5s)
+2026-08-01T06:54:03.2470734Z   ✓  300 [chromium] › tests/core.spec.ts:19:1 › browser_navigate (1.6s)
+2026-08-01T06:54:03.7857956Z   ✓  299 [chromium] › tests/console.spec.ts:90:1 › recent console messages (2.2s)
+2026-08-01T06:54:05.2906110Z   ✓  301 [chromium] › tests/core.spec.ts:36:1 › browser_select_option (2.0s)
+2026-08-01T06:54:05.8257220Z   ✓  302 [chromium] › tests/core.spec.ts:75:1 › browser_select_option (multiple) (2.0s)
+2026-08-01T06:54:07.3679909Z   ✓  303 [chromium] › tests/core.spec.ts:112:1 › browser_resize (2.1s)
+2026-08-01T06:54:07.9821223Z   ✓  304 [chromium] › tests/core.spec.ts:159:1 › old locator error message (2.1s)
+2026-08-01T06:54:08.9351141Z   ✓  305 [chromium] › tests/core.spec.ts:207:1 › visibility: hidden > visible should be shown (1.5s)
+2026-08-01T06:54:09.9333493Z   ✓  306 [chromium] › tests/device.spec.ts:19:1 › --device should work (1.9s)
+2026-08-01T06:54:11.2950533Z   ✓  307 [chromium] › tests/dialog-lifecycle.spec.ts:10:1 › dialog modal state clears when a side-channel client closes the dialog (2.3s)
+2026-08-01T06:54:12.0196899Z   ✓  308 [chromium] › tests/dialogs.spec.ts:27:1 › alert dialog (2.1s)
+2026-08-01T06:54:13.5166356Z   ✓  309 [chromium] › tests/dialogs.spec.ts:42:1 › two alert dialogs (2.2s)
+2026-08-01T06:54:14.2783191Z   ✓  310 [chromium] › tests/dialogs.spec.ts:70:1 › confirm dialog (true) (2.2s)
+2026-08-01T06:54:15.6544236Z   ✓  311 [chromium] › tests/dialogs.spec.ts:86:1 › confirm dialog (false) (2.1s)
+2026-08-01T06:54:16.4731394Z   ✓  312 [chromium] › tests/dialogs.spec.ts:102:1 › prompt dialog (2.2s)
+2026-08-01T06:54:17.9633018Z   ✓  313 [chromium] › tests/dialogs.spec.ts:119:1 › alert dialog w/ race (2.3s)
+2026-08-01T06:54:18.7417864Z   ✓  314 [chromium] › tests/drag.spec.ts:20:1 › browser_drag (2.2s)
+2026-08-01T06:54:20.2132703Z   ✓  315 [chromium] › tests/drag.spec.ts:42:1 › browser_drag (multiple items) (2.2s)
+2026-08-01T06:54:20.8905147Z   ✓  316 [chromium] › tests/evaluate-expectation.spec.ts:22:5 › Evaluate Tool Expectation Parameter › browser_evaluate › should accept expectation parameter with minimal response for page evaluation (2.1s)
+2026-08-01T06:54:22.3254721Z   ✓  317 [chromium] › tests/evaluate-expectation.spec.ts:47:5 › Evaluate Tool Expectation Parameter › browser_evaluate › should accept expectation parameter with full response for page evaluation (2.1s)
+2026-08-01T06:54:23.0204566Z   ✓  318 [chromium] › tests/evaluate-expectation.spec.ts:71:5 › Evaluate Tool Expectation Parameter › browser_evaluate › should accept expectation parameter for element evaluation (2.1s)
+2026-08-01T06:54:24.3570334Z   ✓  319 [chromium] › tests/evaluate.spec.ts:151:3 › browser_evaluate (2.0s)
+2026-08-01T06:54:25.1736050Z   ✓  320 [chromium] › tests/evaluate.spec.ts:151:3 › browser_evaluate (element) (2.1s)
+2026-08-01T06:54:25.1904580Z   ✓  322 [chromium] › tests/expectation-unit.spec.ts:21:3 › Expectation Unit Tests › mergeExpectations should respect user false values (2ms)
+2026-08-01T06:54:25.2045375Z   ✓  323 [chromium] › tests/expectation-unit.spec.ts:39:3 › Expectation Unit Tests › mergeExpectations should use tool defaults when user expectation is undefined (2ms)
+2026-08-01T06:54:25.2177390Z   ✓  324 [chromium] › tests/expectation-unit.spec.ts:50:3 › Expectation Unit Tests › mergeExpectations should use tool defaults for click tool (2ms)
+2026-08-01T06:54:25.2330838Z   ✓  325 [chromium] › tests/expectation-unit.spec.ts:61:3 › Expectation Unit Tests › mergeExpectations should partially override tool defaults (2ms)
+2026-08-01T06:54:25.2595955Z   ✓  326 [chromium] › tests/expectation.spec.ts:28:3 › Expectation Schema › should parse valid expectation options (4ms)
+2026-08-01T06:54:25.2737353Z   ✓  327 [chromium] › tests/expectation.spec.ts:57:3 › Expectation Schema › should use default values for missing options (1ms)
+2026-08-01T06:54:25.2860558Z   ✓  328 [chromium] › tests/expectation.spec.ts:65:3 › Expectation Schema › should parse undefined as valid (optional schema) (1ms)
+2026-08-01T06:54:25.2971517Z   ✓  329 [chromium] › tests/expectation.spec.ts:70:3 › Expectation Schema › should validate snapshotOptions correctly (1ms)
+2026-08-01T06:54:25.3138651Z   ✓  330 [chromium] › tests/expectation.spec.ts:85:3 › Expectation Schema › should validate consoleOptions correctly (1ms)
+2026-08-01T06:54:25.3318889Z   ✓  331 [chromium] › tests/expectation.spec.ts:98:3 › Expectation Schema › should validate imageOptions correctly (2ms)
+2026-08-01T06:54:25.3522629Z   ✓  332 [chromium] › tests/expectation.spec.ts:115:3 › Expectation Schema › should reject invalid enum values (6ms)
+2026-08-01T06:54:25.3775025Z   ✓  333 [chromium] › tests/expectation.spec.ts:121:3 › Expectation Schema › should reject invalid quality values (5ms)
+2026-08-01T06:54:25.3956920Z   ✓  334 [chromium] › tests/expectation.spec.ts:128:3 › Default Expectation Configuration › should return appropriate defaults for navigate tool (3ms)
+2026-08-01T06:54:25.4194268Z   ✓  335 [chromium] › tests/expectation.spec.ts:135:3 › Default Expectation Configuration › should return appropriate defaults for click tool (3ms)
+2026-08-01T06:54:25.4384839Z   ✓  336 [chromium] › tests/expectation.spec.ts:142:3 › Default Expectation Configuration › should return appropriate defaults for screenshot tool (2ms)
+2026-08-01T06:54:25.4659629Z   ✓  337 [chromium] › tests/expectation.spec.ts:149:3 › Default Expectation Configuration › should return appropriate defaults for evaluate tool (7ms)
+2026-08-01T06:54:25.4841083Z   ✓  338 [chromium] › tests/expectation.spec.ts:156:3 › Default Expectation Configuration › should return general defaults for unknown tool (2ms)
+2026-08-01T06:54:26.3599322Z   ✓  321 [chromium] › tests/evaluate.spec.ts:151:3 › browser_evaluate (error) (2.0s)
+2026-08-01T06:54:27.8168495Z   ✓  339 [chromium] › tests/files.spec.ts:20:1 › browser_file_upload (2.3s)
+2026-08-01T06:54:28.4989905Z   ✓  340 [chromium] › tests/files.spec.ts:106:1 › clicking on download link emits download (2.1s)
+2026-08-01T06:54:28.4994825Z   -  342 [chromium] › tests/headed.spec.ts:32:5 › mcpHeadless: false › browser
+2026-08-01T06:54:28.4996156Z   -  343 [chromium] › tests/headed.spec.ts:32:5 › mcpHeadless: true › browser
+2026-08-01T06:54:29.7833622Z   ✓  341 [chromium] › tests/files.spec.ts:149:1 › navigating to download link emits download (1.9s)
+2026-08-01T06:54:30.6585093Z   ✓  344 [chromium] › tests/hover.spec.ts:36:3 › browser_hover (2.1s)
+2026-08-01T06:54:31.7646651Z   ✓  346 [chromium] › tests/http.spec.ts:99:1 › http transport (1.1s)
+2026-08-01T06:54:32.0588138Z   ✓  345 [chromium] › tests/hover.spec.ts:36:3 › browser_hover (tooltip) (2.2s)
+2026-08-01T06:54:32.6960592Z   ✓  347 [chromium] › tests/http.spec.ts:106:1 › http transport (config) (908ms)
+2026-08-01T06:54:42.1767205Z   ✓  349 [chromium] › tests/http.spec.ts:159:1 › http transport browser lifecycle (isolated, multiclient) (9.4s)
+2026-08-01T06:54:42.2285293Z   ✓  348 [chromium] › tests/http.spec.ts:124:1 › http transport browser lifecycle (isolated) (10.1s)
+2026-08-01T06:54:43.7384069Z   ✓  351 [chromium] › tests/http.spec.ts:241:1 › http transport browser lifecycle (persistent, multiclient) (1.5s)
+2026-08-01T06:54:44.2563976Z   ✓  350 [chromium] › tests/http.spec.ts:207:1 › http transport browser lifecycle (persistent) (2.0s)
+2026-08-01T06:54:44.8615104Z   ✓  352 [chromium] › tests/http.spec.ts:262:1 › http transport (default) (1.1s)
+2026-08-01T06:54:46.5632491Z   ✓  353 [chromium] › tests/iframes.spec.ts:19:1 › stitched aria frames (2.3s)
+2026-08-01T06:54:47.5196425Z   ✓  354 [chromium] › tests/inspect-html-comprehensive.spec.ts:14:3 › browser_inspect_html comprehensive tests › full functionality demonstration (2.6s)
+2026-08-01T06:54:49.9267909Z   ✓  356 [chromium] › tests/inspect-html.spec.ts:79:5 › browser_inspect_html › basic HTML inspection (2.4s)
+2026-08-01T06:54:50.0970367Z   ✓  355 [chromium] › tests/inspect-html-comprehensive.spec.ts:193:3 › browser_inspect_html comprehensive tests › performance and timing information (3.5s)
+2026-08-01T06:54:51.7449417Z   ✓  357 [chromium] › tests/inspect-html.spec.ts:79:5 › browser_inspect_html › multiple selectors (1.8s)
+2026-08-01T06:54:51.9544852Z   ✓  358 [chromium] › tests/inspect-html.spec.ts:79:5 › browser_inspect_html › depth control (1.8s)
+2026-08-01T06:54:53.5873846Z   ✓  359 [chromium] › tests/install.spec.ts:19:1 › browser_install (1.8s)
+2026-08-01T06:54:53.9093022Z   ✓  360 [chromium] › tests/launch.spec.ts:21:1 › test reopen browser (1.9s)
+2026-08-01T06:54:54.6033169Z   ✓  361 [chromium] › tests/launch.spec.ts:84:1 › executable path (986ms)
+2026-08-01T06:54:57.3882968Z   ✓  363 [chromium] › tests/launch.spec.ts:147:1 › isolated context (2.8s)
+2026-08-01T06:54:58.8993055Z   ✓  364 [chromium] › tests/launch.spec.ts:196:1 › isolated context with storage state (1.5s)
+2026-08-01T06:55:00.1022437Z   ✓  362 [chromium] › tests/launch.spec.ts:96:1 › persistent context (6.2s)
+2026-08-01T06:55:00.1349234Z   ✓  365 [chromium] › tests/library.spec.ts:21:1 › library can be used from CommonJS (1.1s)
+2026-08-01T06:55:02.1920964Z   ✓  367 [chromium] › tests/mouse-expectation.spec.ts:41:5 › Mouse Tools Expectation Parameter › browser_mouse_move_xy › should accept expectation parameter with full response (2.0s)
+2026-08-01T06:55:02.1928351Z   ✓  366 [chromium] › tests/mouse-expectation.spec.ts:32:5 › Mouse Tools Expectation Parameter › browser_mouse_move_xy › should accept expectation parameter with minimal response (2.1s)
+2026-08-01T06:55:04.2056311Z   ✓  369 [chromium] › tests/mouse-expectation.spec.ts:78:5 › Mouse Tools Expectation Parameter › browser_mouse_drag_xy › should accept expectation parameter with minimal response (2.0s)
+2026-08-01T06:55:04.2098968Z   ✓  368 [chromium] › tests/mouse-expectation.spec.ts:67:5 › Mouse Tools Expectation Parameter › browser_mouse_click_xy › should accept expectation parameter with minimal response (2.0s)
+2026-08-01T06:55:04.9419743Z   ✘  371 [chromium] › tests/navigation-context.spec.ts:41:5 › Navigation Context Handling › waitForCompletion enhancement › should wait for network requests after navigation (645ms)
+2026-08-01T06:55:04.9900553Z   ✘  370 [chromium] › tests/navigation-context.spec.ts:23:5 › Navigation Context Handling › waitForCompletion enhancement › should handle navigation completion with stable context (645ms)
+2026-08-01T06:55:06.4438333Z   ✓  373 [chromium] › tests/navigation-context.spec.ts:74:5 › Navigation Context Handling › Response.finish() navigation detection › should detect navigation and defer snapshot capture (285ms)
+2026-08-01T06:55:06.6698237Z   ✓  374 [chromium] › tests/navigation-context.spec.ts:102:5 › Navigation Context Handling › Response.finish() navigation detection › should handle execution context destruction gracefully (205ms)
+2026-08-01T06:55:06.8165735Z   ✘  372 [chromium] › tests/navigation-context.spec.ts:55:5 › Navigation Context Handling › waitForCompletion enhancement › should handle timeout gracefully during navigation (696ms)
+2026-08-01T06:55:06.8803423Z   ✓  375 [chromium] › tests/navigation-context.spec.ts:127:5 › Navigation Context Handling › Response.finish() navigation detection › should retry snapshot capture on context destruction (184ms)
+2026-08-01T06:55:07.1001388Z   ✓  376 [chromium] › tests/navigation-context.spec.ts:188:5 › Navigation Context Handling › Integration tests › should maintain response quality during navigation (204ms)
+2026-08-01T06:55:08.6798390Z   ✘  378 [chromium] › tests/navigation-context.spec.ts:157:5 › Navigation Context Handling › Integration tests › should handle press_key -> navigation -> snapshot sequence (737ms)
+2026-08-01T06:55:10.0846707Z   ✓  377 [chromium] › tests/network-filter-integration.spec.ts:156:5 › Network Filter Integration Tests › should show filter summary when filters are applied (3.0s)
+2026-08-01T06:55:12.3102598Z   ✓  379 [chromium] › tests/network-filter-integration.spec.ts:156:5 › Network Filter Integration Tests › should filter by URL patterns (2.8s)
+2026-08-01T06:55:13.0998973Z   ✓  380 [chromium] › tests/network-filter-integration.spec.ts:156:5 › Network Filter Integration Tests › should exclude URL patterns (3.0s)
+2026-08-01T06:55:15.0667693Z   ✓  381 [chromium] › tests/network-filter-integration.spec.ts:156:5 › Network Filter Integration Tests › should filter by status code ranges - success only (2.7s)
+2026-08-01T06:55:16.1389557Z   ✓  382 [chromium] › tests/network-filter-integration.spec.ts:156:5 › Network Filter Integration Tests › should filter by status code ranges - errors only (3.0s)
+2026-08-01T06:55:17.7838705Z   ✓  383 [chromium] › tests/network-filter-integration.spec.ts:156:5 › Network Filter Integration Tests › should handle complex combined filters (2.7s)
+2026-08-01T06:55:18.9045635Z   ✓  384 [chromium] › tests/network-filter-integration.spec.ts:215:3 › Network Filter Integration Tests › should limit results with maxRequests (2.7s)
+2026-08-01T06:55:20.0849836Z   ✓  385 [chromium] › tests/network-filter-integration.spec.ts:271:3 › Network Filter Integration Tests › should maintain backward compatibility when no filters are provided (2.3s)
+2026-08-01T06:55:21.2744205Z   ✓  386 [chromium] › tests/network-filter-integration.spec.ts:308:3 › Network Filter Integration Tests › should handle no matching requests gracefully (2.4s)
+2026-08-01T06:55:21.2963454Z   ✓  388 [chromium] › tests/network-filter-unit.spec.ts:72:3 › Network Filter Unit Tests › should return all requests when no filter is applied (3ms)
+2026-08-01T06:55:21.3099275Z   ✓  389 [chromium] › tests/network-filter-unit.spec.ts:78:3 › Network Filter Unit Tests › should return empty array when input is empty (1ms)
+2026-08-01T06:55:21.3242623Z   ✓  390 [chromium] › tests/network-filter-unit.spec.ts:83:3 › Network Filter Unit Tests › should handle null/undefined input gracefully (1ms)
+2026-08-01T06:55:21.3371641Z   ✓  391 [chromium] › tests/network-filter-unit.spec.ts:88:3 › Network Filter Unit Tests › should apply default maxRequests limit (1ms)
+2026-08-01T06:55:21.3498051Z   ✓  392 [chromium] › tests/network-filter-unit.spec.ts:95:3 › Network Filter Unit Tests › should filter by simple string pattern (2ms)
+2026-08-01T06:55:21.3625395Z   ✓  393 [chromium] › tests/network-filter-unit.spec.ts:107:3 › Network Filter Unit Tests › should filter by regular expression pattern (2ms)
+2026-08-01T06:55:21.3729453Z   ✓  394 [chromium] › tests/network-filter-unit.spec.ts:117:3 › Network Filter Unit Tests › should filter by multiple URL patterns (OR logic) (1ms)
+2026-08-01T06:55:21.3840579Z   ✓  395 [chromium] › tests/network-filter-unit.spec.ts:126:3 › Network Filter Unit Tests › should handle invalid regex patterns gracefully (1ms)
+2026-08-01T06:55:21.3952715Z   ✓  396 [chromium] › tests/network-filter-unit.spec.ts:135:3 › Network Filter Unit Tests › should exclude URLs by pattern (2ms)
+2026-08-01T06:55:21.4078116Z   ✓  397 [chromium] › tests/network-filter-unit.spec.ts:145:3 › Network Filter Unit Tests › should handle both include and exclude patterns (1ms)
+2026-08-01T06:55:21.4214782Z   ✓  398 [chromium] › tests/network-filter-unit.spec.ts:155:3 › Network Filter Unit Tests › should filter by single HTTP method (2ms)
+2026-08-01T06:55:21.4360971Z   ✓  399 [chromium] › tests/network-filter-unit.spec.ts:165:3 › Network Filter Unit Tests › should filter by multiple HTTP methods (2ms)
+2026-08-01T06:55:21.4481285Z   ✓  400 [chromium] › tests/network-filter-unit.spec.ts:174:3 › Network Filter Unit Tests › should be case insensitive for methods (2ms)
+2026-08-01T06:55:21.4594497Z   ✓  401 [chromium] › tests/network-filter-unit.spec.ts:183:3 › Network Filter Unit Tests › should filter by single status range (1ms)
+2026-08-01T06:55:21.4724192Z   ✓  402 [chromium] › tests/network-filter-unit.spec.ts:198:3 › Network Filter Unit Tests › should filter by multiple status ranges (1ms)
+2026-08-01T06:55:21.4869166Z   ✓  403 [chromium] › tests/network-filter-unit.spec.ts:210:3 › Network Filter Unit Tests › should include requests without status when filtering by status (1ms)
+2026-08-01T06:55:21.4985313Z   ✓  404 [chromium] › tests/network-filter-unit.spec.ts:220:3 › Network Filter Unit Tests › should apply all filters together (AND logic) (2ms)
+2026-08-01T06:55:21.5104195Z   ✓  405 [chromium] › tests/network-filter-unit.spec.ts:234:3 › Network Filter Unit Tests › should sort newest first by default (1ms)
+2026-08-01T06:55:21.5260537Z   ✓  406 [chromium] › tests/network-filter-unit.spec.ts:241:3 › Network Filter Unit Tests › should sort oldest first when specified (2ms)
+2026-08-01T06:55:21.5411204Z   ✓  407 [chromium] › tests/network-filter-unit.spec.ts:251:3 › Network Filter Unit Tests › should limit results to maxRequests (1ms)
+2026-08-01T06:55:21.5522767Z   ✓  408 [chromium] › tests/network-filter-unit.spec.ts:260:3 › Network Filter Unit Tests › should handle maxRequests larger than available results (1ms)
+2026-08-01T06:55:21.5652551Z   ✓  409 [chromium] › tests/network-filter-unit.spec.ts:269:3 › Network Filter Unit Tests › should handle zero maxRequests (1ms)
+2026-08-01T06:55:21.5758692Z   ✓  410 [chromium] › tests/network-filter-unit.spec.ts:278:3 › Network Filter Unit Tests › should maintain request immutability (2ms)
+2026-08-01T06:55:21.5863099Z   ✓  411 [chromium] › tests/network-filter-unit.spec.ts:292:3 › Network Filter Unit Tests › createStatusCategoryFilter should create success category filter (1ms)
+2026-08-01T06:55:21.6003403Z   ✓  412 [chromium] › tests/network-filter-unit.spec.ts:297:3 › Network Filter Unit Tests › createStatusCategoryFilter should create redirect category filter (1ms)
+2026-08-01T06:55:21.6139181Z   ✓  413 [chromium] › tests/network-filter-unit.spec.ts:302:3 › Network Filter Unit Tests › createStatusCategoryFilter should create client-error category filter (1ms)
+2026-08-01T06:55:21.6255956Z   ✓  414 [chromium] › tests/network-filter-unit.spec.ts:307:3 › Network Filter Unit Tests › createStatusCategoryFilter should create server-error category filter (1ms)
+2026-08-01T06:55:21.6358517Z   ✓  415 [chromium] › tests/network-filter-unit.spec.ts:312:3 › Network Filter Unit Tests › createStatusCategoryFilter should handle invalid category (1ms)
+2026-08-01T06:55:21.6488030Z   ✓  416 [chromium] › tests/network-filter-unit.spec.ts:317:3 › Network Filter Unit Tests › createStatusCategoryFilter should work with main filter function (2ms)
+2026-08-01T06:55:21.6605063Z   ✓  417 [chromium] › tests/network-filter-unit.spec.ts:331:3 › Network Filter Unit Tests › should handle ReDoS attack patterns safely (1ms)
+2026-08-01T06:55:21.6770934Z   ✓  418 [chromium] › tests/network-filter-unit.spec.ts:342:3 › Network Filter Unit Tests › should handle large datasets efficiently (6ms)
+2026-08-01T06:55:22.3885302Z   ✓  387 [chromium] › tests/network-filter-integration.spec.ts:346:3 › Network Filter Integration Tests › should handle invalid regex patterns gracefully (2.3s)
+2026-08-01T06:55:23.0981111Z   ✓  419 [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin (1.4s)
+2026-08-01T06:55:24.0906635Z   ✓  420 [chromium] › tests/network-origin-filter.spec.ts:38:1 › blockedOrigins wins when an origin is both allowed and blocked (1.7s)
+2026-08-01T06:55:25.6706942Z   ✓  422 [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector (1.5s)
+2026-08-01T06:55:26.8772210Z   ✓  423 [chromium] › tests/pdf.spec.ts:25:1 › save as pdf unavailable (1.2s)
+2026-08-01T06:55:28.1575108Z   ✓  424 [chromium] › tests/pdf.spec.ts:42:1 › save as pdf (1.3s)
+2026-08-01T06:55:29.3918413Z   ✓  425 [chromium] › tests/pdf.spec.ts:73:1 › save as pdf (filename: output.pdf) (1.2s)
+2026-08-01T06:55:30.1340219Z   ✓  426 [chromium] › tests/process-test-manager.spec.ts:20:1 › SecureTestProcessManager can spawn and terminate processes (723ms)
+2026-08-01T06:55:31.6978253Z   ✓  427 [chromium] › tests/process-test-manager.spec.ts:53:1 › SecureTestProcessManager handles multiple processes (1.5s)
+2026-08-01T06:55:31.8279809Z   ✓  428 [chromium] › tests/process-test-manager.spec.ts:84:1 › SecureTestProcessManager creates secure environment (108ms)
+2026-08-01T06:55:32.5720038Z   ✓  429 [chromium] › tests/process-test-manager.spec.ts:110:1 › SecureTestProcessManager creates fixture-compatible endpoint function (720ms)
+2026-08-01T06:55:33.8244585Z   ✓  430 [chromium] › tests/request-blocking.spec.ts:34:1 › default to allow all (1.2s)
+2026-08-01T06:55:34.9966474Z   ✓  431 [chromium] › tests/request-blocking.spec.ts:40:1 › blocked works (1.2s)
+2026-08-01T06:55:36.2209661Z   ✓  432 [chromium] › tests/request-blocking.spec.ts:48:1 › allowed works (1.2s)
+2026-08-01T06:55:37.4038201Z   ✓  433 [chromium] › tests/request-blocking.spec.ts:60:1 › blocked takes precedence (1.2s)
+2026-08-01T06:55:38.5805169Z   ✓  434 [chromium] › tests/request-blocking.spec.ts:73:1 › allowed without blocked blocks all non-explicitly specified origins (1.2s)
+2026-08-01T06:55:39.7857328Z   ✓  435 [chromium] › tests/request-blocking.spec.ts:83:1 › blocked without allowed allows non-explicitly specified origins (1.2s)
+2026-08-01T06:55:40.3291365Z   ✓  421 [chromium] › tests/network.spec.ts:19:1 › browser_network_requests (17.2s)
+2026-08-01T06:55:40.3495915Z   ✓  437 [chromium] › tests/response-filtering.spec.ts:108:3 › Response Filtering › should exclude snapshot when expectation.includeSnapshot is false (3ms)
+2026-08-01T06:55:42.8533598Z   ✓  436 [chromium] › tests/response-filtering.spec.ts:80:3 › Response Filtering › should include all content when explicitly requested (3.0s)
+2026-08-01T06:55:43.3765215Z   ✓  438 [chromium] › tests/response-filtering.spec.ts:136:3 › Response Filtering › should exclude code when expectation.includeCode is false (3.0s)
+2026-08-01T06:55:43.3886372Z   ✓  440 [chromium] › tests/response-filtering.spec.ts:193:3 › Response Filtering › should use tool-specific defaults when no expectation provided (2ms)
+2026-08-01T06:55:43.3982184Z   ✓  441 [chromium] › tests/response-filtering.spec.ts:215:3 › Response Filtering › should merge user expectation with tool defaults (1ms)
+2026-08-01T06:55:43.4094694Z   ✓  442 [chromium] › tests/response-filtering.spec.ts:242:3 › Response Filtering › should handle console filtering options (1ms)
+2026-08-01T06:55:43.4241402Z   ✓  443 [chromium] › tests/response-filtering.spec.ts:270:3 › Response Filtering › should handle snapshot filtering options (2ms)
+2026-08-01T06:55:44.6937571Z   ✓  444 [chromium] › tests/response-partial-snapshot.spec.ts:28:3 › Response partial snapshot implementation › should use capturePartialSnapshot when selector is provided (1.3s)
+2026-08-01T06:55:45.8857437Z   ✓  439 [chromium] › tests/response-filtering.spec.ts:166:3 › Response Filtering › should exclude tabs when expectation.includeTabs is false (3.0s)
+2026-08-01T06:55:45.9179026Z   ✓  445 [chromium] › tests/response-partial-snapshot.spec.ts:64:3 › Response partial snapshot implementation › should fall back to full snapshot when selector not found (1.2s)
+2026-08-01T06:55:47.4847626Z   ✓  446 [chromium] › tests/response-partial-snapshot.spec.ts:91:3 › Response partial snapshot implementation › should apply maxLength truncation at word boundary (1.6s)
+2026-08-01T06:55:47.4975152Z   ✓  447 [chromium] › tests/response-partial-snapshot.spec.ts:154:3 › Response partial snapshot implementation › should work with navigate tool expectation (1.6s)
+2026-08-01T06:55:49.0851075Z   ✓  448 [chromium] › tests/roots.spec.ts:32:5 › default mode › should use separate user data by root path (1.6s)
+2026-08-01T06:55:49.1304147Z   ✓  449 [chromium] › tests/roots.spec.ts:59:5 › default mode › check that trace is saved in workspace (1.6s)
+2026-08-01T06:55:50.6937039Z   ✓  450 [chromium] › tests/roots.spec.ts:32:5 › proxy mode › should use separate user data by root path (1.6s)
+2026-08-01T06:55:50.7858430Z   ✓  451 [chromium] › tests/roots.spec.ts:59:5 › proxy mode › check that trace is saved in workspace (1.6s)
+2026-08-01T06:55:52.4256929Z   ✓  452 [chromium] › tests/screenshot-expectation.spec.ts:29:5 › Screenshot Tool Expectation Parameter › browser_take_screenshot › should accept expectation parameter with minimal response (1.7s)
+2026-08-01T06:55:52.5053369Z   ✓  453 [chromium] › tests/screenshot-expectation.spec.ts:37:5 › Screenshot Tool Expectation Parameter › browser_take_screenshot › should accept expectation parameter with full response (1.7s)
+2026-08-01T06:55:54.1645175Z   ✓  454 [chromium] › tests/screenshot-expectation.spec.ts:45:5 › Screenshot Tool Expectation Parameter › browser_take_screenshot › should accept expectation parameter with fullPage option (1.7s)
+2026-08-01T06:55:54.1720488Z   ✓  455 [chromium] › tests/screenshot.spec.ts:95:1 › browser_take_screenshot (viewport) (1.6s)
+2026-08-01T06:55:55.8829334Z   ✓  457 [chromium] › tests/screenshot.spec.ts:138:1 › --output-dir should work (1.7s)
+2026-08-01T06:55:55.8893590Z   ✓  456 [chromium] › tests/screenshot.spec.ts:116:1 › browser_take_screenshot (element) (1.7s)
+2026-08-01T06:55:57.5608045Z   ✓  459 [chromium] › tests/screenshot.spec.ts:157:3 › browser_take_screenshot (type: jpeg) (1.6s)
+2026-08-01T06:55:57.5610307Z   ✓  458 [chromium] › tests/screenshot.spec.ts:157:3 › browser_take_screenshot (type: png) (1.7s)
+2026-08-01T06:55:59.2553326Z   ✓  461 [chromium] › tests/screenshot.spec.ts:182:1 › browser_take_screenshot (default type should be png) (1.7s)
+2026-08-01T06:55:59.2753232Z   ✓  460 [chromium] › tests/screenshot.spec.ts:206:1 › browser_take_screenshot (filename: "output.png") (1.7s)
+2026-08-01T06:56:00.9184618Z   ✓  463 [chromium] › tests/screenshot.spec.ts:256:1 › browser_take_screenshot (fullPage: true) (1.6s)
+2026-08-01T06:56:00.9520146Z   ✓  462 [chromium] › tests/screenshot.spec.ts:229:1 › browser_take_screenshot (imageResponses=omit) (1.7s)
+2026-08-01T06:56:02.4860363Z   ✓  464 [chromium] › tests/screenshot.spec.ts:278:1 › browser_take_screenshot (fullPage: true with element should fail) (1.5s)
+2026-08-01T06:56:02.5809715Z   ✓  465 [chromium] › tests/screenshot.spec.ts:300:1 › browser_take_screenshot (viewport without snapshot) (1.6s)
+2026-08-01T06:56:04.8093584Z   ✓  467 [chromium] › tests/selector-migration.spec.ts:56:3 › Selector Migration Tests › browser_type with new selectors array format (2.2s)
+2026-08-01T06:56:05.2966498Z   ✓  466 [chromium] › tests/selector-migration.spec.ts:7:3 › Selector Migration Tests › browser_click with new selectors array format (2.8s)
+2026-08-01T06:56:07.9564737Z   ✓  469 [chromium] › tests/selector-migration.spec.ts:166:3 › Selector Migration Tests › browser_select_option with new selectors array format (2.6s)
+2026-08-01T06:56:07.9914146Z   ✓  468 [chromium] › tests/selector-migration.spec.ts:118:3 › Selector Migration Tests › browser_hover with new selectors array format (3.2s)
+2026-08-01T06:56:10.0724457Z   ✓  470 [chromium] › tests/selector-migration.spec.ts:210:3 › Selector Migration Tests › browser_drag with new selectors array format (2.1s)
+2026-08-01T06:56:10.6935267Z   ✓  471 [chromium] › tests/selector-migration.spec.ts:239:3 › Selector Migration Tests › selector fallback and priority (2.7s)
+2026-08-01T06:56:11.7256412Z   ✓  472 [chromium] › tests/selector-migration.spec.ts:298:3 › Selector Migration Tests › parallel selector resolution strategy (1.6s)
+2026-08-01T06:56:12.5232249Z   ✓  473 [chromium] › tests/selector-migration.spec.ts:337:3 › Selector Migration Tests › ref selector display format (1.8s)
+2026-08-01T06:56:13.4572223Z   ✓  474 [chromium] › tests/selector-migration.spec.ts:375:3 › Selector Migration Tests › error handling for invalid selectors (1.7s)
+2026-08-01T06:56:14.1735426Z   ✓  475 [chromium] › tests/selector-resolver.spec.ts:23:3 › SelectorResolver Integration › should build and initialize without errors (1.6s)
+2026-08-01T06:56:15.9534699Z   -  476 [chromium] › tests/session-log.spec.ts:70:1 › session log should record tool calls
+2026-08-01T06:56:16.4427606Z   -  477 [chromium] › tests/session-log.spec.ts:142:1 › session log should record user action
+2026-08-01T06:56:18.1590995Z   -  478 [chromium] › tests/session-log.spec.ts:202:1 › session log should update user action
+2026-08-01T06:56:19.0654520Z   ✓  480 [chromium] › tests/sse.spec.ts:59:1 › sse transport (876ms)
+2026-08-01T06:56:19.4783842Z   ✘  479 [chromium] › tests/session-log.spec.ts:262:1 › session log should record tool calls and user actions (3.0s)
+2026-08-01T06:56:19.9222106Z   ✓  481 [chromium] › tests/sse.spec.ts:65:1 › sse transport (config) (827ms)
+2026-08-01T06:56:22.0168575Z   ✓  482 [chromium] › tests/sse.spec.ts:123:1 › sse transport browser lifecycle (isolated, multiclient) (2.1s)
+2026-08-01T06:56:23.8152466Z   ✓  483 [chromium] › tests/sse.spec.ts:82:1 › sse transport browser lifecycle (isolated) (3.4s)
+2026-08-01T06:56:24.1203697Z   ✓  484 [chromium] › tests/sse.spec.ts:175:1 › sse transport browser lifecycle (persistent) (2.1s)
+2026-08-01T06:56:25.4591578Z   ✓  485 [chromium] › tests/sse.spec.ts:215:1 › sse transport browser lifecycle (persistent, multiclient) (1.6s)
+2026-08-01T06:56:25.8885179Z   ✓  486 [chromium] › tests/tab-selector-enhancement.spec.ts:22:3 › Tab Selector Enhancement Integration › should build and initialize enhanced Tab without errors (1.7s)
+2026-08-01T06:56:27.2043024Z   ✓  487 [chromium] › tests/tabs-expectation.spec.ts:30:5 › Tabs Tools Expectation Parameter › browser_tab_list › should accept expectation parameter with minimal response (1.7s)
+2026-08-01T06:56:27.7019334Z   ✓  488 [chromium] › tests/tabs-expectation.spec.ts:65:7 › Tabs Tools Expectation Parameter › browser_tab_new › should accept expectation parameter with minimal response (1.8s)
+2026-08-01T06:56:29.0443313Z   ✓  489 [chromium] › tests/tabs-expectation.spec.ts:65:7 › Tabs Tools Expectation Parameter › browser_tab_new › should accept expectation parameter with full response (1.8s)
+2026-08-01T06:56:29.4964442Z   ✓  490 [chromium] › tests/tabs-expectation.spec.ts:90:5 › Tabs Tools Expectation Parameter › browser_tab_select › should accept expectation parameter with minimal response (1.8s)
+2026-08-01T06:56:30.8068911Z   ✓  491 [chromium] › tests/tabs-expectation.spec.ts:113:5 › Tabs Tools Expectation Parameter › browser_tab_close › should accept expectation parameter with minimal response (1.7s)
+2026-08-01T06:56:31.0999730Z   ✓  492 [chromium] › tests/tabs.spec.ts:54:1 › list initial tabs (1.6s)
+2026-08-01T06:56:32.5654420Z   ✓  493 [chromium] › tests/tabs.spec.ts:64:1 › list first tab (1.7s)
+2026-08-01T06:56:33.0013687Z   ✓  494 [chromium] › tests/tabs.spec.ts:76:1 › create new tab (1.9s)
+2026-08-01T06:56:34.4442341Z   ✓  495 [chromium] › tests/tabs.spec.ts:103:1 › select tab (1.9s)
+2026-08-01T06:56:34.9859882Z   ✓  496 [chromium] › tests/tabs.spec.ts:127:1 › close tab (2.0s)
+2026-08-01T06:56:36.6380555Z   ✓  498 [chromium] › tests/tabs.spec.ts:170:1 › browser_snapshot applies maxLength to a partial snapshot (1.6s)
+2026-08-01T06:56:36.6703088Z   ✓  497 [chromium] › tests/tabs.spec.ts:150:1 › reuse first tab when navigating (2.2s)
+2026-08-01T06:56:38.2857180Z   ✓  500 [chromium] › tests/tools-expectation-integration.spec.ts:21:5 › Main Tools Expectation Integration › browser_navigate tool › should handle expectation parameter with minimal response (1.6s)
+2026-08-01T06:56:38.2859376Z   ✓  499 [chromium] › tests/tabs.spec.ts:194:1 › browser_snapshot limits a partial snapshot to the selected landmark (1.6s)
+2026-08-01T06:56:39.8695516Z   ✓  501 [chromium] › tests/tools-expectation-integration.spec.ts:76:5 › Main Tools Expectation Integration › browser_navigate tool › should use appropriate defaults when no expectation provided (1.6s)
+2026-08-01T06:56:39.8736479Z   ✓  502 [chromium] › tests/tools-expectation-integration.spec.ts:50:5 › Main Tools Expectation Integration › browser_navigate tool › should handle expectation parameter with full response (1.6s)
+2026-08-01T06:56:42.0206221Z   ✓  503 [chromium] › tests/tools-expectation-integration.spec.ts:98:5 › Main Tools Expectation Integration › browser_click tool › should handle expectation parameter with minimal response (2.1s)
+2026-08-01T06:56:42.0700889Z   ✓  504 [chromium] › tests/tools-expectation-integration.spec.ts:132:5 › Main Tools Expectation Integration › browser_click tool › should handle expectation parameter with snapshot (2.2s)
+2026-08-01T06:56:44.1926850Z   ✓  505 [chromium] › tests/tools-expectation-integration.spec.ts:165:5 › Main Tools Expectation Integration › browser_click tool › should use appropriate defaults when no expectation provided (2.2s)
+2026-08-01T06:56:44.2080076Z   ✓  506 [chromium] › tests/tools-expectation-integration.spec.ts:194:5 › Main Tools Expectation Integration › browser_type tool › should handle expectation parameter with minimal response (2.1s)
+2026-08-01T06:56:46.3604777Z   ✓  507 [chromium] › tests/tools-expectation-integration.spec.ts:229:5 › Main Tools Expectation Integration › browser_type tool › should handle expectation parameter with snapshot (2.2s)
+2026-08-01T06:56:46.3818338Z   ✓  508 [chromium] › tests/tools-expectation-integration.spec.ts:263:5 › Main Tools Expectation Integration › browser_type tool › should use appropriate defaults when no expectation provided (2.2s)
+2026-08-01T06:56:47.9607271Z   ✓  509 [chromium] › tests/tools-expectation-integration.spec.ts:292:5 › Main Tools Expectation Integration › browser_snapshot tool › should handle expectation parameter with minimal response (1.6s)
+2026-08-01T06:56:47.9966295Z   ✓  510 [chromium] › tests/tools-expectation-integration.spec.ts:321:5 › Main Tools Expectation Integration › browser_snapshot tool › should use appropriate defaults when no expectation provided (1.6s)
+2026-08-01T06:56:49.5428142Z   ✓  512 [chromium] › tests/tools-expectation-integration.spec.ts:389:5 › Main Tools Expectation Integration › Advanced Expectation Options › should handle snapshotOptions correctly (1.5s)
+2026-08-01T06:56:50.7039821Z   ✓  511 [chromium] › tests/tools-expectation-integration.spec.ts:343:5 › Main Tools Expectation Integration › Backward Compatibility › should maintain backward compatibility for all tools without expectation parameter (2.7s)
+2026-08-01T06:56:50.9290468Z   ✓  513 [chromium] › tests/tools-expectation-integration.spec.ts:425:5 › Main Tools Expectation Integration › Advanced Expectation Options › should handle consoleOptions correctly (1.4s)
+2026-08-01T06:56:52.4790843Z   ✓  514 [chromium] › tests/trace.spec.ts:21:1 › check that trace is saved (1.8s)
+2026-08-01T06:56:53.0912564Z   ✓  515 [chromium] › tests/type.spec.ts:67:3 › browser_type (2.1s)
+2026-08-01T06:56:54.6474110Z   ✓  516 [chromium] › tests/type.spec.ts:67:3 › browser_type (slowly) (2.1s)
+2026-08-01T06:56:55.3160341Z   ✓  517 [chromium] › tests/type.spec.ts:67:3 › browser_type (no submit) (2.2s)
+2026-08-01T06:56:56.3047803Z   ✓  518 [chromium] › tests/wait-expectation.spec.ts:98:5 › Wait Tool Expectation Parameter › browser_wait_for › should accept expectation parameter with minimal response (1.6s)
+2026-08-01T06:56:57.1370719Z   ✓  519 [chromium] › tests/wait-expectation.spec.ts:112:5 › Wait Tool Expectation Parameter › browser_wait_for › should accept expectation parameter with full response (1.8s)
+2026-08-01T06:56:58.0997457Z   ✓  520 [chromium] › tests/wait-expectation.spec.ts:126:5 › Wait Tool Expectation Parameter › browser_wait_for › should accept expectation parameter when waiting for text (1.8s)
+2026-08-01T06:57:00.2853133Z   ✓  521 [chromium] › tests/wait.spec.ts:55:3 › browser_wait_for(text) (3.1s)
+2026-08-01T06:57:01.0194561Z   ✓  522 [chromium] › tests/wait.spec.ts:55:3 › browser_wait_for(textGone) (2.9s)
+2026-08-01T06:57:02.4949378Z   ✓  524 [chromium] › tests/webdriver.spec.ts:19:1 › do not falsely advertise user agent as a test driver (1.5s)
+2026-08-01T06:57:02.6659884Z   ✓  523 [chromium] › tests/wait.spec.ts:55:3 › browser_wait_for(time) (2.4s)
+2026-08-01T06:57:02.7164501Z 
+2026-08-01T06:57:02.7182964Z 
+2026-08-01T06:57:02.7184865Z   1) [chromium] › tests/navigation-context.spec.ts:23:5 › Navigation Context Handling › waitForCompletion enhancement › should handle navigation completion with stable context 
+2026-08-01T06:57:02.7186075Z 
+2026-08-01T06:57:02.7186507Z     TypeError: Cannot read properties of undefined (reading 'settle')
+2026-08-01T06:57:02.7187016Z 
+2026-08-01T06:57:02.7187407Z        at ../src/tools/utils.ts:86
+2026-08-01T06:57:02.7187822Z 
+2026-08-01T06:57:02.7188428Z       84 |     // Additional stability wait with context verification
+2026-08-01T06:57:02.7189103Z       85 |     if (frameNavigated) {
+2026-08-01T06:57:02.7190348Z     > 86 |       await tab.waitForTimeout(tab.context.config.timeouts.settle);
+2026-08-01T06:57:02.7191251Z          |                                                            ^
+2026-08-01T06:57:02.7192262Z       87 |       // Verify page is still responsive
+2026-08-01T06:57:02.7192799Z       88 |       try {
+2026-08-01T06:57:02.7193178Z       89 |         await tab.page.evaluate(() => document.readyState);
+2026-08-01T06:57:02.7193851Z         at waitForCompletion (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/src/tools/utils.ts:86:60)
+2026-08-01T06:57:02.7194668Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/navigation-context.spec.ts:31:22
+2026-08-01T06:57:02.7195084Z 
+2026-08-01T06:57:02.7195555Z     Error Context: test-results/navigation-context-Navigat-46bc1-pletion-with-stable-context-chromium/error-context.md
+2026-08-01T06:57:02.7196056Z 
+2026-08-01T06:57:02.7196924Z   2) [chromium] › tests/navigation-context.spec.ts:41:5 › Navigation Context Handling › waitForCompletion enhancement › should wait for network requests after navigation 
+2026-08-01T06:57:02.7197665Z 
+2026-08-01T06:57:02.7198198Z     TypeError: Cannot read properties of undefined (reading 'settle')
+2026-08-01T06:57:02.7198503Z 
+2026-08-01T06:57:02.7198637Z        at ../src/tools/utils.ts:86
+2026-08-01T06:57:02.7198931Z 
+2026-08-01T06:57:02.7201144Z       84 |     // Additional stability wait with context verification
+2026-08-01T06:57:02.7202105Z       85 |     if (frameNavigated) {
+2026-08-01T06:57:02.7202842Z     > 86 |       await tab.waitForTimeout(tab.context.config.timeouts.settle);
+2026-08-01T06:57:02.7203431Z          |                                                            ^
+2026-08-01T06:57:02.7203852Z       87 |       // Verify page is still responsive
+2026-08-01T06:57:02.7204143Z       88 |       try {
+2026-08-01T06:57:02.7204463Z       89 |         await tab.page.evaluate(() => document.readyState);
+2026-08-01T06:57:02.7205118Z         at waitForCompletion (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/src/tools/utils.ts:86:60)
+2026-08-01T06:57:02.7206317Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/navigation-context.spec.ts:48:22
+2026-08-01T06:57:02.7206754Z 
+2026-08-01T06:57:02.7207435Z     Error Context: test-results/navigation-context-Navigat-e76eb-k-requests-after-navigation-chromium/error-context.md
+2026-08-01T06:57:02.7207961Z 
+2026-08-01T06:57:02.7208774Z   3) [chromium] › tests/navigation-context.spec.ts:55:5 › Navigation Context Handling › waitForCompletion enhancement › should handle timeout gracefully during navigation 
+2026-08-01T06:57:02.7209570Z 
+2026-08-01T06:57:02.7209884Z     TypeError: Cannot read properties of undefined (reading 'settle')
+2026-08-01T06:57:02.7210317Z 
+2026-08-01T06:57:02.7210525Z        at ../src/tools/utils.ts:86
+2026-08-01T06:57:02.7210802Z 
+2026-08-01T06:57:02.7211095Z       84 |     // Additional stability wait with context verification
+2026-08-01T06:57:02.7211458Z       85 |     if (frameNavigated) {
+2026-08-01T06:57:02.7212136Z     > 86 |       await tab.waitForTimeout(tab.context.config.timeouts.settle);
+2026-08-01T06:57:02.7212898Z          |                                                            ^
+2026-08-01T06:57:02.7213265Z       87 |       // Verify page is still responsive
+2026-08-01T06:57:02.7213553Z       88 |       try {
+2026-08-01T06:57:02.7213865Z       89 |         await tab.page.evaluate(() => document.readyState);
+2026-08-01T06:57:02.7214503Z         at waitForCompletion (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/src/tools/utils.ts:86:60)
+2026-08-01T06:57:02.7215285Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/navigation-context.spec.ts:63:22
+2026-08-01T06:57:02.7215696Z 
+2026-08-01T06:57:02.7216154Z     Error Context: test-results/navigation-context-Navigat-5007a-racefully-during-navigation-chromium/error-context.md
+2026-08-01T06:57:02.7216646Z 
+2026-08-01T06:57:02.7217773Z   4) [chromium] › tests/navigation-context.spec.ts:157:5 › Navigation Context Handling › Integration tests › should handle press_key -> navigation -> snapshot sequence 
+2026-08-01T06:57:02.7219265Z 
+2026-08-01T06:57:02.7219691Z     TypeError: Cannot read properties of undefined (reading 'settle')
+2026-08-01T06:57:02.7220106Z 
+2026-08-01T06:57:02.7220355Z        at ../src/tools/utils.ts:86
+2026-08-01T06:57:02.7220655Z 
+2026-08-01T06:57:02.7220989Z       84 |     // Additional stability wait with context verification
+2026-08-01T06:57:02.7221591Z       85 |     if (frameNavigated) {
+2026-08-01T06:57:02.7222499Z     > 86 |       await tab.waitForTimeout(tab.context.config.timeouts.settle);
+2026-08-01T06:57:02.7222993Z          |                                                            ^
+2026-08-01T06:57:02.7223355Z       87 |       // Verify page is still responsive
+2026-08-01T06:57:02.7223640Z       88 |       try {
+2026-08-01T06:57:02.7223963Z       89 |         await tab.page.evaluate(() => document.readyState);
+2026-08-01T06:57:02.7224620Z         at waitForCompletion (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/src/tools/utils.ts:86:60)
+2026-08-01T06:57:02.7225510Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/navigation-context.spec.ts:173:7
+2026-08-01T06:57:02.7225936Z 
+2026-08-01T06:57:02.7226412Z     Error Context: test-results/navigation-context-Navigat-d705a-igation---snapshot-sequence-chromium/error-context.md
+2026-08-01T06:57:02.7226913Z 
+2026-08-01T06:57:02.7227394Z   5) [chromium] › tests/session-log.spec.ts:262:1 › session log should record tool calls and user actions 
+2026-08-01T06:57:02.7227786Z 
+2026-08-01T06:57:02.7227880Z     Error: Not connected
+2026-08-01T06:57:02.7228026Z 
+2026-08-01T06:57:02.7228115Z        at fixtures.ts:135
+2026-08-01T06:57:02.7228261Z 
+2026-08-01T06:57:02.7228519Z       133 |       request.arguments.expectation = { ...DEFAULT_TEST_EXPECTATIONS };
+2026-08-01T06:57:02.7228907Z       134 |     }
+2026-08-01T06:57:02.7229162Z     > 135 |     return originalCallTool(request);
+2026-08-01T06:57:02.7229462Z           |            ^
+2026-08-01T06:57:02.7229669Z       136 |   };
+2026-08-01T06:57:02.7229857Z       137 | }
+2026-08-01T06:57:02.7230038Z       138 |
+2026-08-01T06:57:02.7230804Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/shared/protocol.ts:1083:29
+2026-08-01T06:57:02.7232236Z         at Client.request (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/shared/protocol.ts:1077:16)
+2026-08-01T06:57:02.7233460Z         at Client.originalCallTool (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/node_modules/@modelcontextprotocol/sdk/src/client/index.ts:743:35)
+2026-08-01T06:57:02.7234458Z         at Client.callTool (/home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/fixtures.ts:135:12)
+2026-08-01T06:57:02.7235250Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/session-log.spec.ts:286:16
+2026-08-01T06:57:02.7235646Z 
+2026-08-01T06:57:02.7236116Z     Error Context: test-results/session-log-session-log-sh-dda64-tool-calls-and-user-actions-chromium/error-context.md
+2026-08-01T06:57:02.7236621Z 
+2026-08-01T06:57:02.7236699Z   5 failed
+2026-08-01T06:57:02.7237592Z     [chromium] › tests/navigation-context.spec.ts:23:5 › Navigation Context Handling › waitForCompletion enhancement › should handle navigation completion with stable context 
+2026-08-01T06:57:02.7238943Z     [chromium] › tests/navigation-context.spec.ts:41:5 › Navigation Context Handling › waitForCompletion enhancement › should wait for network requests after navigation 
+2026-08-01T06:57:02.7240252Z     [chromium] › tests/navigation-context.spec.ts:55:5 › Navigation Context Handling › waitForCompletion enhancement › should handle timeout gracefully during navigation 
+2026-08-01T06:57:02.7241551Z     [chromium] › tests/navigation-context.spec.ts:157:5 › Navigation Context Handling › Integration tests › should handle press_key -> navigation -> snapshot sequence 
+2026-08-01T06:57:02.7243046Z     [chromium] › tests/session-log.spec.ts:262:1 › session log should record tool calls and user actions 
+2026-08-01T06:57:02.7243518Z   6 skipped
+2026-08-01T06:57:02.7243712Z   513 passed (4.2m)
+2026-08-01T06:57:02.7438952Z ##[error]Process completed with exit code 1.
+2026-08-01T06:57:02.7548109Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T06:57:02.7549555Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-08-01T06:57:02.7549932Z with:
+2026-08-01T06:57:02.7550130Z   name: finalize-pr31-failure
+2026-08-01T06:57:02.7550788Z   path: /tmp/pr31-red.log
 test-results/**/error-context.md
 playwright-report/**
 extension/test-results/**/error-context.md
 extension/playwright-report/**
 
-2026-08-01T06:46:42.5787588Z   if-no-files-found: warn
-2026-08-01T06:46:42.5787820Z   retention-days: 3
-2026-08-01T06:46:42.5788035Z   compression-level: 6
-2026-08-01T06:46:42.5788511Z   overwrite: false
-2026-08-01T06:46:42.5788723Z   include-hidden-files: false
-2026-08-01T06:46:42.5788997Z ##[endgroup]
-2026-08-01T06:46:42.7427296Z (node:3040) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-08-01T06:46:42.7428120Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-08-01T06:46:42.7483976Z Multiple search paths detected. Calculating the least common ancestor of all paths
-2026-08-01T06:46:42.7485662Z The least common ancestor is /. This will be the root directory of the artifact
-2026-08-01T06:46:42.7501425Z ##[warning]No files were found with the provided path: /tmp/pr31-red.log
-test-results/**/error-context.md
-playwright-report/**
-extension/test-results/**/error-context.md
-extension/playwright-report/**. No artifacts will be uploaded.
-2026-08-01T06:46:42.7704450Z Post job cleanup.
-2026-08-01T06:46:42.8607011Z [command]/usr/bin/git version
-2026-08-01T06:46:42.8647683Z git version 2.54.0
-2026-08-01T06:46:42.8683895Z Temporarily overriding HOME='/home/runner/work/_temp/ad3a7468-f7ba-4b51-b6a6-5fd89d5622af' before making global git config changes
-2026-08-01T06:46:42.8685323Z Adding repository directory to the temporary git global config as a safe directory
-2026-08-01T06:46:42.8697358Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
-2026-08-01T06:46:42.8727685Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-08-01T06:46:42.8764382Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-08-01T06:46:42.9061117Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-08-01T06:46:42.9084754Z http.https://github.com/.extraheader
-2026-08-01T06:46:42.9097613Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-08-01T06:46:42.9139723Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-08-01T06:46:42.9418981Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-08-01T06:46:42.9458149Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-08-01T06:46:42.9896018Z Cleaning up orphan processes
-2026-08-01T06:46:43.0201726Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T06:57:02.7551473Z   if-no-files-found: warn
+2026-08-01T06:57:02.7551695Z   retention-days: 3
+2026-08-01T06:57:02.7552144Z   compression-level: 6
+2026-08-01T06:57:02.7552355Z   overwrite: false
+2026-08-01T06:57:02.7552573Z   include-hidden-files: false
+2026-08-01T06:57:02.7552841Z ##[endgroup]
+2026-08-01T06:57:02.9206064Z (node:28703) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-01T06:57:02.9206941Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-01T06:57:07.3535773Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-08-01T06:57:07.3538913Z The least common ancestor is /. This will be the root directory of the artifact
+2026-08-01T06:57:07.3539946Z With the provided path, there will be 6 files uploaded
+2026-08-01T06:57:07.3552314Z Artifact name is valid!
+2026-08-01T06:57:07.3553454Z Root directory input is valid!
+2026-08-01T06:57:07.6833173Z Beginning upload of artifact content to blob storage
+2026-08-01T06:57:07.7118956Z (node:28703) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-01T06:57:07.9906390Z Uploaded bytes 12546
+2026-08-01T06:57:08.0677813Z Finished uploading artifact content to blob storage!
+2026-08-01T06:57:08.0679091Z SHA256 digest of uploaded artifact zip is 0650372a945b133469a79dac8f45492fcc8e3136a57b62e8d7e41987e83d2e22
+2026-08-01T06:57:08.0681571Z Finalizing artifact upload
+2026-08-01T06:57:08.2683232Z Artifact finalize-pr31-failure.zip successfully finalized. Artifact ID 8814885540
+2026-08-01T06:57:08.2684175Z Artifact finalize-pr31-failure has been successfully uploaded! Final size is 12546 bytes. Artifact ID is 8814885540
+2026-08-01T06:57:08.2685197Z Artifact download URL: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30688549608/artifacts/8814885540
+2026-08-01T06:57:08.3019521Z Post job cleanup.
+2026-08-01T06:57:08.3930975Z [command]/usr/bin/git version
+2026-08-01T06:57:08.3974104Z git version 2.54.0
+2026-08-01T06:57:08.4047990Z Temporarily overriding HOME='/home/runner/work/_temp/db95bdd7-03c8-481a-a265-96ebee062302' before making global git config changes
+2026-08-01T06:57:08.4049832Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-01T06:57:08.4054680Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
+2026-08-01T06:57:08.4128086Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-01T06:57:08.4167887Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-01T06:57:08.4458578Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-01T06:57:08.4501081Z http.https://github.com/.extraheader
+2026-08-01T06:57:08.4515288Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-01T06:57:08.4553658Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-01T06:57:08.4823485Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-01T06:57:08.4861046Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-01T06:57:08.5395179Z Cleaning up orphan processes
+2026-08-01T06:57:08.5753608Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
