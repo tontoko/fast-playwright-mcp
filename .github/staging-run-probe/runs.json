@@ -11,8 +11,8 @@
       "display_title": "ci: finalize PR 31 with tolerant session-log compatibility",
       "run_number": 1,
       "event": "push",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "workflow_id": 324973198,
       "check_suite_id": 83233140462,
       "check_suite_node_id": "CS_kwDOPYDXK88AAAATYRTu7g",
@@ -22,7 +22,7 @@
 
       ],
       "created_at": "2026-08-01T08:07:17Z",
-      "updated_at": "2026-08-01T08:07:20Z",
+      "updated_at": "2026-08-01T08:08:55Z",
       "actor": {
         "login": "tontoko",
         "id": 31890263,
