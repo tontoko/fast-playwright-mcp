@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import {
   configFromCLIOptions,
@@ -62,6 +63,89 @@ test('CLI and environment parsing preserve headers and timeouts', async () => {
       cdpHeaders: { Authorization: 'Bearer env', 'X-Test': 'value' },
     },
     timeouts: { action: 111, navigation: 222, expect: 333 },
+  });
+});
+
+test('rejects invalid CDP header names and line breaks', () => {
+  expect(() => headerParser('Bad Header: value')).toThrow('Invalid header');
+  expect(() => headerParser('X-Test: safe\r\nInjected: value')).toThrow(
+    'Invalid header'
+  );
+});
+
+test('Commander-shaped CDP header option reaches the browser config', async () => {
+  const commanderOptions = {
+    cdpHeader: headerParser('Authorization: Bearer cli'),
+  } as Parameters<typeof resolveCLIConfig>[0] & {
+    cdpHeader: Record<string, string>;
+  };
+
+  const config = await resolveCLIConfig(commanderOptions, {});
+
+  expect(config.browser.cdpHeaders).toEqual({
+    Authorization: 'Bearer cli',
+  });
+});
+
+test('Commander-shaped secrets option parses dotenv values for redaction', async ({
+  page: _page,
+}, testInfo) => {
+  const secretsPath = testInfo.outputPath('secrets.env');
+  await writeFile(
+    secretsPath,
+    'API_TOKEN="secret with spaces" # deployment token\n',
+    'utf8'
+  );
+  const commanderOptions = {
+    secrets: secretsPath,
+  } as Parameters<typeof resolveCLIConfig>[0] & { secrets: string };
+
+  const config = await resolveCLIConfig(commanderOptions, {});
+
+  expect(config.secrets).toEqual({ API_TOKEN: 'secret with spaces' });
+});
+
+test('PLAYWRIGHT_MCP_SECRETS loads the same dotenv redaction values', async ({
+  page: _page,
+}, testInfo) => {
+  const secretsPath = testInfo.outputPath('env-secrets.env');
+  await writeFile(secretsPath, 'ENV_TOKEN="env secret"\n', 'utf8');
+
+  const config = await resolveCLIConfig(
+    {},
+    { PLAYWRIGHT_MCP_SECRETS: secretsPath }
+  );
+
+  expect(config.secrets).toEqual({ ENV_TOKEN: 'env secret' });
+});
+
+test('PLAYWRIGHT_MCP_CONFIG loads a configuration file before environment overrides', async ({
+  page: _page,
+}, testInfo) => {
+  const configPath = testInfo.outputPath('mcp-config.json');
+  await writeFile(
+    configPath,
+    JSON.stringify({
+      toolProfile: 'minimal',
+      timeouts: { action: 111, navigation: 222, expect: 333 },
+    }),
+    'utf8'
+  );
+
+  const config = await resolveCLIConfig(
+    {},
+    {
+      PLAYWRIGHT_MCP_CONFIG: configPath,
+      PLAYWRIGHT_MCP_TIMEOUT_ACTION: '444',
+    }
+  );
+
+  expect(config.toolProfile).toBe('minimal');
+  expect(config.timeouts).toEqual({
+    action: 444,
+    navigation: 222,
+    expect: 333,
+    settle: 500,
   });
 });
 

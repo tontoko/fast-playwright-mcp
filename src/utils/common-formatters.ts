@@ -2,6 +2,7 @@
  * Common formatting functions to reduce code duplication
  */
 
+import { quote } from './codegen.js';
 import { commonFormattersDebug } from './log.js';
 
 /**
@@ -195,7 +196,7 @@ export function generateMouseDragCode(
  * Generate navigation code (common pattern)
  */
 export function generateNavigationCode(url: string): string {
-  return `await page.goto('${url}');`;
+  return `await page.goto(${quote(url)});`;
 }
 
 /**
@@ -213,7 +214,7 @@ export function generateForwardCode(): string {
  * Generate keyboard press code
  */
 export function generateKeyPressCode(key: string): string {
-  return `await page.keyboard.press('${key}');`;
+  return `await page.keyboard.press(${quote(key)});`;
 }
 
 /**
@@ -231,13 +232,6 @@ export function generateLocatorEvaluationCode(
   functionCode: string
 ): string {
   return `await page.${locator}.evaluate(${quote(functionCode)});`;
-}
-
-/**
- * Simple quote utility for code generation
- */
-function quote(str: string): string {
-  return `'${str.replace(/'/g, "\\'")}'`;
 }
 
 /**

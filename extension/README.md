@@ -2,9 +2,9 @@
 
 The extension connects Fast Playwright MCP to tabs in an existing Chrome, Edge, or Chromium profile. The connected MCP client can access the selected tab and its authenticated browser state, so only approve clients you trust.
 
-## Option A: build the bundled extension
+## Build the bundled extension
 
-The bundled extension is the default supported by this repository.
+The bundled protocol-v1 extension is the extension supported by this repository.
 
 ```bash
 cd extension
@@ -33,47 +33,15 @@ Then:
 }
 ```
 
-On the first browser operation, the extension opens a confirmation page. Select the tab to expose and click **Connect**.
+On the first browser operation, the extension opens a confirmation page. Select the tab to expose and click **Connect**. Rejecting the request closes the pending relay, and a later browser operation can open a fresh request.
 
-## Option B: use the current Playwright Extension from Chrome Web Store
+## Microsoft Playwright Extension compatibility
 
-The Microsoft Playwright Extension uses a different extension ID. Install it from:
-
-https://chromewebstore.google.com/detail/playwright-extension/mmlmfjhmonkocbjadbfplnigmagldckm
-
-Set its ID in the MCP server environment:
-
-```json
-{
-  "mcpServers": {
-    "playwright-extension": {
-      "command": "npx",
-      "args": [
-        "@tontoko/fast-playwright-mcp@latest",
-        "--extension"
-      ],
-      "env": {
-        "PLAYWRIGHT_MCP_EXTENSION_ID": "mmlmfjhmonkocbjadbfplnigmagldckm"
-      }
-    }
-  }
-}
-```
-
-The extension normally asks for approval. To allow token-based reconnection, copy the token shown by the extension and also set `PLAYWRIGHT_MCP_EXTENSION_TOKEN` to the same value:
-
-```json
-"env": {
-  "PLAYWRIGHT_MCP_EXTENSION_ID": "mmlmfjhmonkocbjadbfplnigmagldckm",
-  "PLAYWRIGHT_MCP_EXTENSION_TOKEN": "replace-with-the-extension-token"
-}
-```
-
-Do not commit that token to a repository or share it with untrusted clients.
+The current Microsoft Playwright Extension uses protocol v2. This repository's bundled relay remains protocol v1, so the Chrome Web Store extension ID and token must not be configured as a substitute. Protocol-v2 migration is intentionally deferred until the relay, reconnect, and multi-tab semantics can be adopted together.
 
 ## Troubleshooting
 
 - The browser executable must be installed in a standard location for the selected channel (`chrome` by default).
 - Only loopback relay connections are accepted; the server binds the relay to `127.0.0.1`.
-- If the connection page says the extension is missing, verify the extension ID and restart the browser after installing or updating the extension.
-- If a previous connection is stuck, close the confirmation page, disconnect the extension, and retry the browser operation.
+- The launcher selects the Chrome profile containing the bundled extension when it can identify one from `Local State` and the profile `Extensions` directory.
+- If the connection page says the extension is missing, verify that the bundled extension is installed and restart the browser after installing or updating it.

@@ -44,7 +44,7 @@ Version 0.2 adds typed CLI, environment, and configuration-file controls for:
 - HTTP Host allowlisting
 - output-directory size limits
 - response secret redaction
-- action, navigation, and expectation timeouts
+- action, navigation, expectation, and post-action settle timeouts
 - test-id attribute selection
 - generated-code suppression with `codegen: "none"`
 - screenshot CSS/device pixel scale
@@ -54,7 +54,7 @@ See `--help` and the main README for exact names.
 
 ## Runtime requirements
 
-- Node.js 18 or newer
+- Node.js 20 or newer (required by the pinned Playwright runtime)
 - the package's pinned Playwright browser revision, or a compatible configured executable
 - Bun 1.3.5 for repository development and CI
 

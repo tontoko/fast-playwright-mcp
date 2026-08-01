@@ -4,10 +4,9 @@ const EXTENSION_ID_REGEX = /^[a-p]{32}$/;
 export const DEFAULT_EXTENSION_ID = 'jakfalbnbhgkpmoaakfflhflbfpkailf';
 
 /**
- * Protocol v1 is supported by both the bundled extension and the current
- * Chrome Web Store Playwright Extension. The newer v2 protocol requires a
- * different relay implementation, so advertise v1 explicitly instead of
- * relying on the extension's fallback behavior.
+ * Protocol v1 is used by the bundled extension in this repository. The current
+ * Microsoft Playwright Extension uses protocol v2 and is not claimed compatible
+ * with this relay; migrating that transport is tracked separately.
  */
 const SUPPORTED_EXTENSION_PROTOCOL_VERSION = 1;
 

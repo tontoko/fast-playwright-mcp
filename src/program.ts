@@ -130,6 +130,11 @@ program
     positiveNumber
   )
   .option(
+    '--timeout-settle <timeout>',
+    'delay after browser actions before capturing the response, in milliseconds',
+    positiveNumber
+  )
+  .option(
     '--tool-profile <profile>',
     'tool catalog profile: adaptive, full, or minimal',
     parseToolProfile

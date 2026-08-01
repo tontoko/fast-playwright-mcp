@@ -9,6 +9,7 @@ import type {
 import type { FullConfig } from './config.js';
 import { outputFile } from './config.js';
 import type { ToolResponse } from './mcp/types.js';
+import { originRoutePattern } from './network-origin.js';
 import { OutputManager } from './output-manager.js';
 import type { SessionLog } from './session-log.js';
 import { Tab } from './tab.js';
@@ -272,14 +273,14 @@ export class Context {
       await context.route('**', (route) => route.abort('blockedbyclient'));
       await Promise.all(
         this.config.network.allowedOrigins.map((origin) =>
-          context.route(`*://${origin}/**`, (route) => route.continue())
+          context.route(originRoutePattern(origin), (route) => route.continue())
         )
       );
     }
     if (this.config.network.blockedOrigins?.length) {
       await Promise.all(
         this.config.network.blockedOrigins.map((origin) =>
-          context.route(`*://${origin}/**`, (route) =>
+          context.route(originRoutePattern(origin), (route) =>
             route.abort('blockedbyclient')
           )
         )
@@ -333,6 +334,15 @@ export class Context {
   }
 }
 
+function resolveRecorderAction(
+  data: actions.ActionInContext | actions.Action | undefined
+): actions.Action | undefined {
+  if (!data) {
+    return;
+  }
+  return 'action' in data ? data.action : data;
+}
+
 export class InputRecorder {
   private readonly context: Context;
   private readonly browserContext: BrowserContext;
@@ -362,26 +372,30 @@ export class InputRecorder {
       {
         actionAdded: (
           page: Page,
-          data: actions.ActionInContext,
+          data: actions.ActionInContext | actions.Action,
           code: string
         ) => {
           if (this.context.isRunningTool()) {
             return;
           }
           const tab = Tab.forPage(page);
-          tab?.context.sessionLog?.logUserAction(data.action, tab, code, false);
+          const action = resolveRecorderAction(data);
+          if (tab && action) {
+            tab.context.sessionLog?.logUserAction(action, tab, code, false);
+          }
         },
         actionUpdated: (
           page: Page,
-          data: actions.ActionInContext,
+          data: actions.ActionInContext | actions.Action,
           code: string
         ) => {
           if (this.context.isRunningTool()) {
             return;
           }
           const tab = Tab.forPage(page);
-          if (tab) {
-            sessionLog.logUserAction(data.action, tab, code, true);
+          const action = resolveRecorderAction(data);
+          if (tab && action) {
+            sessionLog.logUserAction(action, tab, code, true);
           }
         },
         signalAdded: (page: Page, data: actions.SignalInContext) => {

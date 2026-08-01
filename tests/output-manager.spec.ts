@@ -19,7 +19,7 @@ test('evicts oldest completed files while preserving the finalized target', asyn
   await expect(fs.stat(oldFile)).rejects.toMatchObject({ code: 'ENOENT' });
 });
 
-test('does not follow symlinks and rejects path traversal', async ({
+test('does not follow file symlinks and rejects lexical path traversal', async ({
   page: _page,
 }, testInfo) => {
   const directory = testInfo.outputPath('safe');
@@ -33,4 +33,38 @@ test('does not follow symlinks and rejects path traversal', async ({
   ).rejects.toThrow('Output path must remain inside the output directory');
   await manager.finalizeFile(path.join(directory, 'target.bin'));
   await expect(fs.stat(outside)).resolves.toBeTruthy();
+});
+
+test('rejects a symlinked parent that escapes the output directory', async ({
+  page: _page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('safe-parent');
+  const outside = testInfo.outputPath('outside-directory');
+  await Promise.all([
+    fs.mkdir(directory, { recursive: true }),
+    fs.mkdir(outside, { recursive: true }),
+  ]);
+  await fs.symlink(outside, path.join(directory, 'linked'), 'dir');
+  const manager = new OutputManager(directory, 0);
+
+  await expect(
+    manager.reserveFile(path.join(directory, 'linked', 'escape.txt'))
+  ).rejects.toThrow('Output path must remain inside the output directory');
+});
+
+test('rejects finalization targets outside the output directory', async ({
+  page: _page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('finalization-root');
+  const outside = testInfo.outputPath('outside-finalization.bin');
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(outside, Buffer.alloc(1));
+  const manager = new OutputManager(directory, 0);
+
+  await expect(manager.finalizeFile(outside)).rejects.toThrow(
+    'Output path must remain inside the output directory'
+  );
+  await expect(
+    manager.finalizeDirectory(path.dirname(outside))
+  ).rejects.toThrow('Output path must remain inside the output directory');
 });

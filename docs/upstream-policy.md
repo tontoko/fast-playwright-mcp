@@ -1,6 +1,6 @@
 # Upstream compatibility policy
 
-Microsoft Playwright MCP is reviewed regularly, but changes are not merged automatically.
+Microsoft Playwright MCP and the MCP implementation maintained inside Microsoft Playwright are reviewed regularly, but changes are not merged automatically.
 
 A behavioral port must satisfy all of the following:
 

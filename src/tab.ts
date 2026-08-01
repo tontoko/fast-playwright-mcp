@@ -17,6 +17,12 @@ import { logUnhandledError } from './utils/log.js';
 
 // Regex constants
 
+export function isDownloadNavigationError(error: unknown): boolean {
+  return (
+    error instanceof Error && error.message.includes('Download is starting')
+  );
+}
+
 export const TabEvents = {
   modalState: 'modalState',
 };
@@ -95,6 +101,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
       });
     });
     page.on('dialog', (dialog) => this._dialogShown(dialog));
+    page.on('dialogclosed', (dialog) => this._dialogClosed(dialog));
     page.on('download', (download) => {
       this._downloadStarted(download).catch((error) => {
         // Intentionally ignore download errors to prevent crashing
@@ -145,6 +152,12 @@ export class Tab extends EventEmitter<TabEventsInterface> {
       description: `"${dialog.type()}" dialog with message "${dialog.message()}"`,
       dialog,
     });
+  }
+
+  private _dialogClosed(dialog: playwright.Dialog) {
+    this._modalStates = this._modalStates.filter(
+      (state) => state.type !== 'dialog' || state.dialog !== dialog
+    );
   }
   private async _downloadStarted(download: playwright.Download) {
     const entry = {
@@ -218,7 +231,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
         // Timeout after configured duration
         if (
           Date.now() - this._navigationState.lastNavigationStart >
-          this.context.config.timeouts.navigation
+          (this.context.config.timeouts?.navigation ?? 60_000)
         ) {
           this._navigationState.isNavigating = false;
           resolve();
@@ -239,7 +252,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
     // Consider stale if navigation started more than configured timeout ago
     const isStale =
       Date.now() - this._navigationState.lastNavigationStart >
-      this.context.config.timeouts.navigation;
+      (this.context.config.timeouts?.navigation ?? 60_000);
     if (isStale && this._navigationState.isNavigating) {
       this._navigationState.isNavigating = false;
     }
@@ -289,10 +302,7 @@ export class Tab extends EventEmitter<TabEventsInterface> {
       abortDownloadWaiter();
     } catch (_e: unknown) {
       const e = _e as Error;
-      const mightBeDownload =
-        e.message.includes('net::ERR_ABORTED') || // chromium
-        e.message.includes('Download is starting'); // firefox + webkit
-      if (!mightBeDownload) {
+      if (!isDownloadNavigationError(e)) {
         abortDownloadWaiter();
         throw e;
       }
@@ -344,13 +354,20 @@ export class Tab extends EventEmitter<TabEventsInterface> {
     // Console messages are consumed immediately after collecting them
     this._recentConsoleMessages = [];
     await this._raceAgainstModalStates(async () => {
-      let ariaSnapshot = await this.page.ariaSnapshot({ mode: 'ai' });
-      // Apply selector filtering if specified
+      let ariaSnapshot: string;
       if (selector) {
-        ariaSnapshot = this._filterAriaSnapshotBySelector(
-          ariaSnapshot,
-          selector
-        );
+        const locator = this.page.locator(selector);
+        if (await locator.count()) {
+          ariaSnapshot = await locator.first().ariaSnapshot({ mode: 'ai' });
+        } else {
+          snapshotDebug(
+            'Selector "%s" not found, returning full snapshot',
+            selector
+          );
+          ariaSnapshot = await this.page.ariaSnapshot({ mode: 'ai' });
+        }
+      } else {
+        ariaSnapshot = await this.page.ariaSnapshot({ mode: 'ai' });
       }
       // Apply maxLength truncation if specified
       if (maxLength && ariaSnapshot.length > maxLength) {
@@ -359,79 +376,6 @@ export class Tab extends EventEmitter<TabEventsInterface> {
       result.ariaSnapshot = ariaSnapshot;
     });
     return result;
-  }
-  private _filterAriaSnapshotBySelector(
-    fullSnapshot: string,
-    selector: string
-  ): string {
-    // Parse the ARIA tree to find the section matching the selector
-    const lines = fullSnapshot.split('\n');
-    const selectorToRole: Record<string, string> = {
-      main: 'main',
-      header: 'banner',
-      footer: 'contentinfo',
-      nav: 'navigation',
-      aside: 'complementary',
-      section: 'region',
-      article: 'article',
-    };
-    // Get expected role from selector
-    const expectedRole = selectorToRole[selector] ?? selector;
-    // Find the section in the ARIA tree
-    let capturing = false;
-    let captureIndent = -1;
-    const capturedLines: string[] = [];
-    for (const line of lines) {
-      // Count leading spaces to determine indent level
-      const indent = line.length - line.trimStart().length;
-      const trimmedLine = line.trim();
-      // Check if this line contains our target role with proper ARIA structure
-      // Matches patterns like: "- main [ref=e3]:" or "- main [active] [ref=e1]:"
-      const rolePattern = new RegExp(
-        `^- ${expectedRole}\\s*(?:\\[[^\\]]*\\])*\\s*:?`
-      );
-      if (!capturing && rolePattern.test(trimmedLine)) {
-        capturing = true;
-        captureIndent = indent;
-        capturedLines.push(line);
-        continue;
-      }
-      // If we're capturing, continue until we reach a sibling or parent element
-      if (capturing) {
-        if (indent > captureIndent) {
-          // This is a child element, include it
-          capturedLines.push(line);
-        } else {
-          // We've reached a sibling or parent, stop capturing
-          break;
-        }
-      }
-    }
-    // If we captured something, normalize indentation and return it
-    if (capturedLines.length > 0) {
-      // Calculate minimum indentation (should be the target element's indentation)
-      const minIndent =
-        capturedLines[0].length - capturedLines[0].trimStart().length;
-      // Normalize indentation: remove the minimum indentation from all lines
-      const normalizedLines = capturedLines.map((line) => {
-        if (line.trim() === '') {
-          return line; // Keep empty lines as-is
-        }
-        const currentIndent = line.length - line.trimStart().length;
-        const newIndent = Math.max(0, currentIndent - minIndent);
-        return ' '.repeat(newIndent) + line.trimStart();
-      });
-      return normalizedLines.join('\n');
-    }
-    // Log debug information when selector is not found
-    snapshotDebug(
-      'Selector "%s" not found in snapshot, returning full snapshot',
-      selector
-    );
-
-    // Return the original full snapshot when selector is not found
-    // This ensures that tests expecting complete page structure get what they need
-    return fullSnapshot;
   }
   private _truncateAtWordBoundary(text: string, maxLength: number): string {
     if (text.length <= maxLength) {
