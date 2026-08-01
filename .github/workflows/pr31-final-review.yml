@@ -1,0 +1,368 @@
+name: PR 31 final review and upstream refresh
+
+on:
+  push:
+    branches:
+      - agent/pr31-final-review
+    paths:
+      - '.github/workflows/pr31-final-review.yml'
+      - 'scripts/apply-pr31-final.py.gz.b64'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pr31-final-review
+  cancel-in-progress: false
+
+env:
+  FINAL_BRANCH: agent/pr31-final-review
+  STAGING_BRANCH: agent/pr31-review-fixes
+  PATCH_ARCHIVE: scripts/apply-pr31-final.py.gz.b64
+  PATCH_SCRIPT: scripts/apply-pr31-final.py
+
+jobs:
+  prepare:
+    name: Resolve exact Playwright canary
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      playwright-version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - id: version
+        name: Resolve current playwright@next
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(npm view playwright@next version)"
+          case "$version" in
+            1.63.0-alpha-*) ;;
+            *)
+              echo "Unexpected playwright@next version: $version" >&2
+              exit 1
+              ;;
+          esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          printf 'Resolved Playwright canary: %s\n' "$version"
+
+  quality:
+    name: TDD, quality, Chromium, and package
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Prepare patch and baseline dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${STAGING_BRANCH}:refs/remotes/origin/${STAGING_BRANCH}"
+          base64 --decode "$PATCH_ARCHIVE" | gzip --decompress > "$PATCH_SCRIPT"
+          chmod +x "$PATCH_SCRIPT"
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+      - name: RED — prove the selected regressions fail before implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$PATCH_SCRIPT" tests
+          set +e
+          bunx playwright test \
+            tests/upstream-runtime.spec.ts \
+            tests/dialog-lifecycle.spec.ts \
+            tests/upstream-config.spec.ts \
+            tests/network-origin-filter.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
+            --project=chromium \
+            --workers=1 > /tmp/pr31-red.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/pr31-red.log
+          if [ "$status" -eq 0 ]; then
+            echo 'Expected RED regressions to fail before implementation.' >&2
+            exit 1
+          fi
+      - name: Apply implementation and upstream refresh
+        env:
+          PLAYWRIGHT_VERSION: ${{ needs.prepare.outputs.playwright-version }}
+        run: python3 "$PATCH_SCRIPT" implementation
+      - name: Install refreshed dependency graph
+        run: bun install
+      - name: Format, encode, typecheck, build, generate, and lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun run lint-fix
+          bun run check:encoding
+          bun run typecheck
+          bun run build:publish
+          bun run update-readme
+          bun run lint-fix
+          bun run check:encoding
+          bun run typecheck
+          bun run build:publish
+          bun run lint
+          bun run benchmark:tools -- --check
+          git diff --check
+      - name: GREEN — focused regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          bunx playwright test \
+            tests/upstream-runtime.spec.ts \
+            tests/upstream-config.spec.ts \
+            tests/http-allowed-hosts.spec.ts \
+            tests/mcp-server-initialize.spec.ts \
+            tests/network-origin-filter.spec.ts \
+            tests/output-manager.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
+            tests/dialog-lifecycle.spec.ts \
+            tests/readme-contract.spec.ts \
+            tests/secret-redaction.spec.ts \
+            tests/session-log-redaction.spec.ts \
+            tests/tool-gateways.spec.ts \
+            tests/upstream-check.spec.ts \
+            --project=chromium \
+            --workers=1
+      - name: Full Chromium suite
+        run: bunx playwright test --project=chromium --workers=2
+      - name: Packed npm artifact smoke
+        run: bun run test:package
+      - name: Upload quality failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr31-final-quality-failure
+          path: |
+            /tmp/pr31-red.log
+            test-results/**/error-context.md
+            playwright-report/**
+          if-no-files-found: warn
+          retention-days: 3
+
+  browser-matrix:
+    name: Full browser suite (${{ matrix.project }})
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chrome, chromium, msedge, firefox, webkit]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Apply final source
+        env:
+          PLAYWRIGHT_VERSION: ${{ needs.prepare.outputs.playwright-version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${STAGING_BRANCH}:refs/remotes/origin/${STAGING_BRANCH}"
+          base64 --decode "$PATCH_ARCHIVE" | gzip --decompress > "$PATCH_SCRIPT"
+          python3 "$PATCH_SCRIPT" tests
+          python3 "$PATCH_SCRIPT" implementation
+          bun install
+          bun run lint-fix
+          bun run build:publish
+          bun run update-readme
+          bun run lint-fix
+          bun run build:publish
+      - name: Install browser and dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ matrix.project }}" == "chromium" ]]; then
+            bunx playwright install --with-deps chromium
+          else
+            bunx playwright install --with-deps chromium "${{ matrix.project }}"
+          fi
+      - name: Run full ${{ matrix.project }} suite
+        run: bunx playwright test --project=${{ matrix.project }} --workers=1
+      - name: Upload ${{ matrix.project }} diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr31-final-${{ matrix.project }}-failure
+          path: |
+            test-results/**/error-context.md
+            playwright-report/**
+          if-no-files-found: warn
+          retention-days: 3
+
+  extension:
+    name: Bundled extension build and E2E
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+      - name: Apply final source and build extension
+        env:
+          PLAYWRIGHT_VERSION: ${{ needs.prepare.outputs.playwright-version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${STAGING_BRANCH}:refs/remotes/origin/${STAGING_BRANCH}"
+          base64 --decode "$PATCH_ARCHIVE" | gzip --decompress > "$PATCH_SCRIPT"
+          python3 "$PATCH_SCRIPT" tests
+          python3 "$PATCH_SCRIPT" implementation
+          bun install
+          bun run lint-fix
+          bun run build:publish
+          npm ci --prefix extension
+          npm run build --prefix extension
+          bunx playwright install --with-deps chromium
+      - name: Run all extension E2E tests
+        env:
+          DEBUG: 'pw:mcp:*'
+          PWMCP_DEBUG: '1'
+        run: >-
+          xvfb-run --auto-servernum bunx playwright test
+          --config=extension/playwright.config.ts
+          --workers=1
+      - name: Upload extension diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr31-final-extension-failure
+          path: |
+            extension/test-results/**/error-context.md
+            extension/playwright-report/**
+          if-no-files-found: warn
+          retention-days: 3
+
+  docker:
+    name: Docker build and smoke
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Apply final source and lockfile
+        env:
+          PLAYWRIGHT_VERSION: ${{ needs.prepare.outputs.playwright-version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${STAGING_BRANCH}:refs/remotes/origin/${STAGING_BRANCH}"
+          base64 --decode "$PATCH_ARCHIVE" | gzip --decompress > "$PATCH_SCRIPT"
+          python3 "$PATCH_SCRIPT" tests
+          python3 "$PATCH_SCRIPT" implementation
+          bun install
+          bun run lint-fix
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+      - name: Build image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: .
+          tags: fast-playwright-mcp-pr31:latest
+          load: true
+      - name: Run CLI smoke
+        run: docker run --rm fast-playwright-mcp-pr31:latest --version
+
+  commit:
+    name: Commit verified clean source
+    needs: [prepare, quality, browser-matrix, extension, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Recreate deterministic verified source
+        env:
+          PLAYWRIGHT_VERSION: ${{ needs.prepare.outputs.playwright-version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${STAGING_BRANCH}:refs/remotes/origin/${STAGING_BRANCH}"
+          base64 --decode "$PATCH_ARCHIVE" | gzip --decompress > "$PATCH_SCRIPT"
+          python3 "$PATCH_SCRIPT" tests
+          python3 "$PATCH_SCRIPT" implementation
+          bun install
+          bun run lint-fix
+          bun run check:encoding
+          bun run typecheck
+          bun run build:publish
+          bun run update-readme
+          bun run lint-fix
+          bun run check:encoding
+          bun run typecheck
+          bun run build:publish
+          bun run lint
+          bun run benchmark:tools -- --check
+          git diff --check
+      - name: Remove staging-only machinery and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/pr31-final-review.yml
+          rm -f "$PATCH_ARCHIVE" "$PATCH_SCRIPT"
+          rm -rf lib test-results playwright-report extension/dist extension/test-results extension/playwright-report
+          rm -f -- *.tgz tsconfig.tsbuildinfo
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: finish PR review and refresh Playwright upstream'
+          git push origin HEAD:agent/pr31-final-review
