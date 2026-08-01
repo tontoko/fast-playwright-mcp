@@ -145,8 +145,12 @@ jobs:
           path.write_text(text.replace(old, new), encoding='utf-8')
           PY
 
-      - name: Install refreshed dependency graph
-        run: bun install
+      - name: Install refreshed dependency graph and browser revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun install
+          bunx playwright install --with-deps chromium
 
       - name: Remove generated Python bytecode
         run: rm -rf scripts/__pycache__
