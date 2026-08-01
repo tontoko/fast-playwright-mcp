@@ -1,400 +1,400 @@
-2026-07-31T16:35:38.6874750Z           \"snapshotOptions\": {
-2026-07-31T16:35:38.6875203Z             \"selector\": \".dashboard\",
-2026-07-31T16:35:38.6875510Z             \"maxLength\": 1000,
-2026-07-31T16:35:38.6875775Z             \"format\": \"text\"
-2026-07-31T16:35:38.6876006Z           }
-2026-07-31T16:35:38.6876189Z         }
-2026-07-31T16:35:38.6876371Z       }
-2026-07-31T16:35:38.6876559Z     }
-2026-07-31T16:35:38.6876739Z     ```
-2026-07-31T16:35:38.6876915Z     
-2026-07-31T16:35:38.6877127Z     #### Console Filtering Options
-2026-07-31T16:35:38.6877371Z     
-2026-07-31T16:35:38.6877550Z     ```json
-2026-07-31T16:35:38.6877739Z     {
-2026-07-31T16:35:38.6877955Z       \"name\": \"browser_navigate\",
-2026-07-31T16:35:38.6878217Z       \"arguments\": {
-2026-07-31T16:35:38.6878479Z         \"url\": \"https://example.com\",
-2026-07-31T16:35:38.6878774Z         \"expectation\": {
-2026-07-31T16:35:38.6879037Z           \"includeConsole\": true,
-2026-07-31T16:35:38.6879323Z           \"consoleOptions\": {
-2026-07-31T16:35:38.6879611Z             \"levels\": [\"error\", \"warn\"],
-2026-07-31T16:35:38.6879910Z             \"maxMessages\": 5,
-2026-07-31T16:35:38.6880192Z             \"patterns\": [\"^Error:\"],
-2026-07-31T16:35:38.6880490Z             \"removeDuplicates\": true
-2026-07-31T16:35:38.6880744Z           }
-2026-07-31T16:35:38.6880922Z         }
-2026-07-31T16:35:38.6881100Z       }
-2026-07-31T16:35:38.6881281Z     }
-2026-07-31T16:35:38.6881455Z     ```
-2026-07-31T16:35:38.6881625Z     
-2026-07-31T16:35:38.6881809Z     ### Batch Execution
-2026-07-31T16:35:38.6882022Z     
-2026-07-31T16:35:38.6882526Z     Execute multiple browser actions in a single request with optimized response handling and flexible error control.
-2026-07-31T16:35:38.6883036Z     
-2026-07-31T16:35:38.6883240Z     #### Basic Batch Execution
-2026-07-31T16:35:38.6883470Z     
-2026-07-31T16:35:38.6883648Z     ```json
-2026-07-31T16:35:38.6883828Z     {
-2026-07-31T16:35:38.6884057Z       \"name\": \"browser_batch_execute\",
-2026-07-31T16:35:38.6884334Z       \"arguments\": {
-2026-07-31T16:35:38.6884552Z         \"steps\": [
-2026-07-31T16:35:38.6884758Z           {
-2026-07-31T16:35:38.6884983Z             \"tool\": \"browser_navigate\",
-2026-07-31T16:35:38.6885524Z             \"arguments\": { \"url\": \"https://example.com/login\" }
-2026-07-31T16:35:38.6885866Z           },
-2026-07-31T16:35:38.6886057Z           {
-2026-07-31T16:35:38.6886276Z             \"tool\": \"browser_type\",
-2026-07-31T16:35:38.6886557Z             \"arguments\": { 
-2026-07-31T16:35:38.6886846Z               \"element\": \"username field\", 
-2026-07-31T16:35:38.6887165Z               \"ref\": \"#username\", 
-2026-07-31T16:35:38.6887450Z               \"text\": \"testuser\" 
-2026-07-31T16:35:38.6887699Z             }
-2026-07-31T16:35:38.6887899Z           },
-2026-07-31T16:35:38.6888086Z           {
-2026-07-31T16:35:38.6888447Z             \"tool\": \"browser_type\",
-2026-07-31T16:35:38.6888719Z             \"arguments\": { 
-2026-07-31T16:35:38.6889004Z               \"element\": \"password field\", 
-2026-07-31T16:35:38.6889320Z               \"ref\": \"#password\", 
-2026-07-31T16:35:38.6889603Z               \"text\": \"password\" 
-2026-07-31T16:35:38.6889848Z             }
-2026-07-31T16:35:38.6890034Z           },
-2026-07-31T16:35:38.6890222Z           {
-2026-07-31T16:35:38.6890440Z             \"tool\": \"browser_click\",
-2026-07-31T16:35:38.6890853Z             \"arguments\": { \"element\": \"login button\", \"ref\": \"#login-btn\" }
-2026-07-31T16:35:38.6891223Z           }
-2026-07-31T16:35:38.6891403Z         ]
-2026-07-31T16:35:38.6891585Z       }
-2026-07-31T16:35:38.6891760Z     }
-2026-07-31T16:35:38.6891934Z     ```
-2026-07-31T16:35:38.6892104Z     
-2026-07-31T16:35:38.6892320Z     #### Advanced Batch Configuration
-2026-07-31T16:35:38.6892569Z     
-2026-07-31T16:35:38.6892749Z     ```json
-2026-07-31T16:35:38.6893055Z     {
-2026-07-31T16:35:38.6893284Z       \"name\": \"browser_batch_execute\",
-2026-07-31T16:35:38.6893556Z       \"arguments\": {
-2026-07-31T16:35:38.6893774Z         \"steps\": [
-2026-07-31T16:35:38.6893983Z           {
-2026-07-31T16:35:38.6894211Z             \"tool\": \"browser_navigate\",
-2026-07-31T16:35:38.6894580Z             \"arguments\": { \"url\": \"https://example.com\" },
-2026-07-31T16:35:38.6895109Z             \"expectation\": { \"includeSnapshot\": false },
-2026-07-31T16:35:38.6895612Z             \"continueOnError\": true
-2026-07-31T16:35:38.6895905Z           },
-2026-07-31T16:35:38.6896090Z           {
-2026-07-31T16:35:38.6896310Z             \"tool\": \"browser_click\",
-2026-07-31T16:35:38.6896695Z             \"arguments\": { \"element\": \"button\", \"ref\": \"#submit\" },
-2026-07-31T16:35:38.6897082Z             \"expectation\": { 
-2026-07-31T16:35:38.6897365Z               \"includeSnapshot\": true,
-2026-07-31T16:35:38.6897736Z               \"snapshotOptions\": { \"selector\": \".result-area\" }
-2026-07-31T16:35:38.6898076Z             }
-2026-07-31T16:35:38.6898273Z           }
-2026-07-31T16:35:38.6898461Z         ],
-2026-07-31T16:35:38.6898687Z         \"stopOnFirstError\": false,
-2026-07-31T16:35:38.6898981Z         \"globalExpectation\": {
-2026-07-31T16:35:38.6899263Z           \"includeConsole\": false,
-2026-07-31T16:35:38.6899546Z           \"includeTabs\": false
-2026-07-31T16:35:38.6899781Z         }
-2026-07-31T16:35:38.6899960Z       }
-2026-07-31T16:35:38.6900134Z     }
-2026-07-31T16:35:38.6900309Z     ```
-2026-07-31T16:35:38.6900485Z     
-2026-07-31T16:35:38.6900689Z     #### Error Handling Options
-2026-07-31T16:35:38.6900916Z     
-2026-07-31T16:35:38.6901290Z     - **`continueOnError`** (per step): Continue batch execution even if this step fails
-2026-07-31T16:35:38.6901842Z     - **`stopOnFirstError`** (global): Stop entire batch on first error
-2026-07-31T16:35:38.6902330Z     - Flexible combination allows for robust automation workflows
-2026-07-31T16:35:38.6902666Z     
-2026-07-31T16:35:38.6902884Z     ### Tool-Specific Defaults
-2026-07-31T16:35:38.6903119Z     
-2026-07-31T16:35:38.6903425Z     Each tool has optimized defaults based on typical usage patterns:
-2026-07-31T16:35:38.6903774Z     
-2026-07-31T16:35:38.6904132Z     - **Navigation tools** (`browser_navigate`): Include full context for verification
-2026-07-31T16:35:38.6904761Z     - **Interactive tools** (`browser_click`, `browser_type`): Include snapshot but minimal logging
-2026-07-31T16:35:38.6905646Z     - **Screenshot/snapshot tools**: Exclude additional context
-2026-07-31T16:35:38.6906122Z     - **Code evaluation**: Include console output but minimal other info
-2026-07-31T16:35:38.6906571Z     - **Wait operations**: Minimal output for efficiency
-2026-07-31T16:35:38.6906867Z     
-2026-07-31T16:35:38.6907062Z     ### Performance Benefits
-2026-07-31T16:35:38.6907290Z     
-2026-07-31T16:35:38.6907649Z     - **Token Reduction**: 50-80% reduction in token usage with optimized expectations
-2026-07-31T16:35:38.6908352Z     - **Faster Execution**: 2-5x speed improvement with batch execution
-2026-07-31T16:35:38.6908852Z     - **Reduced Latency**: Fewer round trips between client and server
-2026-07-31T16:35:38.6909353Z     - **Cost Optimization**: Lower API costs due to reduced token consumption
-2026-07-31T16:35:38.6909718Z     
-2026-07-31T16:35:38.6909934Z     ### Response Diff Detection
-2026-07-31T16:35:38.6910166Z     
-2026-07-31T16:35:38.6910685Z     The Fast Server includes automatic diff detection to efficiently track changes between consecutive tool executions:
-2026-07-31T16:35:38.6911217Z     
-2026-07-31T16:35:38.6911392Z     ```json
-2026-07-31T16:35:38.6911585Z     {
-2026-07-31T16:35:38.6911801Z       \"name\": \"browser_click\",
-2026-07-31T16:35:38.6912058Z       \"arguments\": {
-2026-07-31T16:35:38.6912320Z         \"element\": \"Load more button\",
-2026-07-31T16:35:38.6912620Z         \"ref\": \"#load-more\",
-2026-07-31T16:35:38.6912878Z         \"expectation\": {
-2026-07-31T16:35:38.6913140Z           \"includeSnapshot\": true,
-2026-07-31T16:35:38.6913534Z           \"diffOptions\": {
-2026-07-31T16:35:38.6913788Z             \"enabled\": true,
-2026-07-31T16:35:38.6914045Z             \"threshold\": 0.1,
-2026-07-31T16:35:38.6914313Z             \"format\": \"unified\",
-2026-07-31T16:35:38.6914590Z             \"maxDiffLines\": 50,
-2026-07-31T16:35:38.6914838Z             \"context\": 3
-2026-07-31T16:35:38.6915220Z           }
-2026-07-31T16:35:38.6915414Z         }
-2026-07-31T16:35:38.6915594Z       }
-2026-07-31T16:35:38.6915770Z     }
-2026-07-31T16:35:38.6915944Z     ```
-2026-07-31T16:35:38.6916115Z     
-2026-07-31T16:35:38.6916322Z     #### Diff Detection Benefits
-2026-07-31T16:35:38.6916564Z     
-2026-07-31T16:35:38.6916924Z     - **Minimal token usage**: Only changed content is shown instead of full snapshots
-2026-07-31T16:35:38.6917479Z     - **Change tracking**: Automatically detects what changed after actions
-2026-07-31T16:35:38.6918024Z     - **Flexible formats**: Choose between unified, split, or minimal diff formats
-2026-07-31T16:35:38.6918578Z     - **Smart caching**: Compares against previous response from the same tool
-2026-07-31T16:35:38.6918949Z     
-2026-07-31T16:35:38.6919160Z     #### When to Use Diff Detection
-2026-07-31T16:35:38.6919406Z     
-2026-07-31T16:35:38.6919736Z     1. **UI interactions without navigation**: Clicks, typing, hover effects
-2026-07-31T16:35:38.6920257Z     2. **Dynamic content updates**: Loading more items, real-time updates
-2026-07-31T16:35:38.6920724Z     3. **Form interactions**: Track changes as users fill forms
-2026-07-31T16:35:38.6921218Z     4. **Selective monitoring**: Use with CSS selectors to track specific areas
-2026-07-31T16:35:38.6921591Z     
-2026-07-31T16:35:38.6921767Z     ```json
-2026-07-31T16:35:38.6921955Z     {
-2026-07-31T16:35:38.6922172Z       \"name\": \"browser_type\",
-2026-07-31T16:35:38.6922429Z       \"arguments\": {
-2026-07-31T16:35:38.6922688Z         \"element\": \"Search input\",
-2026-07-31T16:35:38.6922963Z         \"ref\": \"#search\",
-2026-07-31T16:35:38.6923232Z         \"text\": \"playwright\",
-2026-07-31T16:35:38.6923487Z         \"expectation\": {
-2026-07-31T16:35:38.6923754Z           \"includeSnapshot\": true,
-2026-07-31T16:35:38.6924042Z           \"snapshotOptions\": {
-2026-07-31T16:35:38.6924348Z             \"selector\": \"#search-results\"
-2026-07-31T16:35:38.6924621Z           },
-2026-07-31T16:35:38.6924823Z           \"diffOptions\": {
-2026-07-31T16:35:38.6925209Z             \"enabled\": true,
-2026-07-31T16:35:38.6925477Z             \"format\": \"minimal\"
-2026-07-31T16:35:38.6925725Z           }
-2026-07-31T16:35:38.6925905Z         }
-2026-07-31T16:35:38.6926086Z       }
-2026-07-31T16:35:38.6926261Z     }
-2026-07-31T16:35:38.6926434Z     ```
-2026-07-31T16:35:38.6926609Z     
-2026-07-31T16:35:38.6926792Z     ### Best Practices
-2026-07-31T16:35:38.6927001Z     
-2026-07-31T16:35:38.6927258Z     1. **Use batch execution** for multi-step workflows
-2026-07-31T16:35:38.6927683Z     2. **Enable diff detection** for actions without page navigation
-2026-07-31T16:35:38.6928409Z     3. **Disable snapshots** for intermediate steps that don't need verification
-2026-07-31T16:35:38.6928934Z     4. **Use selective snapshots** with CSS selectors for large pages
-2026-07-31T16:35:38.6929372Z     5. **Filter console messages** to relevant levels only
-2026-07-31T16:35:38.6929858Z     6. **Combine global and step-specific expectations** for fine-grained control
-2026-07-31T16:35:38.6930344Z     7. **Use minimal diff format** for maximum token savings
-2026-07-31T16:35:38.6930650Z     
-2026-07-31T16:35:38.6930863Z     ### Diagnostic System Examples
-2026-07-31T16:35:38.6931112Z     
-2026-07-31T16:35:38.6931370Z     **Find alternative elements when selectors fail:**
-2026-07-31T16:35:38.6931678Z     ```json
-2026-07-31T16:35:38.6931860Z     {
-2026-07-31T16:35:38.6932086Z       \"name\": \"browser_find_elements\",
-2026-07-31T16:35:38.6932360Z       \"arguments\": {
-2026-07-31T16:35:38.6932588Z         \"searchCriteria\": {
-2026-07-31T16:35:38.6932858Z           \"text\": \"Submit\",
-2026-07-31T16:35:38.6933238Z           \"role\": \"button\"
-2026-07-31T16:35:38.6933472Z         },
-2026-07-31T16:35:38.6933668Z         \"maxResults\": 5
-2026-07-31T16:35:38.6933885Z       }
-2026-07-31T16:35:38.6934069Z     }
-2026-07-31T16:35:38.6934244Z     ```
-2026-07-31T16:35:38.6934420Z     
-2026-07-31T16:35:38.6934669Z     **Generate comprehensive page diagnostics:**
-2026-07-31T16:35:38.6934963Z     ```json
-2026-07-31T16:35:38.6935482Z     {
-2026-07-31T16:35:38.6935723Z       \"name\": \"browser_diagnose\",
-2026-07-31T16:35:38.6935997Z       \"arguments\": {
-2026-07-31T16:35:38.6936272Z         \"includePerformanceMetrics\": true,
-2026-07-31T16:35:38.6936609Z         \"includeAccessibilityInfo\": true,
-2026-07-31T16:35:38.6936965Z         \"includeTroubleshootingSuggestions\": true
-2026-07-31T16:35:38.6937264Z       }
-2026-07-31T16:35:38.6937441Z     }
-2026-07-31T16:35:38.6937617Z     ```
-2026-07-31T16:35:38.6937786Z     
-2026-07-31T16:35:38.6938053Z     **Debug automation failures with enhanced errors:**
-2026-07-31T16:35:38.6938492Z     All tools automatically provide enhanced error messages with:
-2026-07-31T16:35:38.6938882Z     - Alternative element suggestions
-2026-07-31T16:35:38.6939163Z     - Page structure analysis
-2026-07-31T16:35:38.6939450Z     - Context-aware troubleshooting tips
-2026-07-31T16:35:38.6939741Z     - Performance insights
-2026-07-31T16:35:38.6939969Z     
-2026-07-31T16:35:38.6940180Z     ### Network Request Filtering
-2026-07-31T16:35:38.6940417Z     
-2026-07-31T16:35:38.6941048Z     The `browser_network_requests` tool provides advanced filtering capabilities to reduce token usage by up to 80-95% when working with network logs.
-2026-07-31T16:35:38.6941683Z     
-2026-07-31T16:35:38.6941870Z     #### Basic Usage Examples
-2026-07-31T16:35:38.6942103Z     
-2026-07-31T16:35:38.6942275Z     ```json
-2026-07-31T16:35:38.6942501Z     // Filter API requests only
-2026-07-31T16:35:38.6942742Z     {
-2026-07-31T16:35:38.6942975Z       \"name\": \"browser_network_requests\",
-2026-07-31T16:35:38.6943269Z       \"arguments\": {
-2026-07-31T16:35:38.6943544Z         \"urlPatterns\": [\"api/\", \"/graphql\"]
-2026-07-31T16:35:38.6943821Z       }
-2026-07-31T16:35:38.6944005Z     }
-2026-07-31T16:35:38.6944176Z     
-2026-07-31T16:35:38.6944392Z     // Exclude analytics and tracking
-2026-07-31T16:35:38.6944646Z     {
-2026-07-31T16:35:38.6944877Z       \"name\": \"browser_network_requests\", 
-2026-07-31T16:35:38.6945516Z       \"arguments\": {
-2026-07-31T16:35:38.6945878Z         \"excludeUrlPatterns\": [\"analytics\", \"tracking\", \"ads\"]
-2026-07-31T16:35:38.6946226Z       }
-2026-07-31T16:35:38.6946402Z     }
-2026-07-31T16:35:38.6946574Z     
-2026-07-31T16:35:38.6946772Z     // Success responses only
-2026-07-31T16:35:38.6947001Z     {
-2026-07-31T16:35:38.6947229Z       \"name\": \"browser_network_requests\",
-2026-07-31T16:35:38.6947505Z       \"arguments\": {
-2026-07-31T16:35:38.6947798Z         \"statusRanges\": [{ \"min\": 200, \"max\": 299 }]
-2026-07-31T16:35:38.6948099Z       }
-2026-07-31T16:35:38.6948277Z     }
-2026-07-31T16:35:38.6948593Z     
-2026-07-31T16:35:38.6948785Z     // Recent errors only
-2026-07-31T16:35:38.6949002Z     {
-2026-07-31T16:35:38.6949236Z       \"name\": \"browser_network_requests\",
-2026-07-31T16:35:38.6949511Z       \"arguments\": {
-2026-07-31T16:35:38.6949805Z         \"statusRanges\": [{ \"min\": 400, \"max\": 599 }],
-2026-07-31T16:35:38.6950117Z         \"maxRequests\": 5,
-2026-07-31T16:35:38.6950354Z         \"newestFirst\": true
-2026-07-31T16:35:38.6950592Z       }
-2026-07-31T16:35:38.6950771Z     }
-2026-07-31T16:35:38.6950948Z     ```
-2026-07-31T16:35:38.6951120Z     
-2026-07-31T16:35:38.6951303Z     #### Advanced Filtering
-2026-07-31T16:35:38.6951528Z     
-2026-07-31T16:35:38.6951705Z     ```json
-2026-07-31T16:35:38.6951944Z     // Complex filtering for API debugging
-2026-07-31T16:35:38.6952211Z     {
-2026-07-31T16:35:38.6952437Z       \"name\": \"browser_network_requests\",
-2026-07-31T16:35:38.6952718Z       \"arguments\": {
-2026-07-31T16:35:38.6953025Z         \"urlPatterns\": [\"/api/users\", \"/api/posts\"],
-2026-07-31T16:35:38.6953518Z         \"excludeUrlPatterns\": [\"/api/health\"],
-2026-07-31T16:35:38.6953848Z         \"methods\": [\"GET\", \"POST\"],
-2026-07-31T16:35:38.6954122Z         \"statusRanges\": [
-2026-07-31T16:35:38.6954390Z           { \"min\": 200, \"max\": 299 },
-2026-07-31T16:35:38.6954678Z           { \"min\": 400, \"max\": 499 }
-2026-07-31T16:35:38.6954932Z         ],
-2026-07-31T16:35:38.6955293Z         \"maxRequests\": 10,
-2026-07-31T16:35:38.6955552Z         \"newestFirst\": true
-2026-07-31T16:35:38.6955785Z       }
-2026-07-31T16:35:38.6955967Z     }
-2026-07-31T16:35:38.6956141Z     
-2026-07-31T16:35:38.6956356Z     // Monitor only failed requests
-2026-07-31T16:35:38.6956608Z     {
-2026-07-31T16:35:38.6956851Z       \"name\": \"browser_network_requests\", 
-2026-07-31T16:35:38.6957137Z       \"arguments\": {
-2026-07-31T16:35:38.6957362Z         \"statusRanges\": [
-2026-07-31T16:35:38.6957619Z           { \"min\": 400, \"max\": 499 },
-2026-07-31T16:35:38.6957915Z           { \"min\": 500, \"max\": 599 }
-2026-07-31T16:35:38.6958164Z         ],
-2026-07-31T16:35:38.6958360Z         \"maxRequests\": 3
-2026-07-31T16:35:38.6958578Z       }
-2026-07-31T16:35:38.6958751Z     }
-2026-07-31T16:35:38.6958928Z     ```
-2026-07-31T16:35:38.6959102Z     
-2026-07-31T16:35:38.6959307Z     #### Regex Pattern Support
-2026-07-31T16:35:38.6959653Z     
-2026-07-31T16:35:38.6959886Z     ```json
-2026-07-31T16:35:38.6960070Z     {
-2026-07-31T16:35:38.6960306Z       \"name\": \"browser_network_requests\",
-2026-07-31T16:35:38.6960591Z       \"arguments\": {
-2026-07-31T16:35:38.6960889Z         \"urlPatterns\": [\"^/api/v[0-9]+/users$\"],
-2026-07-31T16:35:38.6961261Z         \"excludeUrlPatterns\": [\"\\\\.(css|js|png)$\"]
-2026-07-31T16:35:38.6961562Z       }
-2026-07-31T16:35:38.6961736Z     }
-2026-07-31T16:35:38.6961911Z     ```
-2026-07-31T16:35:38.6962088Z     
-2026-07-31T16:35:38.6962301Z     #### Token Optimization Benefits
-2026-07-31T16:35:38.6962551Z     
-2026-07-31T16:35:38.6962879Z     - **Massive reduction**: 80-95% fewer tokens for large applications
-2026-07-31T16:35:38.6963351Z     - **Focused debugging**: See only relevant network activity
-2026-07-31T16:35:38.6963843Z     - **Performance monitoring**: Track specific endpoints or error patterns
-2026-07-31T16:35:38.6964344Z     - **Cost savings**: Lower API costs due to reduced token usage
-2026-07-31T16:35:38.6964673Z     
-2026-07-31T16:35:38.6964889Z     #### When to Use Network Filtering
-2026-07-31T16:35:38.6965281Z     
-2026-07-31T16:35:38.6965578Z     1. **API debugging**: Focus on specific endpoints and methods
-2026-07-31T16:35:38.6965988Z     2. **Error monitoring**: Track only failed requests
-2026-07-31T16:35:38.6966440Z     3. **Performance analysis**: Monitor slow or problematic endpoints  
-2026-07-31T16:35:38.6966912Z     4. **Large applications**: Reduce overwhelming network logs
-2026-07-31T16:35:38.6967432Z     5. **Token management**: Stay within LLM context limits
-2026-07-31T16:35:38.6967832Z     
-2026-07-31T16:35:38.6968272Z     ### Migration Guide
-2026-07-31T16:35:38.6968502Z     
-2026-07-31T16:35:38.6968811Z     Existing code continues to work without changes. To optimize:
-2026-07-31T16:35:38.6969148Z     
-2026-07-31T16:35:38.6969519Z     1. Start by adding `expectation: { includeSnapshot: false }` to intermediate steps
-2026-07-31T16:35:38.6970018Z     2. Use batch execution for sequences of 3+ operations
-2026-07-31T16:35:38.6970462Z     3. Gradually fine-tune expectations based on your specific needs
-2026-07-31T16:35:38.6970934Z     4. Use diagnostic tools when automation fails or needs debugging
-2026-07-31T16:35:38.6971586Z     5. Set `--tool-profile=full` before upgrading when a client depends on the complete static `tools/list` response.
-2026-07-31T16:35:38.6972101Z     "
-2026-07-31T16:35:38.6972210Z 
-2026-07-31T16:35:38.6972400Z       20 |   const readme = await readFile('README.md', 'utf8');
-2026-07-31T16:35:38.6972717Z       21 |
-2026-07-31T16:35:38.6973038Z     > 22 |   expect(readme).not.toContain('connection.sever.connect');
-2026-07-31T16:35:38.6973532Z          |                      ^
-2026-07-31T16:35:38.6973931Z       23 |   expect(readme).toContain('await connection.connect(transport);');
-2026-07-31T16:35:38.6974305Z       24 | });
-2026-07-31T16:35:38.6974495Z       25 |
-2026-07-31T16:35:38.6974968Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/readme-contract.spec.ts:22:22
-2026-07-31T16:35:38.6975665Z 
-2026-07-31T16:35:38.6976157Z     Error Context: test-results/readme-contract-README-pro-6e0e0-eturned-MCP-server-directly-chromium/error-context.md
-2026-07-31T16:35:38.6976670Z 
-2026-07-31T16:35:38.6977315Z   6) [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
-2026-07-31T16:35:38.6977725Z 
-2026-07-31T16:35:38.6977873Z     Error: expect(received).toThrow(expected)
-2026-07-31T16:35:38.6978086Z 
-2026-07-31T16:35:38.6978222Z     Expected substring: "Invalid header"
-2026-07-31T16:35:38.6978409Z 
-2026-07-31T16:35:38.6978546Z     Received function did not throw
-2026-07-31T16:35:38.6978561Z 
-2026-07-31T16:35:38.6978646Z       68 |
-2026-07-31T16:35:38.6978881Z       69 | test('rejects invalid CDP header names and line breaks', () => {
-2026-07-31T16:35:38.6979147Z     > 70 |   expect(() => headerParser('Bad Header: value')).toThrow('Invalid header');
-2026-07-31T16:35:38.6979302Z          |                                                   ^
-2026-07-31T16:35:38.6979545Z       71 |   expect(() => headerParser('X-Test: safe\r\nInjected: value')).toThrow(
-2026-07-31T16:35:38.6979665Z       72 |     'Invalid header'
-2026-07-31T16:35:38.6979754Z       73 |   );
-2026-07-31T16:35:38.6980124Z         at /home/runner/work/fast-playwright-mcp/fast-playwright-mcp/tests/upstream-config.spec.ts:70:51
-2026-07-31T16:35:38.6980132Z 
-2026-07-31T16:35:38.6980612Z     Error Context: test-results/upstream-config-rejects-in-20ac7-eader-names-and-line-breaks-chromium/error-context.md
-2026-07-31T16:35:38.6980620Z 
-2026-07-31T16:35:38.6980707Z   6 failed
-2026-07-31T16:35:38.6981162Z     [chromium] › tests/network-origin-filter.spec.ts:18:1 › allowedOrigins accepts a full URL origin 
-2026-07-31T16:35:38.6981678Z     [chromium] › tests/network-origin-filter.spec.ts:38:1 › blockedOrigins wins when an origin is both allowed and blocked 
-2026-07-31T16:35:38.6982197Z     [chromium] › tests/partial-snapshot-css.spec.ts:4:1 › snapshotOptions.selector scopes the snapshot with a CSS selector 
-2026-07-31T16:35:38.6982691Z     [chromium] › tests/readme-contract.spec.ts:8:1 › README contains one generated tool catalog with current batch schema 
-2026-07-31T16:35:38.6983180Z     [chromium] › tests/readme-contract.spec.ts:19:1 › README programmatic example uses the returned MCP server directly 
-2026-07-31T16:35:38.6983602Z     [chromium] › tests/upstream-config.spec.ts:69:1 › rejects invalid CDP header names and line breaks 
-2026-07-31T16:35:38.6983706Z   20 passed (8.2s)
-2026-07-31T16:35:38.7040719Z [agent/pr31-review-fixes 9bf2666] test: record review fix FAIL [review-fix-result]
-2026-07-31T16:35:38.7041288Z  1 file changed, 2 insertions(+), 2 deletions(-)
-2026-07-31T16:35:41.3236545Z To https://github.com/tontoko/fast-playwright-mcp
-2026-07-31T16:35:41.3237510Z    97b3ce5..9bf2666  HEAD -> agent/pr31-review-fixes
-2026-07-31T16:35:41.3298912Z ##[error]Process completed with exit code 1.
-2026-07-31T16:35:41.3420257Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-2026-07-31T16:35:41.3421519Z Post job cleanup.
-2026-07-31T16:35:41.4303437Z [command]/usr/bin/git version
-2026-07-31T16:35:41.4347076Z git version 2.54.0
-2026-07-31T16:35:41.4389746Z Temporarily overriding HOME='/home/runner/work/_temp/1ed1d585-04d6-4eb2-9389-a7c851269f13' before making global git config changes
-2026-07-31T16:35:41.4391221Z Adding repository directory to the temporary git global config as a safe directory
-2026-07-31T16:35:41.4396457Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
-2026-07-31T16:35:41.4439329Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-07-31T16:35:41.4478585Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-07-31T16:35:41.4737873Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-07-31T16:35:41.4771480Z http.https://github.com/.extraheader
-2026-07-31T16:35:41.4784111Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-07-31T16:35:41.4821251Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-07-31T16:35:41.5097934Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-07-31T16:35:41.5149847Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-07-31T16:35:41.5614134Z Cleaning up orphan processes
-2026-07-31T16:35:41.6040984Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T01:09:38.6683375Z   PATCH_SCRIPT: scripts/apply-pr31-final.py
+2026-08-01T01:09:38.6683679Z   PLAYWRIGHT_VERSION: 1.63.0-alpha-2026-07-31
+2026-08-01T01:09:38.6683949Z ##[endgroup]
+2026-08-01T01:09:38.7458183Z ##[group]Run bun install
+2026-08-01T01:09:38.7458478Z [36;1mbun install[0m
+2026-08-01T01:09:38.7502689Z shell: /usr/bin/bash -e {0}
+2026-08-01T01:09:38.7502938Z env:
+2026-08-01T01:09:38.7503146Z   FINAL_BRANCH: agent/pr31-final-review
+2026-08-01T01:09:38.7503444Z   STAGING_BRANCH: agent/pr31-review-fixes
+2026-08-01T01:09:38.7503766Z   PATCH_ARCHIVE: scripts/apply-pr31-final.py.gz.b64
+2026-08-01T01:09:38.7504297Z   PATCH_SCRIPT: scripts/apply-pr31-final.py
+2026-08-01T01:09:38.7504573Z ##[endgroup]
+2026-08-01T01:09:38.7595720Z bun install v1.3.5 (1e86cebd)
+2026-08-01T01:09:38.7654518Z Resolving dependencies
+2026-08-01T01:09:39.1718458Z Resolved, downloaded and extracted [14]
+2026-08-01T01:09:39.1799084Z Saved lockfile
+2026-08-01T01:09:39.1799570Z 
+2026-08-01T01:09:39.1799867Z + @playwright/test@1.63.0-alpha-2026-07-31
+2026-08-01T01:09:39.1800241Z + playwright@1.63.0-alpha-2026-07-31
+2026-08-01T01:09:39.1800585Z + playwright-core@1.63.0-alpha-2026-07-31
+2026-08-01T01:09:39.1800864Z 
+2026-08-01T01:09:39.1801008Z 3 packages installed [421.00ms]
+2026-08-01T01:09:39.1982392Z ##[group]Run set -euo pipefail
+2026-08-01T01:09:39.1982726Z [36;1mset -euo pipefail[0m
+2026-08-01T01:09:39.1982962Z [36;1mbun run lint-fix[0m
+2026-08-01T01:09:39.1983190Z [36;1mbun run check:encoding[0m
+2026-08-01T01:09:39.1983432Z [36;1mbun run typecheck[0m
+2026-08-01T01:09:39.1983660Z [36;1mbun run build:publish[0m
+2026-08-01T01:09:39.1983916Z [36;1mbun run update-readme[0m
+2026-08-01T01:09:39.1984147Z [36;1mbun run lint-fix[0m
+2026-08-01T01:09:39.1984369Z [36;1mbun run check:encoding[0m
+2026-08-01T01:09:39.1984607Z [36;1mbun run typecheck[0m
+2026-08-01T01:09:39.1984834Z [36;1mbun run build:publish[0m
+2026-08-01T01:09:39.1985065Z [36;1mbun run lint[0m
+2026-08-01T01:09:39.1985306Z [36;1mbun run benchmark:tools -- --check[0m
+2026-08-01T01:09:39.1985588Z [36;1mgit diff --check[0m
+2026-08-01T01:09:39.2031482Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-08-01T01:09:39.2031815Z env:
+2026-08-01T01:09:39.2032065Z   FINAL_BRANCH: agent/pr31-final-review
+2026-08-01T01:09:39.2032359Z   STAGING_BRANCH: agent/pr31-review-fixes
+2026-08-01T01:09:39.2032680Z   PATCH_ARCHIVE: scripts/apply-pr31-final.py.gz.b64
+2026-08-01T01:09:39.2033017Z   PATCH_SCRIPT: scripts/apply-pr31-final.py
+2026-08-01T01:09:39.2033286Z ##[endgroup]
+2026-08-01T01:09:39.2117850Z $ ultracite format
+2026-08-01T01:09:41.2225850Z tests/dialog-lifecycle.spec.ts:7:11 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2226711Z 
+2026-08-01T01:09:41.2227574Z   × unterminated string literal
+2026-08-01T01:09:41.2227987Z   
+2026-08-01T01:09:41.2228515Z     5 │   return result.content
+2026-08-01T01:09:41.2229223Z     6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2230099Z   > 7 │     .join('
+2026-08-01T01:09:41.2230754Z       │           ^
+2026-08-01T01:09:41.2231221Z     8 │ ');
+2026-08-01T01:09:41.2231586Z     9 │ }
+2026-08-01T01:09:41.2231891Z   
+2026-08-01T01:09:41.2232174Z   i 
+2026-08-01T01:09:41.2232454Z   
+2026-08-01T01:09:41.2232901Z     5 │   return result.content
+2026-08-01T01:09:41.2233591Z     6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2234183Z   > 7 │     .join('
+2026-08-01T01:09:41.2234558Z       │           ^
+2026-08-01T01:09:41.2234927Z     8 │ ');
+2026-08-01T01:09:41.2235265Z     9 │ }
+2026-08-01T01:09:41.2235556Z   
+2026-08-01T01:09:41.2236003Z   i The closing quote must be on the same line.
+2026-08-01T01:09:41.2236480Z   
+2026-08-01T01:09:41.2236640Z 
+2026-08-01T01:09:41.2237513Z tests/dialog-lifecycle.spec.ts:8:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2238157Z 
+2026-08-01T01:09:41.2238429Z   × unterminated string literal
+2026-08-01T01:09:41.2238829Z   
+2026-08-01T01:09:41.2239605Z      6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2240226Z      7 │     .join('
+2026-08-01T01:09:41.2240595Z    > 8 │ ');
+2026-08-01T01:09:41.2240956Z        │ ^^^
+2026-08-01T01:09:41.2241297Z      9 │ }
+2026-08-01T01:09:41.2241663Z     10 │ 
+2026-08-01T01:09:41.2241951Z   
+2026-08-01T01:09:41.2242236Z   i 
+2026-08-01T01:09:41.2242519Z   
+2026-08-01T01:09:41.2243098Z      6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2243687Z      7 │     .join('
+2026-08-01T01:09:41.2244065Z    > 8 │ ');
+2026-08-01T01:09:41.2244412Z        │ ^^^
+2026-08-01T01:09:41.2245306Z      9 │ }
+2026-08-01T01:09:41.2245635Z     10 │ 
+2026-08-01T01:09:41.2245918Z   
+2026-08-01T01:09:41.2246319Z   i The closing quote must be on the same line.
+2026-08-01T01:09:41.2246786Z   
+2026-08-01T01:09:41.2246947Z 
+2026-08-01T01:09:41.2247804Z tests/dialog-lifecycle.spec.ts:9:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2248435Z 
+2026-08-01T01:09:41.2248728Z   × expected `,` but instead found `}`
+2026-08-01T01:09:41.2249157Z   
+2026-08-01T01:09:41.2249738Z      7 │     .join('
+2026-08-01T01:09:41.2250129Z      8 │ ');
+2026-08-01T01:09:41.2250468Z    > 9 │ }
+2026-08-01T01:09:41.2251310Z        │ ^
+2026-08-01T01:09:41.2251694Z     10 │ 
+2026-08-01T01:09:41.2252543Z     11 │ test('dialog modal state clears when a side-channel client closes the dialog', async ({
+2026-08-01T01:09:41.2253270Z   
+2026-08-01T01:09:41.2253574Z   i Remove }
+2026-08-01T01:09:41.2253877Z   
+2026-08-01T01:09:41.2254034Z 
+2026-08-01T01:09:41.2254894Z tests/dialog-lifecycle.spec.ts:18:30 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2255539Z 
+2026-08-01T01:09:41.2255835Z   × expected `,` but instead found `Alert`
+2026-08-01T01:09:41.2256280Z   
+2026-08-01T01:09:41.2256649Z     16 │   server.setContent(
+2026-08-01T01:09:41.2257091Z     17 │     '/',
+2026-08-01T01:09:41.2257822Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2258573Z        │                              ^^^^^
+2026-08-01T01:09:41.2259066Z     19 │     'text/html'
+2026-08-01T01:09:41.2259665Z     20 │   );
+2026-08-01T01:09:41.2259970Z   
+2026-08-01T01:09:41.2260290Z   i Remove Alert
+2026-08-01T01:09:41.2260711Z   
+2026-08-01T01:09:41.2260909Z 
+2026-08-01T01:09:41.2261779Z tests/dialog-lifecycle.spec.ts:18:36 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2262404Z 
+2026-08-01T01:09:41.2262700Z   × expected `,` but instead found `from`
+2026-08-01T01:09:41.2263134Z   
+2026-08-01T01:09:41.2263521Z     16 │   server.setContent(
+2026-08-01T01:09:41.2263953Z     17 │     '/',
+2026-08-01T01:09:41.2264653Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2265429Z        │                                    ^^^^
+2026-08-01T01:09:41.2265930Z     19 │     'text/html'
+2026-08-01T01:09:41.2266337Z     20 │   );
+2026-08-01T01:09:41.2266634Z   
+2026-08-01T01:09:41.2266923Z   i Remove from
+2026-08-01T01:09:41.2267233Z   
+2026-08-01T01:09:41.2267390Z 
+2026-08-01T01:09:41.2268239Z tests/dialog-lifecycle.spec.ts:18:41 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2268887Z 
+2026-08-01T01:09:41.2269180Z   × expected `,` but instead found `page`
+2026-08-01T01:09:41.2269808Z   
+2026-08-01T01:09:41.2270187Z     16 │   server.setContent(
+2026-08-01T01:09:41.2270629Z     17 │     '/',
+2026-08-01T01:09:41.2271320Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2272105Z        │                                         ^^^^
+2026-08-01T01:09:41.2272931Z     19 │     'text/html'
+2026-08-01T01:09:41.2273336Z     20 │   );
+2026-08-01T01:09:41.2273640Z   
+2026-08-01T01:09:41.2273927Z   i Remove page
+2026-08-01T01:09:41.2274244Z   
+2026-08-01T01:09:41.2274402Z 
+2026-08-01T01:09:41.2275257Z tests/dialog-lifecycle.spec.ts:18:45 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2275871Z 
+2026-08-01T01:09:41.2276295Z   × expected `,` but instead found `')">Open dialog</button>'`
+2026-08-01T01:09:41.2276827Z   
+2026-08-01T01:09:41.2277195Z     16 │   server.setContent(
+2026-08-01T01:09:41.2277652Z     17 │     '/',
+2026-08-01T01:09:41.2278359Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2279239Z        │                                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-08-01T01:09:41.2280054Z     19 │     'text/html'
+2026-08-01T01:09:41.2280462Z     20 │   );
+2026-08-01T01:09:41.2280762Z   
+2026-08-01T01:09:41.2281183Z   i Remove ')">Open dialog</button>'
+2026-08-01T01:09:41.2281602Z   
+2026-08-01T01:09:41.2281756Z 
+2026-08-01T01:09:41.2282643Z tests/dialog-lifecycle.spec.ts:18:30 lint/correctness/noUndeclaredVariables ━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2283336Z 
+2026-08-01T01:09:41.2283620Z   × The Alert variable is undeclared.
+2026-08-01T01:09:41.2284043Z   
+2026-08-01T01:09:41.2284412Z     16 │   server.setContent(
+2026-08-01T01:09:41.2284853Z     17 │     '/',
+2026-08-01T01:09:41.2285560Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2286546Z        │                              ^^^^^
+2026-08-01T01:09:41.2287073Z     19 │     'text/html'
+2026-08-01T01:09:41.2287476Z     20 │   );
+2026-08-01T01:09:41.2287770Z   
+2026-08-01T01:09:41.2288246Z   i By default, Biome recognizes browser and Node.js globals.
+2026-08-01T01:09:41.2289077Z     You can ignore more globals using the javascript.globals configuration.
+2026-08-01T01:09:41.2289913Z   
+2026-08-01T01:09:41.2290071Z 
+2026-08-01T01:09:41.2290962Z tests/dialog-lifecycle.spec.ts:18:36 lint/correctness/noUndeclaredVariables ━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2291647Z 
+2026-08-01T01:09:41.2291924Z   × The from variable is undeclared.
+2026-08-01T01:09:41.2292350Z   
+2026-08-01T01:09:41.2292721Z     16 │   server.setContent(
+2026-08-01T01:09:41.2293160Z     17 │     '/',
+2026-08-01T01:09:41.2293856Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2294617Z        │                                    ^^^^
+2026-08-01T01:09:41.2295125Z     19 │     'text/html'
+2026-08-01T01:09:41.2295562Z     20 │   );
+2026-08-01T01:09:41.2295867Z   
+2026-08-01T01:09:41.2296336Z   i By default, Biome recognizes browser and Node.js globals.
+2026-08-01T01:09:41.2297162Z     You can ignore more globals using the javascript.globals configuration.
+2026-08-01T01:09:41.2297770Z   
+2026-08-01T01:09:41.2297926Z 
+2026-08-01T01:09:41.2298812Z tests/dialog-lifecycle.spec.ts:18:41 lint/correctness/noInvalidUseBeforeDeclaration ━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2299779Z 
+2026-08-01T01:09:41.2300153Z   × This variable is used before its declaration.
+2026-08-01T01:09:41.2300644Z   
+2026-08-01T01:09:41.2301014Z     16 │   server.setContent(
+2026-08-01T01:09:41.2301455Z     17 │     '/',
+2026-08-01T01:09:41.2302156Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2302945Z        │                                         ^^^^
+2026-08-01T01:09:41.2303461Z     19 │     'text/html'
+2026-08-01T01:09:41.2303862Z     20 │   );
+2026-08-01T01:09:41.2304168Z   
+2026-08-01T01:09:41.2304539Z   i The variable is declared here:
+2026-08-01T01:09:41.2304943Z   
+2026-08-01T01:09:41.2305271Z     20 │   );
+2026-08-01T01:09:41.2305832Z     21 │   const browserContext = await cdpServer.start();
+2026-08-01T01:09:41.2306540Z   > 22 │   const [page] = browserContext.pages();
+2026-08-01T01:09:41.2307085Z        │          ^^^^
+2026-08-01T01:09:41.2307826Z     23 │   page.on('dialog', () => {
+2026-08-01T01:09:41.2308505Z     24 │     // Keep the dialog open for the assertion below.
+2026-08-01T01:09:41.2309012Z   
+2026-08-01T01:09:41.2309173Z 
+2026-08-01T01:09:41.2310230Z tests/dialog-lifecycle.spec.ts:7:11 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2310848Z 
+2026-08-01T01:09:41.2311099Z   × unterminated string literal
+2026-08-01T01:09:41.2311487Z   
+2026-08-01T01:09:41.2311862Z     5 │   return result.content
+2026-08-01T01:09:41.2312514Z     6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2313298Z   > 7 │     .join('
+2026-08-01T01:09:41.2313665Z       │           ^
+2026-08-01T01:09:41.2313986Z     8 │ ');
+2026-08-01T01:09:41.2314289Z     9 │ }
+2026-08-01T01:09:41.2314551Z   
+2026-08-01T01:09:41.2314800Z   i 
+2026-08-01T01:09:41.2315049Z   
+2026-08-01T01:09:41.2315420Z     5 │   return result.content
+2026-08-01T01:09:41.2316046Z     6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2316610Z   > 7 │     .join('
+2026-08-01T01:09:41.2316947Z       │           ^
+2026-08-01T01:09:41.2317278Z     8 │ ');
+2026-08-01T01:09:41.2317576Z     9 │ }
+2026-08-01T01:09:41.2317826Z   
+2026-08-01T01:09:41.2318185Z   i The closing quote must be on the same line.
+2026-08-01T01:09:41.2318607Z   
+2026-08-01T01:09:41.2318756Z 
+2026-08-01T01:09:41.2319813Z tests/dialog-lifecycle.spec.ts:8:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2320408Z 
+2026-08-01T01:09:41.2320670Z   × unterminated string literal
+2026-08-01T01:09:41.2321018Z   
+2026-08-01T01:09:41.2321563Z      6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2322124Z      7 │     .join('
+2026-08-01T01:09:41.2322728Z    > 8 │ ');
+2026-08-01T01:09:41.2323176Z        │ ^^^
+2026-08-01T01:09:41.2323819Z      9 │ }
+2026-08-01T01:09:41.2324336Z     10 │ 
+2026-08-01T01:09:41.2324725Z   
+2026-08-01T01:09:41.2325284Z   i 
+2026-08-01T01:09:41.2325689Z   
+2026-08-01T01:09:41.2326420Z      6 │     .map((part) => (part.type === 'text' ? part.text : ''))
+2026-08-01T01:09:41.2327133Z      7 │     .join('
+2026-08-01T01:09:41.2390555Z    > 8 │ ');
+2026-08-01T01:09:41.2391132Z        │ ^^^
+2026-08-01T01:09:41.2391557Z      9 │ }
+2026-08-01T01:09:41.2391965Z     10 │ 
+2026-08-01T01:09:41.2392290Z   
+2026-08-01T01:09:41.2392734Z   i The closing quote must be on the same line.
+2026-08-01T01:09:41.2393059Z   
+2026-08-01T01:09:41.2393165Z 
+2026-08-01T01:09:41.2393690Z tests/dialog-lifecycle.spec.ts:9:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2394081Z 
+2026-08-01T01:09:41.2394303Z   × expected `,` but instead found `}`
+2026-08-01T01:09:41.2394583Z   
+2026-08-01T01:09:41.2394788Z      7 │     .join('
+2026-08-01T01:09:41.2395060Z      8 │ ');
+2026-08-01T01:09:41.2395267Z    > 9 │ }
+2026-08-01T01:09:41.2395465Z        │ ^
+2026-08-01T01:09:41.2395682Z     10 │ 
+2026-08-01T01:09:41.2396195Z     11 │ test('dialog modal state clears when a side-channel client closes the dialog', async ({
+2026-08-01T01:09:41.2396951Z   
+2026-08-01T01:09:41.2397125Z   i Remove }
+2026-08-01T01:09:41.2397304Z   
+2026-08-01T01:09:41.2397394Z 
+2026-08-01T01:09:41.2398451Z tests/dialog-lifecycle.spec.ts:18:30 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2398835Z 
+2026-08-01T01:09:41.2399095Z   × expected `,` but instead found `Alert`
+2026-08-01T01:09:41.2399360Z   
+2026-08-01T01:09:41.2399857Z     16 │   server.setContent(
+2026-08-01T01:09:41.2400126Z     17 │     '/',
+2026-08-01T01:09:41.2400550Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2400986Z        │                              ^^^^^
+2026-08-01T01:09:41.2401274Z     19 │     'text/html'
+2026-08-01T01:09:41.2401507Z     20 │   );
+2026-08-01T01:09:41.2401685Z   
+2026-08-01T01:09:41.2401859Z   i Remove Alert
+2026-08-01T01:09:41.2402043Z   
+2026-08-01T01:09:41.2402138Z 
+2026-08-01T01:09:41.2402614Z tests/dialog-lifecycle.spec.ts:18:36 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2402985Z 
+2026-08-01T01:09:41.2403152Z   × expected `,` but instead found `from`
+2026-08-01T01:09:41.2403401Z   
+2026-08-01T01:09:41.2403614Z     16 │   server.setContent(
+2026-08-01T01:09:41.2403867Z     17 │     '/',
+2026-08-01T01:09:41.2404261Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2404699Z        │                                    ^^^^
+2026-08-01T01:09:41.2404987Z     19 │     'text/html'
+2026-08-01T01:09:41.2405212Z     20 │   );
+2026-08-01T01:09:41.2405385Z   
+2026-08-01T01:09:41.2405737Z   i Remove from
+2026-08-01T01:09:41.2405931Z   
+2026-08-01T01:09:41.2406029Z 
+2026-08-01T01:09:41.2406501Z tests/dialog-lifecycle.spec.ts:18:41 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2406859Z 
+2026-08-01T01:09:41.2407020Z   × expected `,` but instead found `page`
+2026-08-01T01:09:41.2407272Z   
+2026-08-01T01:09:41.2407496Z     16 │   server.setContent(
+2026-08-01T01:09:41.2407752Z     17 │     '/',
+2026-08-01T01:09:41.2408147Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2408598Z        │                                         ^^^^
+2026-08-01T01:09:41.2408894Z     19 │     'text/html'
+2026-08-01T01:09:41.2409121Z     20 │   );
+2026-08-01T01:09:41.2409297Z   
+2026-08-01T01:09:41.2409794Z   i Remove page
+2026-08-01T01:09:41.2410134Z   
+2026-08-01T01:09:41.2410313Z 
+2026-08-01T01:09:41.2411413Z tests/dialog-lifecycle.spec.ts:18:45 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2411888Z 
+2026-08-01T01:09:41.2412192Z   × expected `,` but instead found `')">Open dialog</button>'`
+2026-08-01T01:09:41.2412620Z   
+2026-08-01T01:09:41.2412902Z     16 │   server.setContent(
+2026-08-01T01:09:41.2413166Z     17 │     '/',
+2026-08-01T01:09:41.2413574Z   > 18 │     '<button onclick="alert('Alert from page')">Open dialog</button>',
+2026-08-01T01:09:41.2414249Z        │                                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-08-01T01:09:41.2414585Z     19 │     'text/html'
+2026-08-01T01:09:41.2414937Z     20 │   );
+2026-08-01T01:09:41.2415113Z   
+2026-08-01T01:09:41.2415321Z   i Remove ')">Open dialog</button>'
+2026-08-01T01:09:41.2415564Z   
+2026-08-01T01:09:41.2415654Z 
+2026-08-01T01:09:41.2416154Z tests/upstream-runtime.spec.ts:85:82 lint/style/noDoneCallback ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2416539Z 
+2026-08-01T01:09:41.2416780Z   × Disallow using a callback in asynchronous tests and hooks.
+2026-08-01T01:09:41.2417101Z   
+2026-08-01T01:09:41.2417670Z   > 85 │ test('extension profile discovery prefers the browser last-used profile', async (_fixtures, testInfo) => {
+2026-08-01T01:09:41.2418392Z        │                                                                                  ^^^^^^^^^
+2026-08-01T01:09:41.2419054Z     86 │   const userDataDir = testInfo.outputPath('user-data');
+2026-08-01T01:09:41.2420044Z     87 │   await Promise.all([
+2026-08-01T01:09:41.2420284Z   
+2026-08-01T01:09:41.2420573Z   i Return a Promise instead of relying on callback parameter.
+2026-08-01T01:09:41.2420893Z   
+2026-08-01T01:09:41.2420996Z 
+2026-08-01T01:09:41.2421277Z Checked 282 files in 969ms. Fixed 10 files.
+2026-08-01T01:09:41.2421738Z Found 18 errors.
+2026-08-01T01:09:41.2422703Z check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-08-01T01:09:41.2423210Z 
+2026-08-01T01:09:41.2423554Z   × Some errors were emitted while applying fixes.
+2026-08-01T01:09:41.2424021Z   
+2026-08-01T01:09:41.2424375Z 
+2026-08-01T01:09:41.2872315Z Failed to run Ultracite: Command failed: npx @biomejs/biome check --write ./
+2026-08-01T01:09:41.2916822Z error: script "lint-fix" exited with code 1
+2026-08-01T01:09:41.2935158Z ##[error]Process completed with exit code 1.
+2026-08-01T01:09:41.3021706Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-01T01:09:41.3023138Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-08-01T01:09:41.3023513Z with:
+2026-08-01T01:09:41.3023717Z   name: pr31-final-quality-failure
+2026-08-01T01:09:41.3024123Z   path: /tmp/pr31-red.log
+test-results/**/error-context.md
+playwright-report/**
+
+2026-08-01T01:09:41.3024535Z   if-no-files-found: warn
+2026-08-01T01:09:41.3024761Z   retention-days: 3
+2026-08-01T01:09:41.3024966Z   compression-level: 6
+2026-08-01T01:09:41.3025170Z   overwrite: false
+2026-08-01T01:09:41.3025374Z   include-hidden-files: false
+2026-08-01T01:09:41.3025601Z env:
+2026-08-01T01:09:41.3025831Z   FINAL_BRANCH: agent/pr31-final-review
+2026-08-01T01:09:41.3026105Z   STAGING_BRANCH: agent/pr31-review-fixes
+2026-08-01T01:09:41.3026408Z   PATCH_ARCHIVE: scripts/apply-pr31-final.py.gz.b64
+2026-08-01T01:09:41.3026736Z   PATCH_SCRIPT: scripts/apply-pr31-final.py
+2026-08-01T01:09:41.3027000Z ##[endgroup]
+2026-08-01T01:09:41.4837641Z (node:3181) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-01T01:09:41.4839697Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-01T01:09:41.4975196Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-08-01T01:09:41.4979024Z The least common ancestor is /. This will be the root directory of the artifact
+2026-08-01T01:09:41.4980948Z With the provided path, there will be 1 file uploaded
+2026-08-01T01:09:41.4982772Z Artifact name is valid!
+2026-08-01T01:09:41.4983677Z Root directory input is valid!
+2026-08-01T01:09:41.8386637Z Beginning upload of artifact content to blob storage
+2026-08-01T01:09:41.8578418Z (node:3181) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-01T01:09:42.1631864Z Uploaded bytes 431
+2026-08-01T01:09:42.2501677Z Finished uploading artifact content to blob storage!
+2026-08-01T01:09:42.2502970Z SHA256 digest of uploaded artifact zip is 2faf85891f591ce2ce0701a3c0b001ebcd050b1f62305a5cd440969dff27a0b1
+2026-08-01T01:09:42.2504604Z Finalizing artifact upload
+2026-08-01T01:09:42.4708984Z Artifact pr31-final-quality-failure.zip successfully finalized. Artifact ID 8810922556
+2026-08-01T01:09:42.4710867Z Artifact pr31-final-quality-failure has been successfully uploaded! Final size is 431 bytes. Artifact ID is 8810922556
+2026-08-01T01:09:42.4716806Z Artifact download URL: https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/artifacts/8810922556
+2026-08-01T01:09:42.4909348Z Post job cleanup.
+2026-08-01T01:09:42.5764054Z [command]/usr/bin/git version
+2026-08-01T01:09:42.5811880Z git version 2.54.0
+2026-08-01T01:09:42.5854286Z Temporarily overriding HOME='/home/runner/work/_temp/c7061df0-49a8-4f9c-9bfb-2cf96b27446a' before making global git config changes
+2026-08-01T01:09:42.5856046Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-01T01:09:42.5861651Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fast-playwright-mcp/fast-playwright-mcp
+2026-08-01T01:09:42.5906024Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-01T01:09:42.5945678Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-01T01:09:42.6223812Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-01T01:09:42.6247445Z http.https://github.com/.extraheader
+2026-08-01T01:09:42.6261270Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-01T01:09:42.6297607Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-01T01:09:42.6566600Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-01T01:09:42.6609749Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-01T01:09:42.7049956Z Cleaning up orphan processes
+2026-08-01T01:09:42.7361118Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,121 +1,1126 @@
 {
-  "total_count": 1,
+  "total_count": 10,
   "jobs": [
     {
-      "id": 91213037391,
-      "run_id": 30647687368,
-      "workflow_name": "PR 31 review fixes staging",
-      "head_branch": "agent/pr31-review-fixes",
-      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30647687368",
+      "id": 91306965840,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
       "run_attempt": 1,
-      "node_id": "CR_kwDOPYDXK88AAAAVPLh_Tw",
-      "head_sha": "97b3ce5f10b33a6d983020a4f144e123f5b83ac3",
-      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91213037391",
-      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30647687368/job/91213037391",
+      "node_id": "CR_kwDOPYDXK88AAAAVQlG7UA",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306965840",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306965840",
       "status": "completed",
-      "conclusion": "failure",
-      "created_at": "2026-07-31T16:34:46Z",
-      "started_at": "2026-07-31T16:34:55Z",
-      "completed_at": "2026-07-31T16:35:44Z",
-      "name": "focused",
+      "conclusion": "success",
+      "created_at": "2026-08-01T01:08:53Z",
+      "started_at": "2026-08-01T01:08:55Z",
+      "completed_at": "2026-08-01T01:08:59Z",
+      "name": "Resolve exact Playwright canary",
       "steps": [
         {
           "name": "Set up job",
           "status": "completed",
           "conclusion": "success",
           "number": 1,
-          "started_at": "2026-07-31T16:34:56Z",
-          "completed_at": "2026-07-31T16:34:57Z"
+          "started_at": "2026-08-01T01:08:56Z",
+          "completed_at": "2026-08-01T01:08:57Z"
         },
         {
-          "name": "Run actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5",
+          "name": "Use Node.js 22",
           "status": "completed",
           "conclusion": "success",
           "number": 2,
-          "started_at": "2026-07-31T16:34:57Z",
-          "completed_at": "2026-07-31T16:35:00Z"
+          "started_at": "2026-08-01T01:08:57Z",
+          "completed_at": "2026-08-01T01:08:57Z"
         },
         {
-          "name": "Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
+          "name": "Resolve current playwright@next",
           "status": "completed",
           "conclusion": "success",
           "number": 3,
-          "started_at": "2026-07-31T16:35:00Z",
-          "completed_at": "2026-07-31T16:35:03Z"
+          "started_at": "2026-08-01T01:08:57Z",
+          "completed_at": "2026-08-01T01:08:58Z"
         },
         {
-          "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 4,
-          "started_at": "2026-07-31T16:35:03Z",
-          "completed_at": "2026-07-31T16:35:03Z"
-        },
-        {
-          "name": "Run bun install --frozen-lockfile",
-          "status": "completed",
-          "conclusion": "success",
-          "number": 5,
-          "started_at": "2026-07-31T16:35:03Z",
-          "completed_at": "2026-07-31T16:35:05Z"
-        },
-        {
-          "name": "Run bunx playwright install --with-deps chromium",
+          "name": "Post Use Node.js 22",
           "status": "completed",
           "conclusion": "success",
           "number": 6,
-          "started_at": "2026-07-31T16:35:05Z",
-          "completed_at": "2026-07-31T16:35:29Z"
+          "started_at": "2026-08-01T01:08:58Z",
+          "completed_at": "2026-08-01T01:08:58Z"
         },
         {
-          "name": "Run focused review regressions and record result",
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-08-01T01:08:58Z",
+          "completed_at": "2026-08-01T01:08:58Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306965840",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019448,
+      "runner_name": "GitHub Actions 1000019448",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979176,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvaA",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979176",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979176",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:03Z",
+      "completed_at": "2026-08-01T01:09:44Z",
+      "name": "TDD, quality, Chromium, and package",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:04Z",
+          "completed_at": "2026-08-01T01:09:05Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:05Z",
+          "completed_at": "2026-08-01T01:09:06Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:06Z",
+          "completed_at": "2026-08-01T01:09:08Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:08Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Prepare patch and baseline dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:36Z"
+        },
+        {
+          "name": "RED — prove the selected regressions fail before implementation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:36Z",
+          "completed_at": "2026-08-01T01:09:38Z"
+        },
+        {
+          "name": "Apply implementation and upstream refresh",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:38Z",
+          "completed_at": "2026-08-01T01:09:38Z"
+        },
+        {
+          "name": "Install refreshed dependency graph",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:38Z",
+          "completed_at": "2026-08-01T01:09:39Z"
+        },
+        {
+          "name": "Format, encode, typecheck, build, generate, and lint",
           "status": "completed",
           "conclusion": "failure",
-          "number": 7,
-          "started_at": "2026-07-31T16:35:29Z",
-          "completed_at": "2026-07-31T16:35:41Z"
+          "number": 9,
+          "started_at": "2026-08-01T01:09:39Z",
+          "completed_at": "2026-08-01T01:09:41Z"
         },
         {
-          "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+          "name": "GREEN — focused regressions",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-08-01T01:09:41Z",
+          "completed_at": "2026-08-01T01:09:41Z"
+        },
+        {
+          "name": "Full Chromium suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-08-01T01:09:41Z",
+          "completed_at": "2026-08-01T01:09:41Z"
+        },
+        {
+          "name": "Packed npm artifact smoke",
           "status": "completed",
           "conclusion": "skipped",
           "number": 12,
-          "started_at": "2026-07-31T16:35:41Z",
-          "completed_at": "2026-07-31T16:35:41Z"
+          "started_at": "2026-08-01T01:09:41Z",
+          "completed_at": "2026-08-01T01:09:41Z"
         },
         {
-          "name": "Post Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
+          "name": "Upload quality failure diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-08-01T01:09:41Z",
+          "completed_at": "2026-08-01T01:09:42Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24,
+          "started_at": "2026-08-01T01:09:42Z",
+          "completed_at": "2026-08-01T01:09:42Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25,
+          "started_at": "2026-08-01T01:09:42Z",
+          "completed_at": "2026-08-01T01:09:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-08-01T01:09:42Z",
+          "completed_at": "2026-08-01T01:09:42Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-08-01T01:09:42Z",
+          "completed_at": "2026-08-01T01:09:42Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979176",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019452,
+      "runner_name": "GitHub Actions 1000019452",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979185,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvcQ",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979185",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979185",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:03Z",
+      "completed_at": "2026-08-01T01:09:18Z",
+      "name": "Docker build and smoke",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:03Z",
+          "completed_at": "2026-08-01T01:09:08Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:08Z",
+          "completed_at": "2026-08-01T01:09:10Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:10Z",
+          "completed_at": "2026-08-01T01:09:11Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:11Z",
+          "completed_at": "2026-08-01T01:09:12Z"
+        },
+        {
+          "name": "Apply final source and lockfile",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:12Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Build image",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Run CLI smoke",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979185",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019451,
+      "runner_name": "GitHub Actions 1000019451",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979186,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvcg",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979186",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979186",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:03Z",
+      "completed_at": "2026-08-01T01:09:16Z",
+      "name": "Bundled extension build and E2E",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:04Z",
+          "completed_at": "2026-08-01T01:09:05Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:05Z",
+          "completed_at": "2026-08-01T01:09:06Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:06Z",
+          "completed_at": "2026-08-01T01:09:08Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:08Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Apply final source and build extension",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:14Z"
+        },
+        {
+          "name": "Run all extension E2E tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:14Z",
+          "completed_at": "2026-08-01T01:09:14Z"
+        },
+        {
+          "name": "Upload extension diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:14Z",
+          "completed_at": "2026-08-01T01:09:14Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-08-01T01:09:14Z",
+          "completed_at": "2026-08-01T01:09:14Z"
+        },
+        {
+          "name": "Post Setup Bun",
           "status": "completed",
           "conclusion": "skipped",
           "number": 13,
-          "started_at": "2026-07-31T16:35:41Z",
-          "completed_at": "2026-07-31T16:35:41Z"
+          "started_at": "2026-08-01T01:09:14Z",
+          "completed_at": "2026-08-01T01:09:14Z"
         },
         {
-          "name": "Post Run actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5",
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
           "status": "completed",
           "conclusion": "success",
           "number": 14,
-          "started_at": "2026-07-31T16:35:41Z",
-          "completed_at": "2026-07-31T16:35:41Z"
+          "started_at": "2026-08-01T01:09:14Z",
+          "completed_at": "2026-08-01T01:09:14Z"
         },
         {
           "name": "Complete job",
           "status": "completed",
           "conclusion": "success",
           "number": 15,
-          "started_at": "2026-07-31T16:35:41Z",
-          "completed_at": "2026-07-31T16:35:41Z"
+          "started_at": "2026-08-01T01:09:14Z",
+          "completed_at": "2026-08-01T01:09:14Z"
         }
       ],
-      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91213037391",
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979186",
       "labels": [
         "ubuntu-latest"
       ],
-      "runner_id": 1000019445,
-      "runner_name": "GitHub Actions 1000019445",
+      "runner_id": 1000019450,
+      "runner_name": "GitHub Actions 1000019450",
       "runner_group_id": 0,
       "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979205,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvhQ",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979205",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979205",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:02Z",
+      "completed_at": "2026-08-01T01:09:21Z",
+      "name": "Full browser suite (webkit)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:03Z",
+          "completed_at": "2026-08-01T01:09:07Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:07Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:11Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:11Z",
+          "completed_at": "2026-08-01T01:09:13Z"
+        },
+        {
+          "name": "Apply final source",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:13Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Install browser and dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Run full webkit suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Upload webkit diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-01T01:09:18Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979205",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019449,
+      "runner_name": "GitHub Actions 1000019449",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979209,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHviQ",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979209",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979209",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:04Z",
+      "completed_at": "2026-08-01T01:09:22Z",
+      "name": "Full browser suite (chromium)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:05Z",
+          "completed_at": "2026-08-01T01:09:07Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:07Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:11Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:11Z",
+          "completed_at": "2026-08-01T01:09:13Z"
+        },
+        {
+          "name": "Apply final source",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:13Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Install browser and dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Run full chromium suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Upload chromium diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-01T01:09:20Z",
+          "completed_at": "2026-08-01T01:09:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979209",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019455,
+      "runner_name": "GitHub Actions 1000019455",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979216,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvkA",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979216",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979216",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:04Z",
+      "completed_at": "2026-08-01T01:09:18Z",
+      "name": "Full browser suite (chrome)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:05Z",
+          "completed_at": "2026-08-01T01:09:07Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:07Z",
+          "completed_at": "2026-08-01T01:09:08Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:08Z",
+          "completed_at": "2026-08-01T01:09:10Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:10Z",
+          "completed_at": "2026-08-01T01:09:10Z"
+        },
+        {
+          "name": "Apply final source",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:10Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Install browser and dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Run full chrome suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Upload chrome diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-01T01:09:16Z",
+          "completed_at": "2026-08-01T01:09:16Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979216",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019456,
+      "runner_name": "GitHub Actions 1000019456",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979221,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvlQ",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979221",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979221",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:02Z",
+      "completed_at": "2026-08-01T01:09:18Z",
+      "name": "Full browser suite (firefox)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:03Z",
+          "completed_at": "2026-08-01T01:09:05Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:05Z",
+          "completed_at": "2026-08-01T01:09:07Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:07Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Apply final source",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Install browser and dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Run full firefox suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Upload firefox diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-01T01:09:15Z",
+          "completed_at": "2026-08-01T01:09:15Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979221",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019453,
+      "runner_name": "GitHub Actions 1000019453",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91306979223,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlHvlw",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91306979223",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91306979223",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-01T01:09:00Z",
+      "started_at": "2026-08-01T01:09:08Z",
+      "completed_at": "2026-08-01T01:09:19Z",
+      "name": "Full browser suite (msedge)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:09Z"
+        },
+        {
+          "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-08-01T01:09:09Z",
+          "completed_at": "2026-08-01T01:09:11Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-08-01T01:09:11Z",
+          "completed_at": "2026-08-01T01:09:12Z"
+        },
+        {
+          "name": "Use Node.js 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-08-01T01:09:12Z",
+          "completed_at": "2026-08-01T01:09:13Z"
+        },
+        {
+          "name": "Apply final source",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-08-01T01:09:13Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Install browser and dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Run full msedge suite",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Upload msedge diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Post Use Node.js 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:17Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-08-01T01:09:17Z",
+          "completed_at": "2026-08-01T01:09:18Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91306979223",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000019454,
+      "runner_name": "GitHub Actions 1000019454",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 91307064664,
+      "run_id": 30677254568,
+      "workflow_name": "PR 31 final review and upstream refresh",
+      "head_branch": "agent/pr31-final-review",
+      "run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/runs/30677254568",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPYDXK88AAAAVQlM9WA",
+      "head_sha": "183b809eff0c891753ccf8fb7b446c6e35892e01",
+      "url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/actions/jobs/91307064664",
+      "html_url": "https://github.com/tontoko/fast-playwright-mcp/actions/runs/30677254568/job/91307064664",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-08-01T01:09:45Z",
+      "started_at": "2026-08-01T01:09:45Z",
+      "completed_at": "2026-08-01T01:09:45Z",
+      "name": "Commit verified clean source",
+      "steps": [
+
+      ],
+      "check_run_url": "https://api.github.com/repos/tontoko/fast-playwright-mcp/check-runs/91307064664",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
     }
   ]
 }
