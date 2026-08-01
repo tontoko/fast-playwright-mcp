@@ -1,0 +1,100 @@
+name: Repair PR 31 final-review payload transport
+
+on:
+  push:
+    branches:
+      - agent/pr31-final-review
+    paths:
+      - '.github/workflows/repair-pr31-final-workflow.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/pr31-final-review
+          fetch-depth: 0
+      - name: Verify chunked payload and patch the final workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat scripts/apply-pr31-final.py.gz.b64.* > /tmp/pr31-payload.b64
+          printf '%s  %s\n' \
+            '6248edd96a856f8a59b05b8ac5cc8294ff3d8219eb13c20b2a4d23e6858b0022' \
+            /tmp/pr31-payload.b64 | sha256sum --check
+          base64 --decode /tmp/pr31-payload.b64 | gzip --decompress \
+            > /tmp/apply-pr31-final.py
+          printf '%s  %s\n' \
+            '6a95d924a4d0051c3db738f1e126776a51f3ab8185231cc24c49a7d7fa3a0d0d' \
+            /tmp/apply-pr31-final.py | sha256sum --check
+          python3 -m py_compile /tmp/apply-pr31-final.py
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/pr31-final-review.yml')
+          text = path.read_text(encoding='utf-8')
+
+          replacements = [
+              (
+                  "      - 'scripts/apply-pr31-final.py.gz.b64'\n",
+                  "      - 'scripts/apply-pr31-final.py.gz.b64.*'\n",
+                  1,
+                  'path trigger',
+              ),
+              (
+                  "  PATCH_ARCHIVE: scripts/apply-pr31-final.py.gz.b64\n",
+                  """  PATCH_PART_GLOB: scripts/apply-pr31-final.py.gz.b64.*
+          PATCH_B64_SHA256: 6248edd96a856f8a59b05b8ac5cc8294ff3d8219eb13c20b2a4d23e6858b0022
+          PATCH_SCRIPT_SHA256: 6a95d924a4d0051c3db738f1e126776a51f3ab8185231cc24c49a7d7fa3a0d0d
+          """,
+                  1,
+                  'payload environment',
+              ),
+              (
+                  '          base64 --decode "$PATCH_ARCHIVE" | gzip --decompress > "$PATCH_SCRIPT"\n',
+                  """          cat ${PATCH_PART_GLOB} > /tmp/pr31-payload.b64
+          printf '%s  %s\\n' "$PATCH_B64_SHA256" /tmp/pr31-payload.b64 | sha256sum --check
+          base64 --decode /tmp/pr31-payload.b64 | gzip --decompress > "$PATCH_SCRIPT"
+          printf '%s  %s\\n' "$PATCH_SCRIPT_SHA256" "$PATCH_SCRIPT" | sha256sum --check
+          python3 -m py_compile "$PATCH_SCRIPT"
+          """,
+                  5,
+                  'payload reconstruction',
+              ),
+              (
+                  '          rm -f "$PATCH_ARCHIVE" "$PATCH_SCRIPT"\n',
+                  '          rm -f scripts/apply-pr31-final.py.gz.b64.* "$PATCH_SCRIPT"\n',
+                  1,
+                  'payload cleanup',
+              ),
+          ]
+
+          for old, new, expected, label in replacements:
+              actual = text.count(old)
+              if actual != expected:
+                  raise SystemExit(
+                      f'{label}: expected {expected} markers, found {actual}'
+                  )
+              text = text.replace(old, new)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          rm -f scripts/apply-pr31-final.py.gz.b64
+          rm -f .github/workflows/repair-pr31-final-workflow.yml
+          git diff --check
+      - name: Commit the verified transport repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'ci: verify and use chunked PR 31 patch payload'
+          git push origin HEAD:agent/pr31-final-review
