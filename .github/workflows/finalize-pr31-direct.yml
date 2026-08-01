@@ -69,10 +69,6 @@ jobs:
           dialog = Path('tests/dialog-lifecycle.spec.ts')
           text = dialog.read_text(encoding='utf-8')
           text = text.replace(".join('\n');", r".join('\n');")
-          text = text.replace(
-              "'<button onclick=\"alert('Alert from page')\">Open dialog</button>',",
-              "`<button onclick=\"alert('Alert from page')\">Open dialog</button>`,",
-          )
           old_click = "  await page.getByRole('button', { name: 'Open dialog' }).click();\n"
           new_click = """  const clickPromise = page
             .getByRole('button', { name: 'Open dialog' })
@@ -83,23 +79,13 @@ jobs:
                   f'non-blocking dialog trigger: expected one marker, found {text.count(old_click)}'
               )
           text = text.replace(old_click, new_click)
-          old_close = "  await closedPromise;\n"
-          new_close = "  await closedPromise;\n  await clickPromise;\n"
-          if text.count(old_close) != 1:
+          old_dismiss = "  await dialog.dismiss();\n"
+          new_dismiss = "  await dialog.dismiss();\n  await clickPromise;\n"
+          if text.count(old_dismiss) != 1:
               raise SystemExit(
-                  f'dialog completion: expected one marker, found {text.count(old_close)}'
+                  f'dialog completion: expected one marker, found {text.count(old_dismiss)}'
               )
-          dialog.write_text(text.replace(old_close, new_close), encoding='utf-8')
-
-          runtime = Path('tests/upstream-runtime.spec.ts')
-          text = runtime.read_text(encoding='utf-8')
-          runtime.write_text(
-              text.replace(
-                  "async (_fixtures, testInfo) => {",
-                  "async ({ page: _page }, testInfo) => {",
-              ),
-              encoding='utf-8',
-          )
+          dialog.write_text(text.replace(old_dismiss, new_dismiss), encoding='utf-8')
           PY
           bunx biome check --write tests/dialog-lifecycle.spec.ts tests/upstream-runtime.spec.ts
 
