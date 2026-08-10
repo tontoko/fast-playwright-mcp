@@ -84,7 +84,7 @@ export class Context {
   currentTabOrDie(): Tab {
     if (!this._currentTab) {
       throw new Error(
-        'No open pages available. Use the "browser_navigate" tool to navigate to a page first.'
+        'No open pages available. Use the "browser_navigate" tool first.'
       );
     }
     return this._currentTab;
@@ -314,23 +314,28 @@ export class Context {
       this._abortController.signal
     );
     const { browserContext } = result;
-    await this._setupRequestInterception(browserContext);
-    if (this.sessionLog) {
-      await InputRecorder.create(this, browserContext);
+    try {
+      await this._setupRequestInterception(browserContext);
+      if (this.sessionLog) {
+        await InputRecorder.create(this, browserContext);
+      }
+      for (const page of browserContext.pages()) {
+        this._onPageCreated(page);
+      }
+      browserContext.on('page', (page) => this._onPageCreated(page));
+      if (this.config.saveTrace) {
+        await browserContext.tracing.start({
+          name: 'trace',
+          screenshots: false,
+          snapshots: true,
+          sources: false,
+        });
+      }
+      return result;
+    } catch (error) {
+      await result.close().catch(logUnhandledError);
+      throw error;
     }
-    for (const page of browserContext.pages()) {
-      this._onPageCreated(page);
-    }
-    browserContext.on('page', (page) => this._onPageCreated(page));
-    if (this.config.saveTrace) {
-      await browserContext.tracing.start({
-        name: 'trace',
-        screenshots: false,
-        snapshots: true,
-        sources: false,
-      });
-    }
-    return result;
   }
 }
 
