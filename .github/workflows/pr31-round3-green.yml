@@ -1,3 +1,4 @@
+# run: round3-complete-1
 name: PR 31 round 3 GREEN
 
 on:
@@ -7,6 +8,8 @@ on:
     paths:
       - '.github/workflows/pr31-round3-green.yml'
       - 'src/context.ts'
+      - 'src/network-origin.ts'
+      - 'src/utils/codegen.ts'
       - 'scripts/upstream-check.ts'
       - 'tests/context-setup-cleanup.spec.ts'
       - 'tests/upstream-check.spec.ts'
@@ -22,7 +25,7 @@ jobs:
   green:
     if: ${{ !contains(github.event.head_commit.message, '[round3-green]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -50,6 +53,7 @@ jobs:
             tests/context-setup-cleanup.spec.ts \
             tests/upstream-check.spec.ts \
             tests/upstream-dual-audit.spec.ts \
+            tests/upstream-runtime.spec.ts \
             tests/network-origin-filter.spec.ts \
             tests/navigation-context.spec.ts \
             --project=chromium \
