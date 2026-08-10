@@ -13,8 +13,9 @@ import {
 } from '../src/utils/common-formatters.js';
 
 const OLD_PLAYWRIGHT_VERSION = '1.62.0-alpha-1783623505000';
-const MCP_REVIEWED_COMMIT = '55679f5f3d4b4f3e2534ec0ce2fc5683ba2eaf3f';
-const PLAYWRIGHT_REVIEWED_COMMIT = '15b1aec478d90f0293dae7b7b6dafd494d9f0154';
+const MCP_REVIEWED_COMMIT = '7e0457a7cbf88823bf0146d12c46ae12c6818247';
+const PLAYWRIGHT_REVIEWED_COMMIT =
+  '8078b85865a9643b37b5564c188a252545253749';
 const EXTENSION_ID = 'jakfalbnbhgkpmoaakfflhflbfpkailf';
 const OLD_ACTION_PINS = [
   '34e114876b0b11c390a56381ad16ebd13914f8d5',
@@ -102,9 +103,12 @@ test('upstream manifest and package record the reviewed current state', async ()
     reviewedCommit: string;
     playwrightReviewedCommit: string;
     playwrightVersion: string;
+    packageVersion: string;
   };
   expect(manifest.reviewedCommit).toBe(MCP_REVIEWED_COMMIT);
   expect(manifest.playwrightReviewedCommit).toBe(PLAYWRIGHT_REVIEWED_COMMIT);
+  expect(manifest.packageVersion).toBe('0.0.79');
+  expect(manifest.playwrightVersion).toBe('1.63.0-alpha-2026-08-05');
   expect(manifest.playwrightVersion).toBe(packageJSON.dependencies.playwright);
   expect(packageJSON.dependencies['playwright-core']).toBe(
     manifest.playwrightVersion
