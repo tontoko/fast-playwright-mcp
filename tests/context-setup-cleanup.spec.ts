@@ -28,9 +28,10 @@ test('context setup failure closes the created browser and permits retry', async
       } as unknown as BrowserContext;
       return Promise.resolve({
         browserContext,
-        close: async () => {
+        close: () => {
           closeCount++;
           locked = false;
+          return Promise.resolve();
         },
       });
     },
