@@ -22,7 +22,7 @@ function response(label: string): Response {
     toolName: `browser_${label}`,
     toolArgs: { label },
     result: () => label,
-    isError: () => undefined,
+    isError: () => false,
     code: () => '',
     tabSnapshot: () => snapshot(label),
   } as unknown as Response;
