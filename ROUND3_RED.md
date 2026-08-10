@@ -1,0 +1,2 @@
+- tests/context-setup-cleanup.spec.ts: failed as expected (exit 1)
+- tests/upstream-check.spec.ts: failed as expected (exit 1)
