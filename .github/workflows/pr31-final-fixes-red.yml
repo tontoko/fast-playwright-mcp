@@ -14,7 +14,7 @@ on:
       - 'src/utils/codegen.ts'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pr31-final-fixes-red
@@ -41,6 +41,8 @@ jobs:
         run: |
           set -u
           failures=0
+          : > RED_RESULT.md
+          printf '# PR 31 RED verification\n\n' >> RED_RESULT.md
           for file in \
             tests/cdp-relay-launch.spec.ts \
             tests/cdp-relay-security.spec.ts \
@@ -55,10 +57,16 @@ jobs:
             status=$?
             set -e
             if [ "$status" -eq 0 ]; then
-              echo "Regression unexpectedly passed before implementation: ${file}" >&2
+              printf -- '- %s: unexpectedly passed\n' "$file" >> RED_RESULT.md
               failures=$((failures + 1))
             else
-              echo "Observed expected RED failure for ${file}."
+              printf -- '- %s: failed as expected (exit %s)\n' "$file" "$status" >> RED_RESULT.md
             fi
           done
+          printf '\n- unexpected passes: %s\n' "$failures" >> RED_RESULT.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add RED_RESULT.md
+          git commit -m 'test: record PR 31 RED evidence [skip ci]'
+          git push origin HEAD:agent/pr31-final-fixes
           test "$failures" -eq 0
