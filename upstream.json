@@ -1,8 +1,8 @@
 {
   "repository": "microsoft/playwright-mcp",
   "playwrightRepository": "microsoft/playwright",
-  "reviewedCommit": "55679f5f3d4b4f3e2534ec0ce2fc5683ba2eaf3f",
-  "packageVersion": "0.0.78",
-  "playwrightVersion": "1.63.0-alpha-2026-08-01",
-  "playwrightReviewedCommit": "15b1aec478d90f0293dae7b7b6dafd494d9f0154"
+  "reviewedCommit": "7e0457a7cbf88823bf0146d12c46ae12c6818247",
+  "packageVersion": "0.0.79",
+  "playwrightVersion": "1.63.0-alpha-2026-08-05",
+  "playwrightReviewedCommit": "8078b85865a9643b37b5564c188a252545253749"
 }
