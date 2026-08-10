@@ -2,7 +2,7 @@ const SUPPORTED_PROTOCOLS = new Set(['http:', 'https:']);
 
 function stripTrailingSlashes(value: string): string {
   let end = value.length;
-  while (end > 0 && value.charCodeAt(end - 1) === 47) {
+  while (end > 0 && value.codePointAt(end - 1) === 47) {
     end--;
   }
   return value.slice(0, end);
@@ -52,7 +52,9 @@ function fullOriginWildcardPattern(
 
 function hostOnlyRoutePattern(origin: string, original: string): string {
   const wildcardPort = origin.endsWith(':*');
-  const candidate = wildcardPort ? `${origin.slice(0, -2)}:1` : origin;
+  const candidate = wildcardPort
+    ? `${origin.slice(0, -2)}:1`
+    : origin;
   try {
     const parsed = new URL(`http://${candidate}`);
     assertSupportedOrigin(parsed, original);
