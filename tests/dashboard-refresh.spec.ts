@@ -4,12 +4,13 @@ import { refreshDashboard } from '../src/apps/dashboard/refresh.js';
 test('dashboard initializes tabs before requesting a screenshot', async () => {
   const order: string[] = [];
   const result = await refreshDashboard({
-    updateTabs: async () => {
+    updateTabs: () => {
       order.push('tabs');
+      return Promise.resolve();
     },
-    updatePreview: async () => {
+    updatePreview: () => {
       order.push('preview');
-      return true;
+      return Promise.resolve(true);
     },
   });
 
@@ -19,8 +20,8 @@ test('dashboard initializes tabs before requesting a screenshot', async () => {
 
 test('dashboard refresh succeeds when image responses are omitted', async () => {
   const result = await refreshDashboard({
-    updateTabs: async () => {},
-    updatePreview: async () => false,
+    updateTabs: () => Promise.resolve(),
+    updatePreview: () => Promise.resolve(false),
   });
 
   expect(result).toEqual({ previewAvailable: false });
