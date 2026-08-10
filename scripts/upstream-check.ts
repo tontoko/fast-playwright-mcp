@@ -37,11 +37,16 @@ type ChangedFile = {
   deletions?: number;
 };
 
-type ComparePayload = {
+export type ComparePayload = {
   base_commit?: { sha: string };
   commits?: { sha: string; commit?: { message?: string } }[];
   files?: ChangedFile[];
   headSha?: string;
+};
+
+export type UpstreamReportPayloads = {
+  mcp: ComparePayload;
+  playwright: ComparePayload;
 };
 
 export function parseRepositorySlug(
@@ -170,31 +175,39 @@ function suggestion(category: UpstreamCategory): string {
   return 'review';
 }
 
-export function buildUpstreamReport(
-  manifest: UpstreamManifest,
-  payload: ComparePayload
-): string {
-  const head =
-    payload.headSha ?? payload.commits?.at(-1)?.sha ?? manifest.reviewedCommit;
-  const files = [...(payload.files ?? [])].sort((left, right) => {
+function isReportPayloads(
+  payload: ComparePayload | UpstreamReportPayloads
+): payload is UpstreamReportPayloads {
+  return 'mcp' in payload && 'playwright' in payload;
+}
+
+function sortedFiles(payload: ComparePayload): ChangedFile[] {
+  return [...(payload.files ?? [])].sort((left, right) => {
     const category = classifyPath(left.filename).localeCompare(
       classifyPath(right.filename)
     );
     return category || left.filename.localeCompare(right.filename);
   });
+}
+
+function renderComparison(
+  title: string,
+  repository: string,
+  reviewedCommit: string,
+  payload: ComparePayload
+): string[] {
+  const head = payload.headSha ?? payload.commits?.at(-1)?.sha ?? reviewedCommit;
+  const files = sortedFiles(payload);
   const lines = [
-    '<!-- upstream-audit -->',
-    '# Upstream review',
+    `## ${title}`,
     '',
-    `- Repository: \`${manifest.repository}\``,
-    `- Reviewed from: \`${manifest.reviewedCommit}\``,
+    `- Repository: \`${repository}\``,
+    `- Reviewed from: \`${reviewedCommit}\``,
     `- Compared to: \`${head}\``,
-    `- Playwright repository: \`${manifest.playwrightRepository}\``,
-    `- Playwright reviewed at: \`${manifest.playwrightReviewedCommit}\``,
     `- Commits: ${payload.commits?.length ?? 0}`,
     `- Changed files: ${files.length}`,
     '',
-    '## Changed files',
+    '### Changed files',
     '',
   ];
   if (!files.length) {
@@ -208,14 +221,41 @@ export function buildUpstreamReport(
       }; category: \`${category}\`; suggested: \`${suggestion(category)}\``
     );
   }
-  lines.push(
+  lines.push('');
+  return lines;
+}
+
+export function buildUpstreamReport(
+  manifest: UpstreamManifest,
+  payload: ComparePayload | UpstreamReportPayloads
+): string {
+  const payloads = isReportPayloads(payload)
+    ? payload
+    : {
+        mcp: payload,
+        playwright: { headSha: manifest.playwrightReviewedCommit },
+      };
+  return [
+    '<!-- upstream-audit -->',
+    '# Upstream review',
     '',
+    ...renderComparison(
+      'Playwright MCP',
+      manifest.repository,
+      manifest.reviewedCommit,
+      payloads.mcp
+    ),
+    ...renderComparison(
+      'Playwright runtime',
+      manifest.playwrightRepository,
+      manifest.playwrightReviewedCommit,
+      payloads.playwright
+    ),
     '## Policy',
     '',
     'This report is read-only. Changes are reviewed and ported manually; it never modifies production code or repository issues.',
-    ''
-  );
-  return lines.join('\n');
+    '',
+  ].join('\n');
 }
 
 async function githubJson<T>(
@@ -237,20 +277,26 @@ async function githubJson<T>(
   return (await response.json()) as T;
 }
 
-async function loadPayload(
-  manifest: UpstreamManifest,
-  fixture?: string
+async function readFixture(path: string, label: string): Promise<ComparePayload> {
+  const fixturePath = await resolveWorkspaceInputPath(path, {
+    extension: '.json',
+    label,
+  });
+  const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR
+  return JSON.parse(fixtureText) as ComparePayload;
+}
+
+async function loadComparison(
+  repository: string,
+  reviewedCommit: string,
+  fixture: string | undefined,
+  fixtureLabel: string
 ): Promise<ComparePayload> {
   if (fixture) {
-    const fixturePath = await resolveWorkspaceInputPath(fixture, {
-      extension: '.json',
-      label: '--fixture',
-    });
-    const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR
-    return JSON.parse(fixtureText) as ComparePayload;
+    return readFixture(fixture, fixtureLabel);
   }
   const latest = await githubJson<{ sha: string }>(
-    manifest.repository,
+    repository,
     'commits',
     'main'
   );
@@ -258,9 +304,9 @@ async function loadPayload(
     throw new Error('GitHub returned an invalid latest commit SHA');
   }
   const compare = await githubJson<ComparePayload>(
-    manifest.repository,
+    repository,
     'compare',
-    `${manifest.reviewedCommit}...${latest.sha}`
+    `${reviewedCommit}...${latest.sha}`
   );
   return { ...compare, headSha: latest.sha };
 }
@@ -269,15 +315,28 @@ if (import.meta.main) {
   const { values } = parseArgs({
     options: {
       fixture: { type: 'string' },
+      'playwright-fixture': { type: 'string' },
       output: { type: 'string' },
       manifest: { type: 'string', default: 'upstream.json' },
     },
   });
   const manifest = await loadUpstreamManifest(values.manifest);
-  const report = buildUpstreamReport(
-    manifest,
-    await loadPayload(manifest, values.fixture)
-  );
+  const playwrightFixture = values['playwright-fixture'] ?? values.fixture;
+  const [mcp, playwright] = await Promise.all([
+    loadComparison(
+      manifest.repository,
+      manifest.reviewedCommit,
+      values.fixture,
+      '--fixture'
+    ),
+    loadComparison(
+      manifest.playwrightRepository,
+      manifest.playwrightReviewedCommit,
+      playwrightFixture,
+      '--playwright-fixture'
+    ),
+  ]);
+  const report = buildUpstreamReport(manifest, { mcp, playwright });
   if (values.output) {
     const outputPath = await resolveWorkspaceOutputPath(values.output, {
       label: '--output',
