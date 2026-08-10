@@ -1,0 +1,61 @@
+name: Probe PR 31 final fixes
+
+on:
+  push:
+    branches: [agent/sonar-status-probe]
+    paths:
+      - '.github/workflows/pr31-final-fixes-probe.yml'
+      - '.github/pr31-final-fixes-probe/TRIGGER'
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  probe:
+    if: ${{ !contains(github.event.head_commit.message, '[pr31-final-fixes-result]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: agent/sonar-status-probe
+          fetch-depth: 0
+      - name: Query final-fixes branch runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='.github/pr31-final-fixes-probe'
+          mkdir -p "$root"
+          curl --silent --show-error --fail --location \
+            --max-time 40 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=agent%2Fpr31-final-fixes&per_page=20" \
+            > "$root/runs.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('.github/pr31-final-fixes-probe')
+          payload = json.loads((root / 'runs.json').read_text(encoding='utf-8'))
+          lines = ['# PR 31 final-fixes runs', '']
+          for run in payload.get('workflow_runs', []):
+              lines.append(
+                  f"- {run.get('name')} #{run.get('run_number')}: "
+                  f"status={run.get('status')}, conclusion={run.get('conclusion')}, "
+                  f"head={run.get('head_sha')}, id={run.get('id')}"
+              )
+          (root / 'RESULTS.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/pr31-final-fixes-probe
+          git commit -m 'chore: record PR 31 final-fixes runs [pr31-final-fixes-result]'
+          git push origin HEAD:agent/sonar-status-probe
