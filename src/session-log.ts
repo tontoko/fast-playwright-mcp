@@ -202,7 +202,6 @@ export class SessionLog {
   private _writeToFile(lines: string[]): void {
     this._enqueueFileWrite(async () => {
       await fs.promises.appendFile(this._file, lines.join('\n'));
-      await this._outputManager.finalizeFile(this._file);
     });
   }
 
@@ -217,6 +216,7 @@ export class SessionLog {
       this._flushEntries();
     }
     await this._sessionFileQueue;
+    await this._outputManager.finalizeDirectory(this._folder);
   }
 
   private _formatSingleLogEntry(
@@ -339,7 +339,6 @@ export class SessionLog {
     const snapshot = this._redact(tabSnapshot.ariaSnapshot);
     this._enqueueFileWrite(async () => {
       await fs.promises.writeFile(snapshotPath, snapshot);
-      await this._outputManager.finalizeFile(snapshotPath);
     });
     lines.push(`- Snapshot: ${fileName}`);
   }
