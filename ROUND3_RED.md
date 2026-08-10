@@ -1,2 +1,2 @@
 - tests/context-setup-cleanup.spec.ts: unexpectedly passed
-- tests/upstream-check.spec.ts: failed as expected (exit 1)
+- tests/upstream-check.spec.ts: unexpectedly passed
