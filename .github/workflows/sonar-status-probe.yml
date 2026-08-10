@@ -12,7 +12,6 @@ permissions:
   contents: write
   checks: read
   statuses: read
-  pull-requests: read
 
 jobs:
   probe:
@@ -20,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      TARGET_SHA: 3795262331742b87fc04d604a62e5282a0fd1afc
+      TARGET_SHA: e2ab913e704c0eeb16cb3343d609fce323bb634c
       TARGET_PR: '31'
       PROJECT_KEY: tontoko_fast-playwright-mcp
     steps:
@@ -28,124 +27,70 @@ jobs:
         with:
           ref: agent/sonar-status-probe
           fetch-depth: 0
-
-      - name: Query GitHub Checks and Sonar public APIs
+      - name: Query current Sonar analysis
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           root='.github/sonar-probe'
           mkdir -p "$root"
-
-          gh_api() {
-            local path="$1"
-            curl --silent --show-error --location \
-              --max-time 30 \
-              -H "Authorization: Bearer ${GH_TOKEN}" \
-              -H 'Accept: application/vnd.github+json' \
-              -H 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/${path}"
-          }
-
-          sonar_api() {
-            local path="$1"
+          fetch() {
+            local endpoint="$1"
             local output="$2"
-            curl --silent --show-error --location \
+            curl --silent --show-error --fail --location \
               --max-time 40 \
-              --user-agent 'fast-playwright-mcp-sonar-status-probe/2.0' \
-              "https://sonarcloud.io/api/${path}" > "$output"
+              --user-agent 'fast-playwright-mcp-sonar-probe/3.0' \
+              "https://sonarcloud.io/api/${endpoint}" > "$root/${output}"
           }
-
-          gh_api "commits/${TARGET_SHA}/check-runs?per_page=100" > "$root/check-runs.json"
-          gh_api "commits/${TARGET_SHA}/check-suites?per_page=100" > "$root/check-suites.json"
-          gh_api "commits/${TARGET_SHA}/status" > "$root/legacy-status.json"
-
-          sonar_api \
-            "qualitygates/project_status?projectKey=${PROJECT_KEY}&pullRequest=${TARGET_PR}" \
-            "$root/quality-gate.json"
-          sonar_api \
-            "issues/search?componentKeys=${PROJECT_KEY}&pullRequest=${TARGET_PR}&resolved=false&ps=500" \
-            "$root/issues.json"
-          sonar_api \
-            "measures/component?component=${PROJECT_KEY}&pullRequest=${TARGET_PR}&metricKeys=new_reliability_rating,new_security_rating,new_maintainability_rating,new_bugs,new_vulnerabilities,new_code_smells,new_duplicated_lines_density,new_security_hotspots_reviewed" \
-            "$root/measures.json"
-          sonar_api \
-            "project_pull_requests/list?project=${PROJECT_KEY}" \
-            "$root/pull-requests.json"
-
+          fetch "project_pull_requests/list?project=${PROJECT_KEY}" pull-requests.json
+          fetch "qualitygates/project_status?projectKey=${PROJECT_KEY}&pullRequest=${TARGET_PR}" quality-gate.json
+          fetch "issues/search?componentKeys=${PROJECT_KEY}&pullRequest=${TARGET_PR}&resolved=false&ps=500" issues.json
+          fetch "measures/component?component=${PROJECT_KEY}&pullRequest=${TARGET_PR}&metricKeys=new_reliability_rating,new_security_rating,new_maintainability_rating,new_bugs,new_vulnerabilities,new_code_smells,new_duplicated_lines_density,new_security_hotspots_reviewed" measures.json
           python3 - <<'PY'
           import json
           from pathlib import Path
 
           root = Path('.github/sonar-probe')
-          target_sha = '3795262331742b87fc04d604a62e5282a0fd1afc'
+          target_sha = 'e2ab913e704c0eeb16cb3343d609fce323bb634c'
 
           def load(name: str):
               return json.loads((root / name).read_text(encoding='utf-8'))
 
-          checks = load('check-runs.json').get('check_runs', [])
-          suites = load('check-suites.json').get('check_suites', [])
-          legacy = load('legacy-status.json')
+          pull_requests = load('pull-requests.json').get('pullRequests', [])
+          pr = next((item for item in pull_requests if str(item.get('key')) == '31'), {})
           gate = load('quality-gate.json').get('projectStatus', {})
           issues = load('issues.json')
           measure_payload = load('measures.json')
-          pull_requests = load('pull-requests.json').get('pullRequests', [])
-          pr = next((item for item in pull_requests if str(item.get('key')) == '31'), {})
           measures = {
               item.get('metric'): item.get('period', {}).get('value', item.get('value'))
               for item in measure_payload.get('component', {}).get('measures', [])
           }
-
           lines = [
-              '# Final PR 31 Sonar and GitHub status',
+              '# Current PR 31 Sonar status',
               '',
-              '- repository: tontoko/fast-playwright-mcp',
-              '- pull request: 31',
               f'- target SHA: {target_sha}',
-              f"- Sonar analyzed revision: {pr.get('revision')}",
-              f"- Sonar analysis date: {pr.get('analysisDate')}",
-              f"- Sonar quality gate: {gate.get('status')}",
-              f"- unresolved Sonar issues: {issues.get('total')}",
-              f"- GitHub legacy aggregate state: {legacy.get('state')}",
+              f"- analyzed revision: {pr.get('revision')}",
+              f"- analysis date: {pr.get('analysisDate')}",
+              f"- quality gate: {gate.get('status')}",
+              f"- unresolved issues: {issues.get('total')}",
               '',
-              '## Sonar measures',
+              '## Measures',
           ]
           for key in sorted(measures):
               lines.append(f'- {key}: {measures[key]}')
-
-          lines.extend(['', '## Sonar quality-gate conditions'])
+          lines.extend(['', '## Conditions'])
           for condition in gate.get('conditions', []):
               lines.append(
                   f"- {condition.get('metricKey')}: status={condition.get('status')}, "
                   f"actual={condition.get('actualValue')}, threshold={condition.get('errorThreshold')}"
               )
-
-          lines.extend(['', '## GitHub check runs'])
-          for run in checks:
-              app = run.get('app') or {}
-              lines.append(
-                  f"- {run.get('name')} — app={app.get('slug')}, "
-                  f"status={run.get('status')}, conclusion={run.get('conclusion')}"
-              )
-
-          lines.extend(['', '## GitHub check suites'])
-          for suite in suites:
-              app = suite.get('app') or {}
-              lines.append(
-                  f"- {app.get('slug')}: status={suite.get('status')}, "
-                  f"conclusion={suite.get('conclusion')}"
-              )
-
           (root / 'RESULTS.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
-
-      - name: Commit probe result
+      - name: Commit result
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .github/sonar-probe
-          git commit -m 'chore: record final PR 31 Sonar probe [sonar-probe-result]'
+          git commit -m 'chore: record current PR 31 Sonar probe [sonar-probe-result]'
           git push origin HEAD:agent/sonar-status-probe
