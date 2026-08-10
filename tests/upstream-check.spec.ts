@@ -3,9 +3,11 @@ import { expect, test } from '@playwright/test';
 import {
   buildUpstreamReport,
   classifyPath,
+  diffTreeEntries,
   githubApiUrl,
   loadUpstreamManifest,
   parseRepositorySlug,
+  type GitTreeEntry,
 } from '../scripts/upstream-check.js';
 
 test('loads the pinned upstream manifest', async () => {
@@ -54,12 +56,42 @@ test('GitHub API URLs keep validated repositories on the fixed origin', () => {
   expect(url.search).toBe('');
 });
 
-test('fixture report is stable, dual-source, and read-only', async () => {
+test('recursive tree diff includes files beyond the compare API cap', () => {
+  const base: GitTreeEntry[] = Array.from({ length: 301 }, (_, index) => ({
+    path: `src/file-${index}.ts`,
+    mode: '100644',
+    type: 'blob',
+    sha: `old-${index}`,
+  }));
+  const head: GitTreeEntry[] = base.map((entry, index) => ({
+    ...entry,
+    sha: `new-${index}`,
+  }));
+  const compareFiles = base.slice(0, 300).map((entry) => ({
+    filename: entry.path,
+    status: 'modified',
+    additions: 1,
+    deletions: 1,
+  }));
+
+  const files = diffTreeEntries(base, head, compareFiles);
+
+  expect(files).toHaveLength(301);
+  expect(files[300]).toEqual({
+    filename: 'src/file-300.ts',
+    status: 'modified',
+  });
+});
+
+test('fixture report is stable, complete, dual-source, and read-only', async () => {
   const manifest = await loadUpstreamManifest();
   const fixture = JSON.parse(
     await readFile('tests/upstream/fixtures/compare.json', 'utf8')
   );
-  const payloads = { mcp: fixture, playwright: fixture };
+  const payloads = {
+    mcp: { ...fixture, totalCommits: 450, completeFileList: true },
+    playwright: { ...fixture, completeFileList: true },
+  };
   const first = buildUpstreamReport(manifest, payloads);
   const second = buildUpstreamReport(manifest, payloads);
   expect(first).toBe(second);
@@ -67,6 +99,8 @@ test('fixture report is stable, dual-source, and read-only', async () => {
   expect(first).toContain('## Playwright runtime');
   expect(first).toContain(manifest.repository);
   expect(first).toContain(manifest.playwrightRepository);
+  expect(first).toContain('Commits: 450');
+  expect(first).toContain('File inventory: complete recursive tree diff');
   expect(first).toContain('This report is read-only');
   expect(first).not.toContain('gh issue');
 });
