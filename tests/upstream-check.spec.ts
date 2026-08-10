@@ -11,12 +11,12 @@ import {
 test('loads the pinned upstream manifest', async () => {
   const manifest = await loadUpstreamManifest();
   expect(manifest.reviewedCommit).toBe(
-    '55679f5f3d4b4f3e2534ec0ce2fc5683ba2eaf3f'
+    '7e0457a7cbf88823bf0146d12c46ae12c6818247'
   );
   expect(manifest.playwrightReviewedCommit).toBe(
-    '15b1aec478d90f0293dae7b7b6dafd494d9f0154'
+    '8078b85865a9643b37b5564c188a252545253749'
   );
-  expect(manifest.playwrightVersion).not.toBe('1.62.0-alpha-1783623505000');
+  expect(manifest.playwrightVersion).toBe('1.63.0-alpha-2026-08-05');
 });
 
 test('classifies upstream paths deterministically', () => {
@@ -54,14 +54,19 @@ test('GitHub API URLs keep validated repositories on the fixed origin', () => {
   expect(url.search).toBe('');
 });
 
-test('fixture report is stable and read-only', async () => {
+test('fixture report is stable, dual-source, and read-only', async () => {
   const manifest = await loadUpstreamManifest();
   const fixture = JSON.parse(
     await readFile('tests/upstream/fixtures/compare.json', 'utf8')
   );
-  const first = buildUpstreamReport(manifest, fixture);
-  const second = buildUpstreamReport(manifest, fixture);
+  const payloads = { mcp: fixture, playwright: fixture };
+  const first = buildUpstreamReport(manifest, payloads);
+  const second = buildUpstreamReport(manifest, payloads);
   expect(first).toBe(second);
+  expect(first).toContain('## Playwright MCP');
+  expect(first).toContain('## Playwright runtime');
+  expect(first).toContain(manifest.repository);
+  expect(first).toContain(manifest.playwrightRepository);
   expect(first).toContain('This report is read-only');
   expect(first).not.toContain('gh issue');
 });

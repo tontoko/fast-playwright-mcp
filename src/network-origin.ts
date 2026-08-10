@@ -52,9 +52,7 @@ function fullOriginWildcardPattern(
 
 function hostOnlyRoutePattern(origin: string, original: string): string {
   const wildcardPort = origin.endsWith(':*');
-  const candidate = wildcardPort
-    ? `${origin.slice(0, -2)}:1`
-    : origin;
+  const candidate = wildcardPort ? `${origin.slice(0, -2)}:1` : origin;
   try {
     const parsed = new URL(`http://${candidate}`);
     assertSupportedOrigin(parsed, original);

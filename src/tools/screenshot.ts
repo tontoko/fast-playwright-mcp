@@ -1,3 +1,4 @@
+import { extname } from 'node:path';
 import type * as playwright from 'playwright';
 import { z } from 'zod';
 import type { Response } from '../response.js';
@@ -8,7 +9,6 @@ import { formatObject } from '../utils/codegen.js';
 import { defineTabTool } from './tool.js';
 import { generateLocator } from './utils.js';
 
-// Enhanced selector schema for browser tools
 const selectorsSchema = z
   .array(elementSelectorSchema)
   .min(1)
@@ -20,14 +20,16 @@ const selectorsSchema = z
 const screenshotSchema = z
   .object({
     type: z
-      .enum(['png', 'jpeg'])
-      .default('png')
-      .describe('Image format for the screenshot. Default is png.'),
+      .enum(['png', 'jpeg', 'webp'])
+      .optional()
+      .describe(
+        'Image format. When omitted, inferred from filename or defaults to png.'
+      ),
     filename: z
       .string()
       .optional()
       .describe(
-        'File name to save the screenshot to. Defaults to `page-{timestamp}.{png|jpeg}` if not specified.'
+        'File name to save the screenshot to. Defaults to `page-{timestamp}.{png|jpeg|webp}` if not specified.'
       ),
     selectors: selectorsSchema
       .optional()
@@ -58,29 +60,54 @@ const screenshotSchema = z
   );
 
 type ScreenshotParams = z.output<typeof screenshotSchema>;
+type ScreenshotType = 'png' | 'jpeg' | 'webp';
+
+function resolveScreenshotType(
+  type: ScreenshotType | undefined,
+  filename: string | undefined
+): ScreenshotType {
+  if (type) {
+    return type;
+  }
+  const extension = filename ? extname(filename).toLowerCase() : '';
+  if (extension === '.jpg' || extension === '.jpeg') {
+    return 'jpeg';
+  }
+  if (extension === '.webp') {
+    return 'webp';
+  }
+  return 'png';
+}
 
 async function prepareFileName(
   context: Tab['context'],
   filename: string | undefined,
-  fileType: string
+  fileType: ScreenshotType
 ): Promise<string> {
   const defaultName = `page-${new Date().toISOString()}.${fileType}`;
   return await context.outputFile(filename ?? defaultName);
 }
 
 function createScreenshotOptions(
-  fileType: string,
+  fileType: ScreenshotType,
   fileName: string,
   fullPage: boolean | undefined,
   scale: 'css' | 'device'
 ): playwright.PageScreenshotOptions {
   return {
-    type: fileType as 'png' | 'jpeg',
+    type: fileType,
     quality: fileType === 'png' ? undefined : 90,
     scale,
     path: fileName,
     ...(fullPage !== undefined && { fullPage }),
   };
+}
+
+function imageMimeType(fileType: ScreenshotType): string {
+  if (fileType === 'jpeg') {
+    return 'image/jpeg';
+  }
+  return `image/${fileType}`;
 }
 
 function isElementScreenshotRequest(params: ScreenshotParams): boolean {
@@ -108,12 +135,12 @@ async function getScreenshotLocator(
 
   const resolutionResults = await tab.resolveElementLocators(params.selectors);
   const successfulResults = resolutionResults.filter(
-    (r) => r.locator && !r.error
+    (result) => result.locator && !result.error
   );
 
   if (successfulResults.length === 0) {
     const errors = resolutionResults
-      .map((r) => r.error || 'Unknown error')
+      .map((result) => result.error || 'Unknown error')
       .join(', ');
     throw new Error(
       `Failed to resolve element selectors for screenshot: ${errors}`
@@ -157,7 +184,7 @@ const screenshot = defineTabTool({
     type: 'action',
   },
   handle: async (tab, params, response) => {
-    const fileType = params.type ?? 'png';
+    const fileType = resolveScreenshotType(params.type, params.filename);
     const fileName = await prepareFileName(
       tab.context,
       params.filename,
@@ -191,11 +218,9 @@ const screenshot = defineTabTool({
       `Took the ${screenshotTarget} screenshot and saved it as ${fileName}`
     );
 
-    // https://github.com/microsoft/playwright-mcp/issues/817
-    // Never return large images to LLM, saving them to the file system is enough.
     if (!params.fullPage) {
       response.addImage({
-        contentType: fileType === 'png' ? 'image/png' : 'image/jpeg',
+        contentType: imageMimeType(fileType),
         data: buffer,
       });
     }

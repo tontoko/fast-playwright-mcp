@@ -1,4 +1,5 @@
 import { App } from '@modelcontextprotocol/ext-apps';
+import { refreshDashboard } from './refresh.js';
 import {
   clearError,
   firstText,
@@ -45,14 +46,12 @@ const refreshButton = element<HTMLButtonElement>('refresh');
 const status = element<HTMLElement>('status');
 const error = element<HTMLElement>('error');
 
-async function updatePreview(): Promise<void> {
+async function updatePreview(): Promise<boolean> {
   const result = await callTool('browser_take_screenshot', {
     type: 'jpeg',
     expectation: compactExpectation,
   });
-  if (!renderScreenshot(preview, contentFrom(result))) {
-    throw new Error('Screenshot tool did not return a supported image.');
-  }
+  return renderScreenshot(preview, contentFrom(result));
 }
 
 async function selectTab(index: number): Promise<void> {
@@ -91,8 +90,13 @@ async function refresh(): Promise<void> {
   refreshButton.disabled = true;
   status.textContent = 'Refreshing browser state…';
   try {
-    await Promise.all([updatePreview(), updateTabs()]);
-    status.textContent = 'Browser state is up to date.';
+    const { previewAvailable } = await refreshDashboard({
+      updateTabs,
+      updatePreview,
+    });
+    status.textContent = previewAvailable
+      ? 'Browser state is up to date.'
+      : 'Browser state is up to date; image preview is disabled.';
   } catch (cause) {
     renderError(
       error,

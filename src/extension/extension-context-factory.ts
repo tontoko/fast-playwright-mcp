@@ -7,6 +7,18 @@ import { startHttpServer } from '../http-server.js';
 import { extensionContextFactoryDebug } from '../utils/log.js';
 import { CDPRelayServer } from './cdp-relay.js';
 
+type ExtensionConnectOptions = {
+  noDefaults: boolean;
+  timeout: number;
+};
+
+type ExtensionChromium = {
+  connectOverCDP(
+    endpoint: string,
+    options: ExtensionConnectOptions
+  ): Promise<Browser>;
+};
+
 export class ExtensionContextFactory implements BrowserContextFactory {
   name = 'extension';
   description = 'Connect to a browser using the Playwright MCP extension';
@@ -33,7 +45,6 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     browserContext: BrowserContext;
     close: () => Promise<void>;
   }> {
-    // First call will establish the connection to the extension.
     this._browserPromise ??= this._obtainBrowser(clientInfo, abortSignal);
     const browserPromise = this._browserPromise;
     let browser: Browser;
@@ -60,21 +71,35 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     abortSignal: AbortSignal
   ): Promise<Browser> {
     this._relayPromise ??= this._startRelay(abortSignal);
-    const relay = await this._relayPromise;
+    const relayPromise = this._relayPromise;
+    let relay: CDPRelayServer;
+    try {
+      relay = await relayPromise;
+    } catch (error) {
+      if (this._relayPromise === relayPromise) {
+        this._relayPromise = undefined;
+      }
+      throw error;
+    }
     abortSignal.throwIfAborted();
     await relay.ensureExtensionConnectionForMCPContext(clientInfo, abortSignal);
-    const browser = await chromium.connectOverCDP(relay.cdpEndpoint());
+    const extensionChromium = chromium as unknown as ExtensionChromium;
+    const browser = await extensionChromium.connectOverCDP(
+      relay.cdpEndpoint(),
+      { noDefaults: true, timeout: 0 }
+    );
     browser.on('disconnected', () => {
       this._browserPromise = undefined;
+      if (this._relayPromise === relayPromise) {
+        this._relayPromise = undefined;
+      }
+      relay.stop();
       extensionContextFactoryDebug('Browser disconnected');
     });
     return browser;
   }
 
   private async _startRelay(abortSignal: AbortSignal) {
-    // Both the bundled and current Web Store extensions intentionally reject
-    // non-numeric hosts. Binding explicitly also avoids exposing the relay on
-    // every interface when the OS default is :: or 0.0.0.0.
     const httpServer = await startHttpServer({ host: '127.0.0.1' });
     extensionContextFactoryDebug(
       'Starting CDP relay',

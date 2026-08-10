@@ -2,6 +2,10 @@
 // - https://github.com/microsoft/playwright/blob/76ee48dc9d4034536e3ec5b2c7ce8be3b79418a8/packages/playwright-core/src/utils/isomorphic/stringUtils.ts
 // - https://github.com/microsoft/playwright/blob/76ee48dc9d4034536e3ec5b2c7ce8be3b79418a8/packages/playwright-core/src/server/codegen/javascript.ts
 // NOTE: this function should not be used to escape any selectors.
+const ESCAPED_SINGLE_QUOTE = String.raw({ raw: ["\\'"] });
+const ESCAPED_BACKTICK = String.raw({ raw: ['\\`'] });
+const ESCAPED_TEMPLATE_OPEN = String.raw({ raw: ['\\${'] });
+
 export function escapeWithQuotes(
   text: string,
   char: "'" | '"' | '`' = "'"
@@ -12,11 +16,11 @@ export function escapeWithQuotes(
   }
   const body = stringified.slice(1, -1);
   if (char === "'") {
-    return `'${body.replaceAll("'", String.raw`\'`)}'`;
+    return `'${body.replaceAll("'", ESCAPED_SINGLE_QUOTE)}'`;
   }
   return `\`${body
-    .replaceAll('`', String.raw`\``)
-    .replaceAll('${', String.raw`\${')}\``;
+    .replaceAll('`', ESCAPED_BACKTICK)
+    .replaceAll('${', ESCAPED_TEMPLATE_OPEN)}\``;
 }
 
 export function quote(text: string): string {
