@@ -30,23 +30,47 @@ export type UpstreamManifest = {
   playwrightVersion: string;
 };
 
-type ChangedFile = {
+export type ChangedFile = {
   filename: string;
   status: string;
   additions?: number;
   deletions?: number;
+  previous_filename?: string;
+};
+
+export type GitTreeEntry = {
+  path: string;
+  mode: string;
+  type: 'blob' | 'commit' | 'tree';
+  sha: string | null;
+  size?: number;
 };
 
 export type ComparePayload = {
+  ahead_by?: number;
   base_commit?: { sha: string };
   commits?: { sha: string; commit?: { message?: string } }[];
+  completeFileList?: boolean;
   files?: ChangedFile[];
   headSha?: string;
+  total_commits?: number;
+  totalCommits?: number;
 };
 
 export type UpstreamReportPayloads = {
   mcp: ComparePayload;
   playwright: ComparePayload;
+};
+
+type GitCommitPayload = {
+  sha: string;
+  tree: { sha: string };
+};
+
+type GitTreePayload = {
+  sha: string;
+  tree: GitTreeEntry[];
+  truncated: boolean;
 };
 
 export function parseRepositorySlug(
@@ -181,6 +205,60 @@ function isReportPayloads(
   return 'mcp' in payload && 'playwright' in payload;
 }
 
+function fileEntries(entries: readonly GitTreeEntry[]): Map<string, GitTreeEntry> {
+  return new Map(
+    entries
+      .filter((entry) => entry.type !== 'tree')
+      .map((entry) => [entry.path, entry])
+  );
+}
+
+export function diffTreeEntries(
+  baseEntries: readonly GitTreeEntry[],
+  headEntries: readonly GitTreeEntry[],
+  compareFiles: readonly ChangedFile[] = []
+): ChangedFile[] {
+  const base = fileEntries(baseEntries);
+  const head = fileEntries(headEntries);
+  const known = new Map(compareFiles.map((file) => [file.filename, file]));
+  const renamedSources = new Set(
+    compareFiles
+      .filter((file) => file.status === 'renamed' && file.previous_filename)
+      .map((file) => file.previous_filename as string)
+  );
+  const paths = [...new Set([...base.keys(), ...head.keys()])].sort((left, right) =>
+    left.localeCompare(right)
+  );
+  const result: ChangedFile[] = [];
+
+  for (const path of paths) {
+    const before = base.get(path);
+    const after = head.get(path);
+    if (
+      before &&
+      after &&
+      before.sha === after.sha &&
+      before.mode === after.mode &&
+      before.type === after.type
+    ) {
+      continue;
+    }
+    if (before && !after && renamedSources.has(path)) {
+      continue;
+    }
+    const status = before ? (after ? 'modified' : 'removed') : 'added';
+    const knownFile = known.get(path);
+    result.push(knownFile ? { ...knownFile } : { filename: path, status });
+  }
+
+  for (const file of compareFiles) {
+    if (!result.some((candidate) => candidate.filename === file.filename)) {
+      result.push({ ...file });
+    }
+  }
+  return result.sort((left, right) => left.filename.localeCompare(right.filename));
+}
+
 function sortedFiles(payload: ComparePayload): ChangedFile[] {
   return [...(payload.files ?? [])].sort((left, right) => {
     const category = classifyPath(left.filename).localeCompare(
@@ -199,14 +277,25 @@ function renderComparison(
   const head =
     payload.headSha ?? payload.commits?.at(-1)?.sha ?? reviewedCommit;
   const files = sortedFiles(payload);
+  const totalCommits =
+    payload.totalCommits ??
+    payload.total_commits ??
+    payload.ahead_by ??
+    payload.commits?.length ??
+    0;
   const lines = [
     `## ${title}`,
     '',
     `- Repository: \`${repository}\``,
     `- Reviewed from: \`${reviewedCommit}\``,
     `- Compared to: \`${head}\``,
-    `- Commits: ${payload.commits?.length ?? 0}`,
+    `- Commits: ${totalCommits}`,
     `- Changed files: ${files.length}`,
+    `- File inventory: ${
+      payload.completeFileList
+        ? 'complete recursive tree diff'
+        : 'API response or fixture'
+    }`,
     '',
     '### Changed files',
     '',
@@ -216,10 +305,10 @@ function renderComparison(
   }
   for (const file of files) {
     const category = classifyPath(file.filename);
+    const additions = file.additions ?? '?';
+    const deletions = file.deletions ?? '?';
     lines.push(
-      `- \`${file.filename}\` — ${file.status}; +${file.additions ?? 0}/-${
-        file.deletions ?? 0
-      }; category: \`${category}\`; suggested: \`${suggestion(category)}\``
+      `- \`${file.filename}\` — ${file.status}; +${additions}/-${deletions}; category: \`${category}\`; suggested: \`${suggestion(category)}\``
     );
   }
   lines.push('');
@@ -259,23 +348,32 @@ export function buildUpstreamReport(
   ].join('\n');
 }
 
-async function githubJson<T>(
-  repository: string,
-  ...segments: readonly string[]
-): Promise<T> {
-  const url = githubApiUrl(repository, ...segments);
-  const headers = {
+function githubHeaders(): Record<string, string> {
+  return {
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
     ...(process.env.GITHUB_TOKEN
       ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
       : {}),
   };
-  const response = await fetch(url, { headers }); // NOSONAR
+}
+
+async function githubJsonUrl<T>(url: URL): Promise<T> {
+  if (url.origin !== GITHUB_API_ORIGIN) {
+    throw new Error('GitHub API URL must use the configured origin');
+  }
+  const response = await fetch(url, { headers: githubHeaders() }); // NOSONAR
   if (!response.ok) {
     throw new Error(`GitHub request failed (${response.status}): ${url}`);
   }
   return (await response.json()) as T;
+}
+
+async function githubJson<T>(
+  repository: string,
+  ...segments: readonly string[]
+): Promise<T> {
+  return githubJsonUrl<T>(githubApiUrl(repository, ...segments));
 }
 
 async function readFixture(
@@ -288,6 +386,35 @@ async function readFixture(
   });
   const fixtureText = await readFile(fixturePath, 'utf8'); // NOSONAR
   return JSON.parse(fixtureText) as ComparePayload;
+}
+
+async function fetchTreeEntries(
+  repository: string,
+  commitSha: string
+): Promise<GitTreeEntry[]> {
+  const commit = await githubJson<GitCommitPayload>(
+    repository,
+    'git',
+    'commits',
+    commitSha
+  );
+  if (!FULL_SHA.test(commit.tree.sha)) {
+    throw new Error(`GitHub returned an invalid tree SHA for ${commitSha}`);
+  }
+  const treeUrl = githubApiUrl(
+    repository,
+    'git',
+    'trees',
+    commit.tree.sha
+  );
+  treeUrl.searchParams.set('recursive', '1');
+  const tree = await githubJsonUrl<GitTreePayload>(treeUrl);
+  if (tree.truncated) {
+    throw new Error(
+      `Recursive tree response was truncated for ${repository}@${commitSha}`
+    );
+  }
+  return tree.tree;
 }
 
 async function loadComparison(
@@ -312,7 +439,25 @@ async function loadComparison(
     'compare',
     `${reviewedCommit}...${latest.sha}`
   );
-  return { ...compare, headSha: latest.sha };
+  const baseCommit = compare.base_commit?.sha ?? reviewedCommit;
+  if (!FULL_SHA.test(baseCommit)) {
+    throw new Error('GitHub returned an invalid comparison base SHA');
+  }
+  const [baseTree, headTree] = await Promise.all([
+    fetchTreeEntries(repository, baseCommit),
+    fetchTreeEntries(repository, latest.sha),
+  ]);
+  return {
+    ...compare,
+    completeFileList: true,
+    files: diffTreeEntries(baseTree, headTree, compare.files),
+    headSha: latest.sha,
+    totalCommits:
+      compare.total_commits ??
+      compare.ahead_by ??
+      compare.commits?.length ??
+      0,
+  };
 }
 
 if (import.meta.main) {
