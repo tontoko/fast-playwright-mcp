@@ -1,7 +1,8 @@
 # PR 31 final-fixes runs
 
+- PR31 Green #10: status=in_progress, conclusion=None, head=773a1d1f8167d9536434a28e9e4bf49583482019, id=31402763297
 - PR 31 final fixes RED #8: status=completed, conclusion=failure, head=8e5d708860defd209aafbe6188163dfc46d1c94f, id=31402318735
-- PR31 Green #9: status=in_progress, conclusion=None, head=8e5d708860defd209aafbe6188163dfc46d1c94f, id=31402318592
+- PR31 Green #9: status=completed, conclusion=cancelled, head=8e5d708860defd209aafbe6188163dfc46d1c94f, id=31402318592
 - PR 31 final fixes RED #7: status=completed, conclusion=failure, head=057c05447d33627befd5e187cda84f8e1354e69b, id=31402265480
 - PR31 Green #8: status=completed, conclusion=cancelled, head=057c05447d33627befd5e187cda84f8e1354e69b, id=31402265522
 - PR31 Green #7: status=completed, conclusion=failure, head=78912d75c18453ca8a6d68aebb33bf578728a6e5, id=31402138046
