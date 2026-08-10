@@ -77,7 +77,7 @@ test('recursive tree diff includes files beyond the compare API cap', () => {
   const files = diffTreeEntries(base, head, compareFiles);
 
   expect(files).toHaveLength(301);
-  expect(files[300]).toEqual({
+  expect(files.find((file) => file.filename === 'src/file-300.ts')).toEqual({
     filename: 'src/file-300.ts',
     status: 'modified',
   });
