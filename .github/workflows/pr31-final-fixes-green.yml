@@ -1,28 +1,9 @@
-name: PR 31 final fixes GREEN
+name: PR31 Green
 
 on:
   push:
-    branches: [agent/pr31-final-fixes]
-    paths:
-      - '.github/workflows/pr31-final-fixes-green.yml'
-      - 'scripts/apply-pr31-final-fixes.py'
-      - 'package.json'
-      - 'upstream.json'
-      - 'docs/upstream-compatibility.md'
-      - 'scripts/upstream-check.ts'
-      - 'src/apps/dashboard/**'
-      - 'src/extension/**'
-      - 'src/session-log.ts'
-      - 'src/tools/screenshot.ts'
-      - 'src/utils/codegen.ts'
-      - 'tests/cdp-relay-launch.spec.ts'
-      - 'tests/cdp-relay-security.spec.ts'
-      - 'tests/dashboard-refresh.spec.ts'
-      - 'tests/session-log-eviction.spec.ts'
-      - 'tests/screenshot-webp.spec.ts'
-      - 'tests/upstream-dual-audit.spec.ts'
-      - 'tests/upstream-check.spec.ts'
-      - 'tests/upstream-runtime.spec.ts'
+    branches:
+      - agent/pr31-final-fixes
 
 permissions:
   contents: write
@@ -33,7 +14,6 @@ concurrency:
 
 jobs:
   green:
-    if: ${{ !contains(github.event.head_commit.message, '[green-result]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -47,21 +27,14 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: '22'
-
-      - name: Apply CDP relay launch and upgrade hardening
+      - name: Apply relay hardening
         run: python3 scripts/apply-pr31-final-fixes.py
-
-      - name: Install refreshed dependencies and browser revision
-        shell: bash
+      - name: Install dependencies and Chromium
         run: |
-          set -euo pipefail
           bun install
           bunx playwright install --with-deps chromium
-
-      - name: Format and static verification
-        shell: bash
+      - name: Static verification
         run: |
-          set -euo pipefail
           bun run lint-fix
           bun run check:encoding
           bun run typecheck
@@ -77,11 +50,8 @@ jobs:
           grep -q '## Playwright MCP' /tmp/upstream-report.md
           grep -q '## Playwright runtime' /tmp/upstream-report.md
           git diff --check
-
-      - name: Focused final regressions
-        shell: bash
+      - name: Focused regressions
         run: |
-          set -euo pipefail
           bunx playwright test \
             tests/cdp-relay-launch.spec.ts \
             tests/cdp-relay-security.spec.ts \
@@ -96,30 +66,22 @@ jobs:
             tests/tool-gateways.spec.ts \
             --project=chromium \
             --workers=1
-
       - name: Full Chromium suite
         run: bunx playwright test --project=chromium --workers=2
-
-      - name: Packed npm artifact smoke
+      - name: Packed package smoke
         run: bun run test:package
-
       - name: Extension build and E2E
-        shell: bash
         env:
           DEBUG: 'pw:mcp:*'
           PWMCP_DEBUG: '1'
         run: |
-          set -euo pipefail
           npm ci --prefix extension
           npm run build --prefix extension
           xvfb-run --auto-servernum bunx playwright test \
             --config=extension/playwright.config.ts \
             --workers=1
-
-      - name: Record verified source state
-        shell: bash
+      - name: Commit verified source state
         run: |
-          set -euo pipefail
           printf '# PR 31 GREEN verification\n\n' > GREEN_RESULT.md
           printf -- '- static verification: passed\n' >> GREEN_RESULT.md
           printf -- '- focused regressions: passed\n' >> GREEN_RESULT.md
@@ -129,12 +91,15 @@ jobs:
           rm -rf lib test-results playwright-report extension/dist \
             extension/test-results extension/playwright-report
           rm -f -- *.tgz tsconfig.tsbuildinfo
+          git rm .github/workflows/pr31-final-fixes-green.yml
+          git rm .github/workflows/pr31-final-fixes-red.yml
+          git rm scripts/apply-pr31-final-fixes.py
+          git rm RED_RESULT.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git commit -m 'fix: complete PR 31 review and upstream refresh [green-result]'
           git push origin HEAD:agent/pr31-final-fixes
-
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
