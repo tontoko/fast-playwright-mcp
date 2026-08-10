@@ -5,7 +5,9 @@ import { startHttpServer } from '../src/http-server.js';
 import { CDPRelayServer } from '../src/extension/cdp-relay.js';
 import { DEFAULT_EXTENSION_ID } from '../src/extension/connect-url.js';
 
-test('custom extension executable launch errors reject instead of crashing', async ({}, testInfo) => {
+test('custom extension executable launch errors reject instead of crashing', async ({
+  page: _page,
+}, testInfo) => {
   const server = await startHttpServer({ host: '127.0.0.1' });
   const relay = new CDPRelayServer(
     server,
@@ -25,7 +27,9 @@ test('custom extension executable launch errors reject instead of crashing', asy
   }
 });
 
-test('custom extension executables launch the profile containing the extension', async ({}, testInfo) => {
+test('custom extension executables launch the profile containing the extension', async ({
+  page: _page,
+}, testInfo) => {
   test.skip(process.platform === 'win32', 'uses a POSIX test executable');
   const userDataDir = testInfo.outputPath('user-data');
   const profile = 'Profile 1';
