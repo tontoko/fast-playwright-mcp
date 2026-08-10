@@ -28,7 +28,9 @@ function response(label: string): Response {
   } as unknown as Response;
 }
 
-test('active session directory is finalized as one eviction unit', async ({}, testInfo) => {
+test('active session directory is finalized as one eviction unit', async ({
+  page: _page,
+}, testInfo) => {
   const outputRoot = testInfo.outputPath('output');
   const sessionFolder = testInfo.outputPath('output', 'session-active');
   await mkdir(sessionFolder, { recursive: true });
