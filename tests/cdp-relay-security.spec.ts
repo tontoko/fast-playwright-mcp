@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { WebSocket } from 'ws';
+import { type ClientOptions, WebSocket } from 'ws';
 import { CDPRelayServer } from '../src/extension/cdp-relay.js';
 import { startHttpServer } from '../src/http-server.js';
 
 async function expectUpgradeRejected(
   url: string,
-  options: ConstructorParameters<typeof WebSocket>[1]
+  options: ClientOptions
 ): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     const socket = new WebSocket(url, options);
