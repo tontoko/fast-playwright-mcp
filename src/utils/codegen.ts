@@ -2,9 +2,9 @@
 // - https://github.com/microsoft/playwright/blob/76ee48dc9d4034536e3ec5b2c7ce8be3b79418a8/packages/playwright-core/src/utils/isomorphic/stringUtils.ts
 // - https://github.com/microsoft/playwright/blob/76ee48dc9d4034536e3ec5b2c7ce8be3b79418a8/packages/playwright-core/src/server/codegen/javascript.ts
 // NOTE: this function should not be used to escape any selectors.
-const ESCAPED_SINGLE_QUOTE = String.raw({ raw: ["\\'"] });
-const ESCAPED_BACKTICK = String.raw({ raw: ['\\`'] });
-const ESCAPED_TEMPLATE_OPEN = String.raw({ raw: ['\\${'] });
+const ESCAPED_SINGLE_QUOTE = String.raw`\'`;
+const ESCAPED_BACKTICK = String.raw`\``;
+const ESCAPED_TEMPLATE_OPEN = String.raw`\${`;
 
 export function escapeWithQuotes(
   text: string,
