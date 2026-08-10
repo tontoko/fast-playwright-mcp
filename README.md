@@ -760,8 +760,8 @@ http.createServer(async (req, res) => {
   - Title: Take a screenshot
   - Description: Take a screenshot of current page and return image data
   - Parameters:
-    - `type` (string, optional): Image format for the screenshot. Default is png.
-    - `filename` (string, optional): File name to save the screenshot to. Defaults to `page-{timestamp}.{png|jpeg}` if not specified.
+    - `type` (string, optional): Image format. When omitted, inferred from filename or defaults to png.
+    - `filename` (string, optional): File name to save the screenshot to. Defaults to `page-{timestamp}.{png|jpeg|webp}` if not specified.
     - `selectors` (array, optional): Optional element selectors for element screenshots. If not provided, viewport screenshot will be taken.
     - `scale` (string, optional): Use CSS pixels or device pixels for the screenshot.
     - `fullPage` (boolean, optional): When true, takes a screenshot of the full scrollable page, instead of the currently visible viewport. Cannot be used with element screenshots.
@@ -919,6 +919,7 @@ http.createServer(async (req, res) => {
 
 
 <!--- End of tools generated section -->
+
 
 
 ### Token Optimization Examples

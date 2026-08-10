@@ -1,9 +1,9 @@
 import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
-import { startHttpServer } from '../src/http-server.js';
 import { CDPRelayServer } from '../src/extension/cdp-relay.js';
 import { DEFAULT_EXTENSION_ID } from '../src/extension/connect-url.js';
+import { startHttpServer } from '../src/http-server.js';
 
 test('custom extension executable launch errors reject instead of crashing', async ({
   page: _page,
@@ -52,12 +52,7 @@ test('custom extension executables launch the profile containing the extension',
   await chmod(executable, 0o755);
 
   const server = await startHttpServer({ host: '127.0.0.1' });
-  const relay = new CDPRelayServer(
-    server,
-    'chromium',
-    userDataDir,
-    executable
-  );
+  const relay = new CDPRelayServer(server, 'chromium', userDataDir, executable);
   const controller = new AbortController();
   const connection = relay.ensureExtensionConnectionForMCPContext(
     { name: 'relay-test', version: '1.0.0' },
@@ -65,11 +60,9 @@ test('custom extension executables launch the profile containing the extension',
   );
   try {
     await expect
-      .poll(
-        async () =>
-          readFile(argumentsFile, 'utf8').catch(() => ''),
-        { timeout: 5000 }
-      )
+      .poll(async () => readFile(argumentsFile, 'utf8').catch(() => ''), {
+        timeout: 5000,
+      })
       .toContain(`--profile-directory=${profile}`);
   } finally {
     controller.abort(new Error('test complete'));

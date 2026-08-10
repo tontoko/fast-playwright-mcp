@@ -1,7 +1,7 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
-import type { Response } from '../src/response.js';
 import { OutputManager } from '../src/output-manager.js';
+import type { Response } from '../src/response.js';
 import { SessionLog } from '../src/session-log.js';
 import type { TabSnapshot } from '../src/tab.js';
 import { SecretRedactor } from '../src/utils/secret-redactor.js';

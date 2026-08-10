@@ -10,16 +10,13 @@ test('upstream report contains independent MCP and Playwright comparisons', asyn
   const fixture = JSON.parse(
     await readFile('tests/upstream/fixtures/compare.json', 'utf8')
   );
-  const report = buildUpstreamReport(
-    manifest,
-    {
-      mcp: fixture,
-      playwright: {
-        ...fixture,
-        headSha: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-      },
-    } as never
-  );
+  const report = buildUpstreamReport(manifest, {
+    mcp: fixture,
+    playwright: {
+      ...fixture,
+      headSha: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    },
+  } as never);
 
   expect(report).toContain('## Playwright MCP');
   expect(report).toContain(`Repository: \`${manifest.repository}\``);
