@@ -14,7 +14,7 @@ import coreBundle from 'playwright-core/lib/coreBundle';
 import type websocket from 'ws';
 import { WebSocket, WebSocketServer } from 'ws';
 import type { ClientInfo } from '../browser-context-factory.js';
-import { httpAddressToString } from '../http-server.js';
+import { httpAddressToString, isHostAllowed } from '../http-server.js';
 import { ManualPromise } from '../manual-promise.js';
 import { cdpRelayDebug, logUnhandledError } from '../utils/log.js';
 import {
@@ -28,6 +28,62 @@ const { registry } = coreBundle.registry;
 const HTTP_TO_WS_REGEX = /^http/;
 const MAX_MESSAGE_SIZE = 1024 * 1024;
 const DANGEROUS_PROPS = new Set(['__proto__', 'constructor', 'prototype']);
+
+function isAllowedRelayOrigin(
+  origin: string | undefined,
+  boundHost: string
+): boolean {
+  if (!origin) {
+    return true;
+  }
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return true;
+    }
+    return isHostAllowed(url.host, boundHost, undefined);
+  } catch {
+    return false;
+  }
+}
+
+export function isRelayUpgradeAllowed(
+  hostHeader: string | undefined,
+  origin: string | undefined,
+  boundHost: string
+): boolean {
+  return (
+    isHostAllowed(hostHeader, boundHost, undefined) &&
+    isAllowedRelayOrigin(origin, boundHost)
+  );
+}
+
+export function launchBrowserProcess(
+  executablePath: string,
+  args: readonly string[]
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let spawned = false;
+    const child = spawn(executablePath, [...args], {
+      windowsHide: true,
+      detached: true,
+      shell: false,
+      stdio: 'ignore',
+    });
+    child.once('spawn', () => {
+      spawned = true;
+      child.unref();
+      resolve();
+    });
+    child.on('error', (error) => {
+      if (!spawned) {
+        reject(error);
+        return;
+      }
+      cdpRelayDebug('Detached browser process error:', error);
+    });
+  });
+}
 
 type CDPParams = Record<string, unknown>;
 
@@ -74,10 +130,9 @@ export class CDPRelayServer {
     executablePath?: string
   ) {
     this._httpServer = server;
-    this._wsHost = httpAddressToString(server.address()).replace(
-      HTTP_TO_WS_REGEX,
-      'ws'
-    );
+    const httpAddress = httpAddressToString(server.address());
+    this._wsHost = httpAddress.replace(HTTP_TO_WS_REGEX, 'ws');
+    const boundHost = new URL(httpAddress).hostname;
     this._browserChannel = browserChannel;
     this._userDataDir = userDataDir;
     this._executablePath = executablePath;
@@ -85,7 +140,21 @@ export class CDPRelayServer {
     this._cdpPath = `/cdp/${uuid}`;
     this._extensionPath = `/extension/${uuid}`;
     this._resetExtensionConnection();
-    this._wss = new WebSocketServer({ server });
+    this._wss = new WebSocketServer({
+      server,
+      verifyClient: (info, done) => {
+        const allowed = isRelayUpgradeAllowed(
+          info.req.headers.host,
+          info.origin,
+          boundHost
+        );
+        if (allowed) {
+          done(true);
+        } else {
+          done(false, 403, 'Forbidden');
+        }
+      },
+    });
     this._wss.on('connection', this._onConnection.bind(this));
   }
 
@@ -149,14 +218,12 @@ export class CDPRelayServer {
     const args: string[] = [];
     if (this._userDataDir) {
       args.push(`--user-data-dir=${this._userDataDir}`);
-      if (!this._executablePath) {
-        const profile = await findExtensionProfile(
-          this._userDataDir,
-          extensionId
-        );
-        if (profile) {
-          args.push(`--profile-directory=${profile}`);
-        }
+      const profile = await findExtensionProfile(
+        this._userDataDir,
+        extensionId
+      );
+      if (profile) {
+        args.push(`--profile-directory=${profile}`);
       }
     }
     if (platform() === 'linux' && this._browserChannel === 'chromium') {
@@ -164,12 +231,7 @@ export class CDPRelayServer {
     }
     args.push(url.toString());
 
-    spawn(executablePath, args, {
-      windowsHide: true,
-      detached: true,
-      shell: false,
-      stdio: 'ignore',
-    });
+    await launchBrowserProcess(executablePath, args);
   }
 
   private _resolveBrowserExecutablePath(): string {

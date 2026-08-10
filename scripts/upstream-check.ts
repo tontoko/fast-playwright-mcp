@@ -196,7 +196,8 @@ function renderComparison(
   reviewedCommit: string,
   payload: ComparePayload
 ): string[] {
-  const head = payload.headSha ?? payload.commits?.at(-1)?.sha ?? reviewedCommit;
+  const head =
+    payload.headSha ?? payload.commits?.at(-1)?.sha ?? reviewedCommit;
   const files = sortedFiles(payload);
   const lines = [
     `## ${title}`,
@@ -277,7 +278,10 @@ async function githubJson<T>(
   return (await response.json()) as T;
 }
 
-async function readFixture(path: string, label: string): Promise<ComparePayload> {
+async function readFixture(
+  path: string,
+  label: string
+): Promise<ComparePayload> {
   const fixturePath = await resolveWorkspaceInputPath(path, {
     extension: '.json',
     label,
