@@ -209,7 +209,7 @@ function fileEntries(entries: readonly GitTreeEntry[]): Map<string, GitTreeEntry
   return new Map(
     entries
       .filter((entry) => entry.type !== 'tree')
-      .map((entry) => [entry.path, entry])
+      .map((entry) => [entry.path, entry] as const)
   );
 }
 
@@ -220,7 +220,9 @@ export function diffTreeEntries(
 ): ChangedFile[] {
   const base = fileEntries(baseEntries);
   const head = fileEntries(headEntries);
-  const known = new Map(compareFiles.map((file) => [file.filename, file]));
+  const known = new Map(
+    compareFiles.map((file) => [file.filename, file] as const)
+  );
   const renamedSources = new Set(
     compareFiles
       .filter((file) => file.status === 'renamed' && file.previous_filename)
@@ -230,6 +232,7 @@ export function diffTreeEntries(
     left.localeCompare(right)
   );
   const result: ChangedFile[] = [];
+  const resultPaths = new Set<string>();
 
   for (const path of paths) {
     const before = base.get(path);
@@ -249,10 +252,11 @@ export function diffTreeEntries(
     const status = before ? (after ? 'modified' : 'removed') : 'added';
     const knownFile = known.get(path);
     result.push(knownFile ? { ...knownFile } : { filename: path, status });
+    resultPaths.add(path);
   }
 
   for (const file of compareFiles) {
-    if (!result.some((candidate) => candidate.filename === file.filename)) {
+    if (!resultPaths.has(file.filename)) {
       result.push({ ...file });
     }
   }
