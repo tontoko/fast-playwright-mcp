@@ -35,7 +35,7 @@ test('active session directory is finalized as one eviction unit', async ({}, te
   const log = new SessionLog(
     sessionFolder,
     new OutputManager(outputRoot, 240),
-    new SecretRedactor()
+    new SecretRedactor(undefined)
   );
 
   log.logResponse(response('first'));
