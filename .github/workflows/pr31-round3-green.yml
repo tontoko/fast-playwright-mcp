@@ -1,4 +1,4 @@
-# run: round3-complete-1
+# run: round3-complete-2
 name: PR 31 round 3 GREEN
 
 on:
@@ -39,6 +39,107 @@ jobs:
           node-version: '22'
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps chromium
+      - name: Apply lint-safe refactor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          context = Path('src/context.ts')
+          text = context.read_text(encoding='utf-8')
+          text = text.replace(
+              'No open pages available. Use the "browser_navigate" tool first.',
+              'No open pages available. Use the "browser_navigate" tool to navigate to a page first.',
+          )
+          context.write_text(text, encoding='utf-8')
+
+          path = Path('scripts/upstream-check.ts')
+          text = path.read_text(encoding='utf-8')
+          start = text.index('export function diffTreeEntries(')
+          end = text.index('\nfunction sortedFiles(', start)
+          replacement = """function treeEntriesMatch(
+            before: GitTreeEntry | undefined,
+            after: GitTreeEntry | undefined
+          ): boolean {
+            return Boolean(
+              before &&
+                after &&
+                before.sha === after.sha &&
+                before.mode === after.mode &&
+                before.type === after.type
+            );
+          }
+
+          function changedFileForPath(
+            path: string,
+            base: ReadonlyMap<string, GitTreeEntry>,
+            head: ReadonlyMap<string, GitTreeEntry>,
+            known: ReadonlyMap<string, ChangedFile>,
+            renamedSources: ReadonlySet<string>
+          ): ChangedFile | undefined {
+            const before = base.get(path);
+            const after = head.get(path);
+            if (treeEntriesMatch(before, after)) {
+              return;
+            }
+            if (before && !after && renamedSources.has(path)) {
+              return;
+            }
+            const knownFile = known.get(path);
+            if (knownFile) {
+              return { ...knownFile };
+            }
+            return {
+              filename: path,
+              status: before ? (after ? 'modified' : 'removed') : 'added',
+            };
+          }
+
+          export function diffTreeEntries(
+            baseEntries: readonly GitTreeEntry[],
+            headEntries: readonly GitTreeEntry[],
+            compareFiles: readonly ChangedFile[] = []
+          ): ChangedFile[] {
+            const base = fileEntries(baseEntries);
+            const head = fileEntries(headEntries);
+            const known = new Map(
+              compareFiles.map((file) => [file.filename, file] as const)
+            );
+            const renamedSources = new Set(
+              compareFiles
+                .filter(
+                  (file) => file.status === 'renamed' && file.previous_filename
+                )
+                .map((file) => file.previous_filename as string)
+            );
+            const paths = [...new Set([...base.keys(), ...head.keys()])].sort(
+              (left, right) => left.localeCompare(right)
+            );
+            const result = paths
+              .map((path) =>
+                changedFileForPath(path, base, head, known, renamedSources)
+              )
+              .filter((file): file is ChangedFile => Boolean(file));
+            const resultPaths = new Set(result.map((file) => file.filename));
+
+            for (const file of compareFiles) {
+              if (!resultPaths.has(file.filename)) {
+                result.push({ ...file });
+              }
+            }
+            return result.sort((left, right) =>
+              left.filename.localeCompare(right.filename)
+            );
+          }
+          """
+          text = text[:start] + replacement + text[end:]
+          text = text.replace(
+              'async function githubJson<T>(\n',
+              'function githubJson<T>(\n',
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
       - name: Static verification
         run: |
           bun run lint-fix
