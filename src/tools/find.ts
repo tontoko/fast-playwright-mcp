@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { expectationSchema } from '../schemas/expectation.js';
+import { regexMatchedLineIndices } from '../utils/bounded-regex.js';
 import { defineTabTool } from './tool.js';
 
 const findSchema = z.object({
@@ -16,28 +17,20 @@ type LineRange = {
   end: number;
 };
 
-function createMatcher(
+function substringMatchedLineIndices(
+  lines: readonly string[],
   query: string,
-  regex: boolean,
   caseSensitive: boolean
-): (line: string) => boolean {
-  if (!regex) {
-    const needle = caseSensitive ? query : query.toLowerCase();
-    return (line) =>
-      (caseSensitive ? line : line.toLowerCase()).includes(needle);
+): number[] {
+  const needle = caseSensitive ? query : query.toLowerCase();
+  const matched: number[] = [];
+  for (const [index, line] of lines.entries()) {
+    const haystack = caseSensitive ? line : line.toLowerCase();
+    if (haystack.includes(needle)) {
+      matched.push(index);
+    }
   }
-
-  let pattern: RegExp;
-  try {
-    pattern = new RegExp(query, caseSensitive ? 'u' : 'iu');
-  } catch (error) {
-    throw new Error(
-      `Invalid regular expression: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-  return (line) => pattern.test(line);
+  return matched;
 }
 
 function mergeRanges(ranges: LineRange[]): LineRange[] {
@@ -80,16 +73,15 @@ export const browserFind = defineTabTool({
   handle: async (tab, params, response) => {
     const snapshot = await tab.page.ariaSnapshot({ mode: 'ai' });
     const lines = snapshot.split('\n');
-    const matches = createMatcher(
-      params.query,
-      params.regex,
-      params.caseSensitive
-    );
+    const matchedIndices = params.regex
+      ? await regexMatchedLineIndices(
+          lines,
+          params.query,
+          params.caseSensitive ? 'u' : 'iu'
+        )
+      : substringMatchedLineIndices(lines, params.query, params.caseSensitive);
     const ranges: LineRange[] = [];
-    for (const [index, line] of lines.entries()) {
-      if (!matches(line)) {
-        continue;
-      }
+    for (const index of matchedIndices) {
       ranges.push({
         start: Math.max(0, index - params.contextLines),
         end: Math.min(lines.length - 1, index + params.contextLines),

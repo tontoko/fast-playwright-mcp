@@ -56,7 +56,13 @@ export class SessionLog {
 
     return new SessionLog(
       sessionFolder,
-      new OutputManager(path.dirname(sessionFolder), config.outputMaxSize),
+      // Join the directory-wide eviction queue so session-log cleanup
+      // serializes with trace/screenshot finalization into the same output
+      // directory instead of racing an independent queue.
+      await OutputManager.forDirectory(
+        path.dirname(sessionFolder),
+        config.outputMaxSize
+      ),
       new SecretRedactor(config.secrets)
     );
   }

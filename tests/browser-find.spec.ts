@@ -56,3 +56,43 @@ test('browser_find reports no match without returning the full snapshot', async 
     result: expect.stringContaining('No snapshot matches'),
   });
 });
+
+test('browser_find regex search matches snapshot lines', async ({
+  startClient,
+  server,
+}) => {
+  server.setContent(
+    '/find-regex.html',
+    '<main><h1>Account settings</h1><button>Save changes</button></main>',
+    'text/html'
+  );
+  const { client } = await startClient({ config: localBrowserConfig() });
+  await client.callTool({
+    name: 'browser_navigate',
+    arguments: { url: `${server.PREFIX}find-regex.html` },
+  });
+  const result = await client.callTool({
+    name: 'browser_find',
+    arguments: { query: 'save|account', regex: true },
+  });
+  expect(result).toHaveResponse({
+    result: expect.stringContaining('Save changes'),
+  });
+});
+
+test('browser_find rejects invalid regex patterns', async ({
+  startClient,
+  server,
+}) => {
+  const { client } = await startClient({ config: localBrowserConfig() });
+  await client.callTool({
+    name: 'browser_navigate',
+    arguments: { url: server.HELLO_WORLD },
+  });
+  const result = await client.callTool({
+    name: 'browser_find',
+    arguments: { query: '(', regex: true },
+  });
+  expect(result.isError).toBe(true);
+  expect(result.content[0].text).toContain('Invalid regular expression');
+});
