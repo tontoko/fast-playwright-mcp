@@ -128,6 +128,13 @@ export class OutputManager {
     return reservedTarget;
   }
 
+  async reserveDirectory(path: string): Promise<string> {
+    const target = await this.resolveFinalizationTarget(path, 'directory');
+    this.pruneExpiredReservations();
+    this.evictionQueue.reservedTargets.set(target, Date.now());
+    return target;
+  }
+
   async finalizeFile(path: string): Promise<void> {
     const target = await this.resolveFinalizationTarget(path, 'file');
     await this.enqueue(async () => {
@@ -160,6 +167,15 @@ export class OutputManager {
         this.evictionQueue.reservedTargets.delete(reserved);
       }
     }
+  }
+
+  private isReserved(path: string): boolean {
+    for (const reserved of this.evictionQueue.reservedTargets.keys()) {
+      if (path === reserved || isPathInside(reserved, path)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private canonicalOutputDirectory(): Promise<string> {
@@ -291,7 +307,7 @@ export class OutputManager {
     const protectedTarget =
       entry.path === target ||
       (targetIsDirectory && isPathInside(target, entry.path)) ||
-      this.evictionQueue.reservedTargets.has(entry.path);
+      this.isReserved(entry.path);
     if (protectedTarget) {
       await this.removeOldest(
         entries,

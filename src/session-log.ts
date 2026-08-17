@@ -53,16 +53,18 @@ export class SessionLog {
       `session-${Date.now()}`
     );
     await fs.promises.mkdir(sessionFolder, { recursive: true });
+    const outputManager = await OutputManager.forDirectory(
+      path.dirname(sessionFolder),
+      config.outputMaxSize
+    );
+    // Register the session folder as reserved so quota eviction from other
+    // artifacts cannot delete the log while the session is active; each
+    // flush refreshes the reservation and dispose releases it.
+    await outputManager.reserveDirectory(sessionFolder);
 
     return new SessionLog(
       sessionFolder,
-      // Join the directory-wide eviction queue so session-log cleanup
-      // serializes with trace/screenshot finalization into the same output
-      // directory instead of racing an independent queue.
-      await OutputManager.forDirectory(
-        path.dirname(sessionFolder),
-        config.outputMaxSize
-      ),
+      outputManager,
       new SecretRedactor(config.secrets)
     );
   }
@@ -178,6 +180,7 @@ export class SessionLog {
 
   private _executeFlushProcess(): void {
     this._clearFlushTimeout();
+    this._outputManager.reserveDirectory(this._folder).catch(logUnhandledError);
     const { entries, lines } = this._prepareFlushData();
     this._processEntries(entries, lines);
     this._writeToFile(lines);

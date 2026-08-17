@@ -188,3 +188,29 @@ test('default output directory is stable within a process', async ({
   expect(path.dirname(second)).toBe(path.dirname(first));
   expect(path.basename(first)).toBe('first.png');
 });
+
+test('reserved directories shield their contents until finalized', async ({
+  page: _page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('reserved-directory');
+  const sessionFolder = path.join(directory, 'session-1');
+  await fs.mkdir(sessionFolder, { recursive: true });
+  const sessionManager = await OutputManager.forDirectory(directory, 100);
+  await sessionManager.reserveDirectory(sessionFolder);
+  const logFile = path.join(sessionFolder, 'session.md');
+  await fs.writeFile(logFile, Buffer.alloc(80));
+
+  // Quota pressure from another artifact must not evict the active session
+  // log even though it is the oldest content in the tree.
+  const artifactManager = await OutputManager.forDirectory(directory, 100);
+  const artifact = path.join(directory, 'artifact.bin');
+  await fs.writeFile(artifact, Buffer.alloc(80));
+  await artifactManager.finalizeFile(artifact);
+  await expect(fs.stat(logFile)).resolves.toBeTruthy();
+
+  // Disposing the session releases the reservation and eviction resumes.
+  await sessionManager.finalizeDirectory(sessionFolder);
+  await fs.writeFile(path.join(directory, 'newer.bin'), Buffer.alloc(80));
+  await artifactManager.finalizeFile(path.join(directory, 'newer.bin'));
+  await expect(fs.stat(logFile)).rejects.toMatchObject({ code: 'ENOENT' });
+});

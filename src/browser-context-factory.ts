@@ -116,7 +116,11 @@ class BaseContextFactory implements BrowserContextFactory {
     traceDir?: string;
   }> {
     if (this.config.saveTrace) {
-      this._tracesDir = await outputFile(
+      // The obtained browser is reused across contexts (HTTP sessions with
+      // --isolated share this factory), and Playwright fixes the traces
+      // directory at launch — keep the first directory for every context
+      // instead of overwriting it per createContext call.
+      this._tracesDir ??= await outputFile(
         this.config,
         clientInfo.rootPath,
         `traces-${Date.now()}`
