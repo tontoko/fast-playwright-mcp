@@ -313,22 +313,31 @@ export class Context {
       this._clientInfo,
       this._abortController.signal
     );
-    const { browserContext } = result;
-    await this._setupRequestInterception(browserContext);
-    if (this.sessionLog) {
-      await InputRecorder.create(this, browserContext);
-    }
-    for (const page of browserContext.pages()) {
-      this._onPageCreated(page);
-    }
-    browserContext.on('page', (page) => this._onPageCreated(page));
-    if (this.config.saveTrace) {
-      await browserContext.tracing.start({
-        name: 'trace',
-        screenshots: false,
-        snapshots: true,
-        sources: false,
+    try {
+      const { browserContext } = result;
+      await this._setupRequestInterception(browserContext);
+      if (this.sessionLog) {
+        await InputRecorder.create(this, browserContext);
+      }
+      for (const page of browserContext.pages()) {
+        this._onPageCreated(page);
+      }
+      browserContext.on('page', (page) => this._onPageCreated(page));
+      if (this.config.saveTrace) {
+        await browserContext.tracing.start({
+          name: 'trace',
+          screenshots: false,
+          snapshots: true,
+          sources: false,
+        });
+      }
+    } catch (error) {
+      // Release the user-data-dir lock and stop the launched browser so a
+      // failed setup (e.g. an invalid network origin) stays recoverable.
+      await result.close().catch((closeError) => {
+        contextDebug('Error closing failed browser context:', closeError);
       });
+      throw error;
     }
     return result;
   }

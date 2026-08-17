@@ -80,3 +80,42 @@ test('blockedOrigins wins when an origin is both allowed and blocked', async ({
 
   expect(result.isError).toBe(true);
 });
+
+test('failed context setup releases the persistent profile lock', async ({
+  startClient,
+  server,
+}, testInfo) => {
+  const executablePath = process.env.PLAYWRIGHT_MCP_TEST_EXECUTABLE_PATH;
+  const { client } = await startClient({
+    config: {
+      toolProfile: 'adaptive',
+      browser: {
+        browserName: 'chromium',
+        userDataDir: testInfo.outputPath('locked-user-data-dir'),
+        launchOptions: {
+          headless: true,
+          ...(executablePath ? { executablePath } : {}),
+        },
+      },
+      network: { allowedOrigins: ['https://example.test/path'] },
+    },
+  });
+
+  const first = await client.callTool({
+    name: 'browser_navigate',
+    arguments: { url: server.HELLO_WORLD },
+  });
+  expect(first.isError).toBe(true);
+  expect(first.content[0].text).toContain('Invalid network origin');
+
+  // The invalid config still fails, but the failed setup must close its
+  // browser context and release the user-data-dir lock instead of leaving
+  // every later tool stuck on "Browser is already in use".
+  const second = await client.callTool({
+    name: 'browser_navigate',
+    arguments: { url: server.HELLO_WORLD },
+  });
+  expect(second.isError).toBe(true);
+  expect(second.content[0].text).toContain('Invalid network origin');
+  expect(second.content[0].text).not.toContain('already in use');
+});

@@ -20,6 +20,18 @@ const CONFIG_PATH = /config|program|cli/u;
 const TEST_PATH = /test|spec|fixture/u;
 const DOC_PATH = /readme|docs\//u;
 const MCP_PATH = /tools|mcp|browser|backend/u;
+// The compare endpoint caps the commits array at one page and the files
+// array at 300 entries without any pagination hints, so the audit has to
+// page commits explicitly and rebuild the file list from per-commit
+// windows. GitHub also silently drops files from larger compares even
+// below the 300-file cap (verified against a git diff of the same range),
+// so windows cover exactly one commit each; only a single commit's own
+// diff is reliably complete.
+const COMPARE_COMMITS_PER_PAGE = 100;
+const COMPARE_FILES_LIMIT = 300;
+const COMPARE_WINDOW_SPAN = 1;
+const MAX_COMPARE_PAGES = 50;
+const MAX_FILE_WINDOWS = 2000;
 
 export type UpstreamManifest = {
   repository: string;
@@ -37,11 +49,23 @@ type ChangedFile = {
   deletions?: number;
 };
 
+export type CompareCommit = { sha: string; commit?: { message?: string } };
+
+export type CompareWindow = {
+  /** Oldest boundary commit; the window contains commits strictly after it. */
+  base: string;
+  /** Newest boundary commit; the window contains commits up to and including it. */
+  head: string;
+};
+
 export type ComparePayload = {
   base_commit?: { sha: string };
-  commits?: { sha: string; commit?: { message?: string } }[];
+  commits?: CompareCommit[];
   files?: ChangedFile[];
   headSha?: string;
+  ahead_by?: number;
+  total_commits?: number;
+  truncated?: boolean;
 };
 
 export type UpstreamReportPayloads = {
@@ -190,6 +214,34 @@ function sortedFiles(payload: ComparePayload): ChangedFile[] {
   });
 }
 
+export function compareCommitCount(payload: ComparePayload): number {
+  return (
+    payload.ahead_by ?? payload.total_commits ?? payload.commits?.length ?? 0
+  );
+}
+
+export function mergeCompareFiles(
+  windows: readonly (readonly ChangedFile[])[]
+): ChangedFile[] {
+  const merged = new Map<string, ChangedFile>();
+  for (const window of windows) {
+    for (const file of window) {
+      const existing = merged.get(file.filename);
+      if (!existing) {
+        merged.set(file.filename, file);
+        continue;
+      }
+      merged.set(file.filename, {
+        ...existing,
+        status: file.status,
+        additions: (existing.additions ?? 0) + (file.additions ?? 0),
+        deletions: (existing.deletions ?? 0) + (file.deletions ?? 0),
+      });
+    }
+  }
+  return [...merged.values()];
+}
+
 function renderComparison(
   title: string,
   repository: string,
@@ -205,12 +257,17 @@ function renderComparison(
     `- Repository: \`${repository}\``,
     `- Reviewed from: \`${reviewedCommit}\``,
     `- Compared to: \`${head}\``,
-    `- Commits: ${payload.commits?.length ?? 0}`,
+    `- Commits: ${compareCommitCount(payload)}`,
     `- Changed files: ${files.length}`,
     '',
-    '### Changed files',
-    '',
   ];
+  if (payload.truncated) {
+    lines.push(
+      '⚠️ The GitHub comparison was truncated by API limits, so the commit count and file list may understate upstream changes.',
+      ''
+    );
+  }
+  lines.push('### Changed files', '');
   if (!files.length) {
     lines.push('No changes found.');
   }
@@ -259,11 +316,17 @@ export function buildUpstreamReport(
   ].join('\n');
 }
 
-async function githubJson<T>(
-  repository: string,
-  ...segments: readonly string[]
-): Promise<T> {
-  const url = githubApiUrl(repository, ...segments);
+const RETRY_AFTER_CAP_SECONDS = 60;
+
+function retryDelayMilliseconds(response: Response): number | undefined {
+  const retryAfter = Number(response.headers.get('retry-after'));
+  if (Number.isFinite(retryAfter) && retryAfter >= 0) {
+    return Math.min(retryAfter, RETRY_AFTER_CAP_SECONDS) * 1000;
+  }
+  return 5000;
+}
+
+async function githubJsonUrl<T>(url: URL): Promise<T> {
   const headers = {
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
@@ -271,11 +334,182 @@ async function githubJson<T>(
       ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
       : {}),
   };
-  const response = await fetch(url, { headers }); // NOSONAR
+  let response = await fetch(url, { headers }); // NOSONAR
+  // The per-commit audit requests can trip rate limits; wait once and retry
+  // rather than failing the whole report.
+  if (response.status === 429 || response.status === 403) {
+    const delay = retryDelayMilliseconds(response);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    response = await fetch(url, { headers }); // NOSONAR
+  }
   if (!response.ok) {
     throw new Error(`GitHub request failed (${response.status}): ${url}`);
   }
   return (await response.json()) as T;
+}
+
+function githubJson<T>(
+  repository: string,
+  ...segments: readonly string[]
+): Promise<T> {
+  return githubJsonUrl<T>(githubApiUrl(repository, ...segments));
+}
+
+function githubComparePage(
+  repository: string,
+  basehead: string,
+  page: number
+): Promise<ComparePayload> {
+  const url = githubApiUrl(repository, 'compare', basehead);
+  url.searchParams.set('per_page', String(COMPARE_COMMITS_PER_PAGE));
+  url.searchParams.set('page', String(page));
+  return githubJsonUrl<ComparePayload>(url);
+}
+
+export function planCompareWindows(
+  reviewedCommit: string,
+  aheadShasOldestFirst: readonly string[],
+  span: number
+): CompareWindow[] {
+  if (span < 1) {
+    throw new Error('Compare window span must be positive');
+  }
+  const boundaryIndices: number[] = [];
+  for (let index = 0; index < aheadShasOldestFirst.length; index += span) {
+    boundaryIndices.push(index);
+  }
+  if (boundaryIndices.at(-1) !== aheadShasOldestFirst.length) {
+    boundaryIndices.push(aheadShasOldestFirst.length);
+  }
+  const boundaryCommit = (index: number) =>
+    index === 0 ? reviewedCommit : aheadShasOldestFirst[index - 1];
+  const windows: CompareWindow[] = [];
+  for (let position = 0; position < boundaryIndices.length - 1; position++) {
+    windows.push({
+      base: boundaryCommit(boundaryIndices[position]),
+      head: boundaryCommit(boundaryIndices[position + 1]),
+    });
+  }
+  return windows;
+}
+
+export function buildFileWindows(
+  commits: readonly CompareCommit[],
+  reviewedCommit: string,
+  headSha: string,
+  span = COMPARE_WINDOW_SPAN,
+  maxWindows = MAX_FILE_WINDOWS
+): { windows: CompareWindow[]; truncated: boolean } {
+  const aheadShasOldestFirst = commits
+    .map((commit) => commit.sha)
+    .filter((sha) => sha !== reviewedCommit);
+  // The walk should end at the head commit; if it does not, the commit list
+  // is incomplete and no window may be synthesized for the uncovered tail —
+  // a large window is exactly what silently drops files.
+  const reachedHead = aheadShasOldestFirst.length
+    ? aheadShasOldestFirst.at(-1) === headSha
+    : headSha === reviewedCommit;
+  const windows = planCompareWindows(
+    reviewedCommit,
+    aheadShasOldestFirst,
+    span
+  );
+  // When the window budget is exceeded, keep the newest windows (the most
+  // relevant for port review) and let the truncation flag carry the rest.
+  const bounded =
+    windows.length > maxWindows
+      ? windows.slice(windows.length - maxWindows)
+      : windows;
+  return {
+    windows: bounded,
+    truncated: !reachedHead || bounded.length < windows.length,
+  };
+}
+
+async function fetchWindowFiles(
+  repository: string,
+  window: CompareWindow
+): Promise<{ files: ChangedFile[]; truncated: boolean }> {
+  const payload = await githubComparePage(
+    repository,
+    `${window.base}...${window.head}`,
+    1
+  );
+  const files = payload.files ?? [];
+  return { files, truncated: files.length >= COMPARE_FILES_LIMIT };
+}
+
+async function loadNetworkComparison(
+  repository: string,
+  reviewedCommit: string
+): Promise<ComparePayload> {
+  const latest = await githubJson<{ sha: string }>(
+    repository,
+    'commits',
+    'main'
+  );
+  if (!FULL_SHA.test(latest.sha)) {
+    throw new Error('GitHub returned an invalid latest commit SHA');
+  }
+  const basehead = `${reviewedCommit}...${latest.sha}`;
+  const first = await githubComparePage(repository, basehead, 1);
+  const expected = compareCommitCount(first);
+  const commitsBySha = new Map<string, CompareCommit>();
+  for (const commit of first.commits ?? []) {
+    commitsBySha.set(commit.sha, commit);
+  }
+  for (
+    let page = 2;
+    commitsBySha.size < expected && page <= MAX_COMPARE_PAGES;
+    page++
+  ) {
+    // biome-ignore lint/nursery/noAwaitInLoop: compare pages are fetched sequentially to stay within GitHub rate limits.
+    const next = await githubComparePage(repository, basehead, page);
+    const fresh = next.commits ?? [];
+    if (!fresh.length) {
+      break;
+    }
+    const sizeBefore = commitsBySha.size;
+    for (const commit of fresh) {
+      commitsBySha.set(commit.sha, commit);
+    }
+    // A repeated or ignored page would otherwise burn the remaining budget.
+    if (commitsBySha.size === sizeBefore) {
+      break;
+    }
+  }
+  const commits = [...commitsBySha.values()];
+  // behind_by > 0 means the reviewed commit is no longer an ancestor of main
+  // (e.g. an upstream force push), so the three-dot comparison is unreliable.
+  let truncated = commits.length < expected || (first.behind_by ?? 0) > 0;
+
+  // Rebuild the file list from per-commit windows: the compare files array
+  // is capped at 300 entries and can silently omit files even below that
+  // cap, while a single commit's own diff is complete up to the cap.
+  const { windows, truncated: windowsTruncated } = buildFileWindows(
+    commits,
+    reviewedCommit,
+    latest.sha
+  );
+  truncated ||= windowsTruncated;
+  const collected: ChangedFile[][] = [];
+  for (const window of windows) {
+    // biome-ignore lint/nursery/noAwaitInLoop: per-commit windows are fetched sequentially to stay within GitHub rate limits.
+    const result = await fetchWindowFiles(repository, window);
+    collected.push(result.files);
+    truncated ||= result.truncated;
+  }
+  const files = mergeCompareFiles(collected);
+
+  return {
+    base_commit: first.base_commit,
+    commits,
+    files,
+    headSha: latest.sha,
+    ahead_by: first.ahead_by,
+    total_commits: first.total_commits,
+    truncated,
+  };
 }
 
 async function readFixture(
@@ -290,7 +524,7 @@ async function readFixture(
   return JSON.parse(fixtureText) as ComparePayload;
 }
 
-async function loadComparison(
+function loadComparison(
   repository: string,
   reviewedCommit: string,
   fixture: string | undefined,
@@ -299,20 +533,7 @@ async function loadComparison(
   if (fixture) {
     return readFixture(fixture, fixtureLabel);
   }
-  const latest = await githubJson<{ sha: string }>(
-    repository,
-    'commits',
-    'main'
-  );
-  if (!FULL_SHA.test(latest.sha)) {
-    throw new Error('GitHub returned an invalid latest commit SHA');
-  }
-  const compare = await githubJson<ComparePayload>(
-    repository,
-    'compare',
-    `${reviewedCommit}...${latest.sha}`
-  );
-  return { ...compare, headSha: latest.sha };
+  return loadNetworkComparison(repository, reviewedCommit);
 }
 
 if (import.meta.main) {
