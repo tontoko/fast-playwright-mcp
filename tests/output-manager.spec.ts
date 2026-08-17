@@ -118,3 +118,32 @@ test('contexts sharing an output directory share one eviction queue', async ({
       .length
   ).toBe(1);
 });
+
+test('reserved outputs survive concurrent eviction pressure', async ({
+  page: _page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('reserved-outputs');
+  await fs.mkdir(directory, { recursive: true });
+  const writer = await OutputManager.forDirectory(directory, 100);
+  const finalizer = await OutputManager.forDirectory(directory, 100);
+
+  const stale = path.join(directory, 'stale.bin');
+  const reserved = path.join(directory, 'reserved.bin');
+  const finalized = path.join(directory, 'finalized.bin');
+  await fs.writeFile(stale, Buffer.alloc(80));
+  await fs.utimes(stale, new Date(1), new Date(1));
+  const reservedPath = await writer.reserveFile(reserved);
+  await fs.writeFile(reserved, Buffer.alloc(80));
+  await fs.writeFile(finalized, Buffer.alloc(80));
+
+  // Eviction pressure from another finalization must skip the reserved,
+  // written-but-not-finalized file: only the stale file fits the quota.
+  await finalizer.finalizeFile(finalized);
+  await expect(fs.stat(reservedPath)).resolves.toBeTruthy();
+
+  // Once finalized itself, the reservation is released and normal quota
+  // eviction applies again.
+  await writer.finalizeFile(reserved);
+  const survivors = (await fs.readdir(directory)).sort();
+  expect(survivors).toEqual(['reserved.bin']);
+});

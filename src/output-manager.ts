@@ -16,7 +16,15 @@ type OutputEntry = {
 
 type ExpectedPathKind = 'file' | 'directory';
 
-type EvictionQueue = { promise: Promise<void> };
+type EvictionQueue = {
+  promise: Promise<void>;
+  /** Canonical paths reserved for in-flight writes; eviction must skip them. */
+  reservedTargets: Map<string, number>;
+};
+
+// A tool that reserves output but never finalizes (e.g. a failed screenshot)
+// must not protect its path forever, so reservations expire.
+const RESERVATION_TTL_MS = 10 * 60_000;
 
 const OUTSIDE_OUTPUT_ERROR =
   'Output path must remain inside the output directory';
@@ -59,7 +67,7 @@ export class OutputManager {
     const canonical = await fs.realpath(lexical);
     let queue = OutputManager.evictionQueues.get(canonical);
     if (!queue) {
-      queue = { promise: Promise.resolve() };
+      queue = { promise: Promise.resolve(), reservedTargets: new Map() };
       OutputManager.evictionQueues.set(canonical, queue);
     }
     return new OutputManager(lexical, maxSize, queue);
@@ -73,7 +81,10 @@ export class OutputManager {
   constructor(
     outputDir: string,
     maxSize: number,
-    evictionQueue: EvictionQueue = { promise: Promise.resolve() }
+    evictionQueue: EvictionQueue = {
+      promise: Promise.resolve(),
+      reservedTargets: new Map(),
+    }
   ) {
     this.lexicalOutputDir = resolve(outputDir);
     this.maxSize = maxSize;
@@ -93,6 +104,7 @@ export class OutputManager {
       throw new Error(OUTSIDE_OUTPUT_ERROR);
     }
 
+    let reservedTarget: string;
     try {
       const status = await fs.lstat(target);
       if (status.isSymbolicLink() || !status.isFile()) {
@@ -102,23 +114,39 @@ export class OutputManager {
       if (!isPathInside(root, canonicalTarget)) {
         throw new Error(OUTSIDE_OUTPUT_ERROR);
       }
-      return canonicalTarget;
+      reservedTarget = canonicalTarget;
     } catch (error) {
-      if (isErrnoException(error, 'ENOENT')) {
-        return target;
+      if (!isErrnoException(error, 'ENOENT')) {
+        throw error;
       }
-      throw error;
+      reservedTarget = target;
     }
+    // Mark the reserved path so a concurrent eviction pass from any manager
+    // on this directory cannot unlink the file between write and finalize.
+    this.pruneExpiredReservations();
+    this.evictionQueue.reservedTargets.set(reservedTarget, Date.now());
+    return reservedTarget;
   }
 
   async finalizeFile(path: string): Promise<void> {
     const target = await this.resolveFinalizationTarget(path, 'file');
+    this.evictionQueue.reservedTargets.delete(target);
     await this.enqueue(() => this.evict(target, false));
   }
 
   async finalizeDirectory(path: string): Promise<void> {
     const target = await this.resolveFinalizationTarget(path, 'directory');
+    this.evictionQueue.reservedTargets.delete(target);
     await this.enqueue(() => this.evict(target, true));
+  }
+
+  private pruneExpiredReservations(): void {
+    const now = Date.now();
+    for (const [reserved, reservedAt] of this.evictionQueue.reservedTargets) {
+      if (now - reservedAt > RESERVATION_TTL_MS) {
+        this.evictionQueue.reservedTargets.delete(reserved);
+      }
+    }
   }
 
   private canonicalOutputDirectory(): Promise<string> {
@@ -230,6 +258,7 @@ export class OutputManager {
       return;
     }
 
+    this.pruneExpiredReservations();
     const entries = await this.collectEntries();
     const total = entries.reduce((sum, entry) => sum + entry.size, 0);
     await this.removeOldest(entries, target, targetIsDirectory, total, 0);
@@ -248,7 +277,8 @@ export class OutputManager {
     const entry = entries[index];
     const protectedTarget =
       entry.path === target ||
-      (targetIsDirectory && isPathInside(target, entry.path));
+      (targetIsDirectory && isPathInside(target, entry.path)) ||
+      this.evictionQueue.reservedTargets.has(entry.path);
     if (protectedTarget) {
       await this.removeOldest(
         entries,
