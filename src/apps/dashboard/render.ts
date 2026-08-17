@@ -105,3 +105,12 @@ export function firstText(content: readonly McpContent[]): string | undefined {
       candidate.type === 'text' && typeof candidate.text === 'string'
   )?.text;
 }
+
+export function isErrorResult(result: unknown): boolean {
+  return (
+    !!result &&
+    typeof result === 'object' &&
+    'isError' in result &&
+    Boolean((result as { isError?: unknown }).isError)
+  );
+}

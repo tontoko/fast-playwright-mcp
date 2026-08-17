@@ -1,6 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
-import { parseTabLines } from '../src/apps/dashboard/render.js';
+import {
+  firstText,
+  isErrorResult,
+  parseTabLines,
+} from '../src/apps/dashboard/render.js';
 
 const HTML_SINK_PATTERN = /innerHTML|outerHTML|insertAdjacentHTML/u;
 
@@ -30,4 +34,27 @@ test('dashboard renderer does not use HTML string sinks', async () => {
   const source = await readFile('src/apps/dashboard/render.ts', 'utf8');
   expect(source).not.toMatch(HTML_SINK_PATTERN);
   expect(source).toContain('textContent');
+});
+
+test('tool error results are detected while successes stay silent', () => {
+  expect(isErrorResult({ isError: true, content: [] })).toBe(true);
+  expect(
+    isErrorResult({
+      isError: true,
+      content: [{ type: 'text', text: 'No open pages available.' }],
+    })
+  ).toBe(true);
+  // A successful response without an image part (imageResponses: 'omit')
+  // must not be treated as an error.
+  expect(isErrorResult({ content: [] })).toBe(false);
+  expect(isErrorResult({ isError: false, content: [] })).toBe(false);
+  expect(isErrorResult(undefined)).toBe(false);
+  expect(isErrorResult('text')).toBe(false);
+
+  expect(firstText([{ type: 'text', text: 'No open pages available.' }])).toBe(
+    'No open pages available.'
+  );
+  expect(
+    firstText([{ type: 'image', data: 'aGk=', mimeType: 'image/png' }])
+  ).toBeUndefined();
 });

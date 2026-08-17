@@ -3,6 +3,7 @@ import { refreshDashboard } from './refresh.js';
 import {
   clearError,
   firstText,
+  isErrorResult,
   type McpContent,
   parseTabLines,
   renderError,
@@ -33,11 +34,20 @@ function contentFrom(result: unknown): McpContent[] {
   return Array.isArray(result.content) ? (result.content as McpContent[]) : [];
 }
 
-function callTool(
+async function callTool(
   name: string,
   args: Record<string, unknown>
 ): Promise<unknown> {
-  return app.callServerTool({ name, arguments: args });
+  const result = await app.callServerTool({ name, arguments: args });
+  // A normal MCP error result (e.g. the browser disconnected or a stale tab
+  // index) resolves instead of rejecting; surface it so the dashboard shows
+  // the failure instead of reporting stale state as current.
+  if (isErrorResult(result)) {
+    throw new Error(
+      firstText(contentFrom(result)) || `Tool ${name} returned an error`
+    );
+  }
+  return result;
 }
 
 const preview = element<HTMLImageElement>('preview');
