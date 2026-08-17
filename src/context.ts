@@ -173,7 +173,7 @@ export class Context {
       return;
     }
     this._getOutputManager(this._traceDir)
-      .then((manager) => manager.reserveDirectory(this._traceDir as string))
+      .then((manager) => manager.refreshReservation(this._traceDir as string))
       .catch((error) => {
         contextDebug('Failed to refresh trace reservation:', error);
       });

@@ -81,7 +81,7 @@ export class SessionLog {
     // keeps its protection; unref'd so the timer never holds the process.
     this._reservationRefreshInterval = setInterval(() => {
       this._outputManager
-        .reserveDirectory(this._folder)
+        .refreshReservation(this._folder)
         .catch(logUnhandledError);
     }, RESERVATION_REFRESH_INTERVAL_MS);
     this._reservationRefreshInterval.unref?.();

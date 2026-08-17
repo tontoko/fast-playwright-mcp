@@ -214,3 +214,41 @@ test('reserved directories shield their contents until finalized', async ({
   await artifactManager.finalizeFile(path.join(directory, 'newer.bin'));
   await expect(fs.stat(logFile)).rejects.toMatchObject({ code: 'ENOENT' });
 });
+
+test('shared directory leases survive a sibling release', async ({
+  page: _page,
+}, testInfo) => {
+  // Mirrors --isolated --save-trace HTTP sessions sharing one browser and
+  // one traces directory: each session acquires its own lease; one session
+  // closing must not unprotect the sibling's in-progress trace files.
+  const directory = testInfo.outputPath('shared-leases');
+  const shared = path.join(directory, 'traces');
+  await fs.mkdir(shared, { recursive: true });
+  const [sessionA, sessionB] = await Promise.all([
+    OutputManager.forDirectory(directory, 100),
+    OutputManager.forDirectory(directory, 100),
+  ]);
+  await sessionA.reserveDirectory(shared);
+  await sessionB.reserveDirectory(shared);
+  const traceFile = path.join(shared, 'a.trace');
+  await fs.writeFile(traceFile, Buffer.alloc(80));
+  // Make the trace file the oldest content so only its lease protects it.
+  await fs.utimes(traceFile, new Date(1), new Date(1));
+  const pressure = await OutputManager.forDirectory(directory, 100);
+
+  // Session A closes first: quota pressure may evict anything except the
+  // trace file, whose lease is still held by session B.
+  await sessionA.finalizeDirectory(shared);
+  const artifactA = path.join(directory, 'artifact-a.bin');
+  await fs.writeFile(artifactA, Buffer.alloc(80));
+  await pressure.finalizeFile(artifactA);
+  await expect(fs.stat(traceFile)).resolves.toBeTruthy();
+
+  // Session B closes too: the last lease is gone and the oldest unprotected
+  // content becomes evictable again under pressure.
+  await sessionB.finalizeDirectory(shared);
+  const artifactB = path.join(directory, 'artifact-b.bin');
+  await fs.writeFile(artifactB, Buffer.alloc(80));
+  await pressure.finalizeFile(path.join(directory, 'artifact-b.bin'));
+  await expect(fs.stat(traceFile)).rejects.toMatchObject({ code: 'ENOENT' });
+});

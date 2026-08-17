@@ -16,10 +16,16 @@ type OutputEntry = {
 
 type ExpectedPathKind = 'file' | 'directory';
 
+type Reservation = {
+  /** Number of live leases; shared targets (e.g. the traces directory of a shared browser) hold one per owner. */
+  refCount: number;
+  lastRefreshedAt: number;
+};
+
 type EvictionQueue = {
   promise: Promise<void>;
-  /** Canonical paths reserved for in-flight writes; eviction must skip them. */
-  reservedTargets: Map<string, number>;
+  /** Canonical reserved paths; eviction must skip them while leased. */
+  reservedTargets: Map<string, Reservation>;
 };
 
 // A tool that reserves output but never finalizes (e.g. a failed screenshot)
@@ -123,16 +129,31 @@ export class OutputManager {
     }
     // Mark the reserved path so a concurrent eviction pass from any manager
     // on this directory cannot unlink the file between write and finalize.
-    this.pruneExpiredReservations();
-    this.evictionQueue.reservedTargets.set(reservedTarget, Date.now());
+    this.acquireReservation(reservedTarget);
     return reservedTarget;
   }
 
   async reserveDirectory(path: string): Promise<string> {
     const target = await this.resolveFinalizationTarget(path, 'directory');
-    this.pruneExpiredReservations();
-    this.evictionQueue.reservedTargets.set(target, Date.now());
+    this.acquireReservation(target);
     return target;
+  }
+
+  // Keep an existing lease alive (e.g. a periodic refresh from an active
+  // session) without taking a new one; a TTL-pruned lease re-acquires with a
+  // single conservative lease so an active owner never loses protection.
+  async refreshReservation(path: string): Promise<void> {
+    const target = await this.resolveFinalizationTarget(path, 'directory');
+    this.pruneExpiredReservations();
+    const entry = this.evictionQueue.reservedTargets.get(target);
+    if (entry) {
+      entry.lastRefreshedAt = Date.now();
+      return;
+    }
+    this.evictionQueue.reservedTargets.set(target, {
+      refCount: 1,
+      lastRefreshedAt: Date.now(),
+    });
   }
 
   async finalizeFile(path: string): Promise<void> {
@@ -144,7 +165,7 @@ export class OutputManager {
         // Release inside the queued pass: releasing earlier would let a
         // concurrently queued eviction delete this target while its own
         // finalization is still in flight.
-        this.evictionQueue.reservedTargets.delete(target);
+        this.releaseReservation(target);
       }
     });
   }
@@ -155,15 +176,40 @@ export class OutputManager {
       try {
         await this.evict(target, true);
       } finally {
-        this.evictionQueue.reservedTargets.delete(target);
+        this.releaseReservation(target);
       }
     });
   }
 
+  private acquireReservation(target: string): void {
+    this.pruneExpiredReservations();
+    const entry = this.evictionQueue.reservedTargets.get(target);
+    if (entry) {
+      entry.refCount++;
+      entry.lastRefreshedAt = Date.now();
+      return;
+    }
+    this.evictionQueue.reservedTargets.set(target, {
+      refCount: 1,
+      lastRefreshedAt: Date.now(),
+    });
+  }
+
+  private releaseReservation(target: string): void {
+    const entry = this.evictionQueue.reservedTargets.get(target);
+    if (!entry) {
+      return;
+    }
+    entry.refCount--;
+    if (entry.refCount <= 0) {
+      this.evictionQueue.reservedTargets.delete(target);
+    }
+  }
+
   private pruneExpiredReservations(): void {
     const now = Date.now();
-    for (const [reserved, reservedAt] of this.evictionQueue.reservedTargets) {
-      if (now - reservedAt > RESERVATION_TTL_MS) {
+    for (const [reserved, entry] of this.evictionQueue.reservedTargets) {
+      if (now - entry.lastRefreshedAt > RESERVATION_TTL_MS) {
         this.evictionQueue.reservedTargets.delete(reserved);
       }
     }
