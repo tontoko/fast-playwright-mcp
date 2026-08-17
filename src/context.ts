@@ -48,7 +48,6 @@ export class Context {
   private static _testIdAttribute: string | undefined;
   private static _testIdAttributeUsers = 0;
   private _closeBrowserContextPromise: Promise<void> | undefined;
-  private _outputManagerPromise: Promise<OutputManager> | undefined;
   private _isRunningTool = false;
   private _disposed = false;
   private readonly _abortController = new AbortController();
@@ -163,12 +162,22 @@ export class Context {
     };
   }
 
+  private readonly _outputManagers = new Map<string, Promise<OutputManager>>();
+
   private _getOutputManager(path: string): Promise<OutputManager> {
-    this._outputManagerPromise ??= OutputManager.forDirectory(
-      dirname(path),
-      this.config.outputMaxSize
-    );
-    return this._outputManagerPromise;
+    // outputFile() derives a fresh timestamped directory per call when no
+    // outputDir/rootPath is configured, so look up the manager per actual
+    // directory; forDirectory keeps eviction shared across them.
+    const directory = dirname(path);
+    let manager = this._outputManagers.get(directory);
+    if (!manager) {
+      manager = OutputManager.forDirectory(
+        directory,
+        this.config.outputMaxSize
+      );
+      this._outputManagers.set(directory, manager);
+    }
+    return manager;
   }
 
   private _onPageCreated(page: Page) {
