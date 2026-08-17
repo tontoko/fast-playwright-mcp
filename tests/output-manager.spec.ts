@@ -74,20 +74,24 @@ test('contexts sharing an output directory share one eviction queue', async ({
 }, testInfo) => {
   const directory = testInfo.outputPath('shared-outputs');
   const alias = path.join(testInfo.outputPath('shared-alias-parent'), 'link');
+  await fs.mkdir(directory, { recursive: true });
   await fs.mkdir(path.dirname(alias), { recursive: true });
   await fs.symlink(directory, alias, 'dir');
 
-  const [first, second, viaAlias] = await Promise.all([
-    OutputManager.forDirectory(directory, 100),
+  const [direct, aliased] = await Promise.all([
     OutputManager.forDirectory(directory, 100),
     OutputManager.forDirectory(alias, 100),
   ]);
-  expect(second).toBe(first);
-  expect(viaAlias).toBe(first);
+  // Instances stay separate so each caller's lexical containment checks use
+  // the path form that caller provides; eviction still serializes.
+  expect(aliased).not.toBe(direct);
+  await expect(
+    aliased.finalizeFile(path.join(alias, 'contained.bin'))
+  ).resolves.toBeUndefined();
 
-  // Concurrent finalizations through the shared queue must not evict each
-  // other's protected targets: the older file is evicted, the newest file
-  // that finalized last survives.
+  // Concurrent finalizations through separate instances of the same
+  // directory must not evict each other's protected targets: the stale file
+  // is evicted and at least one concurrently finalized file survives.
   const stale = path.join(directory, 'stale.bin');
   const left = path.join(directory, 'left.bin');
   const right = path.join(directory, 'right.bin');
@@ -95,11 +99,22 @@ test('contexts sharing an output directory share one eviction queue', async ({
   await fs.utimes(stale, new Date(1), new Date(1));
   await fs.writeFile(left, Buffer.alloc(80));
   await fs.writeFile(right, Buffer.alloc(80));
-  await Promise.all([first.finalizeFile(left), second.finalizeFile(right)]);
+  await Promise.all([
+    direct.finalizeFile(left),
+    direct.finalizeFile(right),
+    aliased.finalizeFile(path.join(alias, 'left.bin')),
+  ]);
   await expect(fs.stat(stale)).rejects.toMatchObject({ code: 'ENOENT' });
   const survivors = (await fs.readdir(directory))
     .filter((name) => name.endsWith('.bin'))
     .sort();
-  expect(survivors.length).toBeGreaterThan(0);
+  // Whichever finalization runs first evicts the stale file and, under the
+  // 100-byte quota, exactly one of the concurrently finalized files — the
+  // one whose eviction pass completed first. Independent queues could
+  // interleave and lose both.
   expect(survivors).not.toContain('stale.bin');
+  expect(
+    survivors.filter((name) => name === 'left.bin' || name === 'right.bin')
+      .length
+  ).toBe(1);
 });

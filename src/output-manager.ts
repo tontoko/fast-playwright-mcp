@@ -16,6 +16,8 @@ type OutputEntry = {
 
 type ExpectedPathKind = 'file' | 'directory';
 
+type EvictionQueue = { promise: Promise<void> };
+
 const OUTSIDE_OUTPUT_ERROR =
   'Output path must remain inside the output directory';
 
@@ -41,25 +43,12 @@ function isPathInside(root: string, candidate: string): boolean {
 }
 
 export class OutputManager {
-  private queue: Promise<void> = Promise.resolve();
-  private readonly lexicalOutputDir: string;
-  private canonicalOutputDirPromise: Promise<string> | undefined;
-  private readonly maxSize: number;
-
-  constructor(outputDir: string, maxSize: number) {
-    this.lexicalOutputDir = resolve(outputDir);
-    this.maxSize = maxSize;
-  }
-
-  // Managers serialize eviction through an in-memory queue, so every context
-  // writing into the same output directory must share one instance;
-  // independent queues would let concurrent finalizations evict each other's
-  // files. The registry is keyed by canonical path, and the first
-  // registration's maxSize applies to the shared instance.
-  private static readonly sharedByCanonicalDirectory = new Map<
-    string,
-    OutputManager
-  >();
+  // Eviction must serialize per output directory: managers created for the
+  // same directory (including via different lexical paths such as symlink
+  // aliases) evict through one shared queue, so concurrent finalizations
+  // cannot collect and unlink each other's files. Instances stay separate
+  // to keep each caller's lexical containment checks correct.
+  private static readonly evictionQueues = new Map<string, EvictionQueue>();
 
   static async forDirectory(
     outputDir: string,
@@ -68,13 +57,27 @@ export class OutputManager {
     const lexical = resolve(outputDir);
     await fs.mkdir(lexical, { recursive: true });
     const canonical = await fs.realpath(lexical);
-    let shared = OutputManager.sharedByCanonicalDirectory.get(canonical);
-    if (!shared) {
-      shared = new OutputManager(lexical, maxSize);
-      shared.canonicalOutputDirPromise = Promise.resolve(canonical);
-      OutputManager.sharedByCanonicalDirectory.set(canonical, shared);
+    let queue = OutputManager.evictionQueues.get(canonical);
+    if (!queue) {
+      queue = { promise: Promise.resolve() };
+      OutputManager.evictionQueues.set(canonical, queue);
     }
-    return shared;
+    return new OutputManager(lexical, maxSize, queue);
+  }
+
+  private readonly evictionQueue: EvictionQueue;
+  private readonly lexicalOutputDir: string;
+  private canonicalOutputDirPromise: Promise<string> | undefined;
+  private readonly maxSize: number;
+
+  constructor(
+    outputDir: string,
+    maxSize: number,
+    evictionQueue: EvictionQueue = { promise: Promise.resolve() }
+  ) {
+    this.lexicalOutputDir = resolve(outputDir);
+    this.maxSize = maxSize;
+    this.evictionQueue = evictionQueue;
   }
 
   async reserveFile(path: string): Promise<string> {
@@ -212,8 +215,8 @@ export class OutputManager {
   }
 
   private async enqueue(operation: () => Promise<void>): Promise<void> {
-    const task = this.queue.then(operation, operation);
-    this.queue = task.catch(() => {
+    const task = this.evictionQueue.promise.then(operation, operation);
+    this.evictionQueue.promise = task.catch(() => {
       // Preserve queue progress while returning the original failure to caller.
     });
     await task;
