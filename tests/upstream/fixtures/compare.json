@@ -1,0 +1,41 @@
+{
+  "headSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "commits": [
+    {
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "commit": { "message": "feat: example" }
+    }
+  ],
+  "files": [
+    {
+      "filename": "README.md",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 1
+    },
+    {
+      "filename": "packages/playwright-core/src/tools/backend/find.ts",
+      "status": "modified",
+      "additions": 20,
+      "deletions": 2
+    },
+    {
+      "filename": "packages/playwright-core/src/tools/mcp/config.ts",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 1
+    },
+    {
+      "filename": ".github/workflows/release.yml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1
+    },
+    {
+      "filename": "tests/browser.spec.ts",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 0
+    }
+  ]
+}

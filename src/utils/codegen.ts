@@ -2,43 +2,31 @@
 // - https://github.com/microsoft/playwright/blob/76ee48dc9d4034536e3ec5b2c7ce8be3b79418a8/packages/playwright-core/src/utils/isomorphic/stringUtils.ts
 // - https://github.com/microsoft/playwright/blob/76ee48dc9d4034536e3ec5b2c7ce8be3b79418a8/packages/playwright-core/src/server/codegen/javascript.ts
 // NOTE: this function should not be used to escape any selectors.
-export function escapeWithQuotes(text: string, char = "'") {
+const ESCAPED_SINGLE_QUOTE = String.raw({ raw: ["\\'"] });
+const ESCAPED_BACKTICK = String.raw({ raw: ['\\`'] });
+const ESCAPED_TEMPLATE_OPEN = String.raw({ raw: ['\\${'] });
+
+export function escapeWithQuotes(
+  text: string,
+  char: "'" | '"' | '`' = "'"
+): string {
   const stringified = JSON.stringify(text);
-  const escapedText = extractEscapedContent(stringified);
-  return wrapWithCharacter(escapedText, char);
-}
-
-function extractEscapedContent(stringified: string): string {
-  return stringified.substring(1, stringified.length - 1).replace(/\\"/g, '"');
-}
-
-function wrapWithCharacter(text: string, char: string): string {
-  const replacements: Record<string, string> = {
-    "'": "'",
-    '"': '"',
-    '`': '`',
-  };
-
-  const replacement = replacements[char];
-  if (!replacement) {
-    throw new Error('Invalid escape char');
+  if (char === '"') {
+    return stringified;
   }
-
-  // Use string replace methods instead of dynamic RegExp for security
-  let result = text;
+  const body = stringified.slice(1, -1);
   if (char === "'") {
-    result = text.replaceAll("'", "'");
-  } else if (char === '"') {
-    result = text.replaceAll('"', '"');
-  } else if (char === '`') {
-    result = text.replaceAll('`', '`');
+    return `'${body.replaceAll("'", ESCAPED_SINGLE_QUOTE)}'`;
   }
-
-  return char + result + char;
+  return `\`${body
+    .replaceAll('`', ESCAPED_BACKTICK)
+    .replaceAll('${', ESCAPED_TEMPLATE_OPEN)}\``;
 }
-export function quote(text: string) {
+
+export function quote(text: string): string {
   return escapeWithQuotes(text, "'");
 }
+
 export function formatObject(value: unknown, indent = '  '): string {
   if (typeof value === 'string') {
     return quote(value);

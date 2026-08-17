@@ -1,6 +1,4 @@
 import type * as playwright from 'playwright';
-// @ts-expect-error - playwright-core internal module without proper types
-import { asLocator } from 'playwright-core/lib/utils';
 import { TIMEOUTS } from '../config/constants.js';
 import type { Tab } from '../tab.js';
 import { toolsUtilsDebug } from '../utils/log.js';
@@ -8,6 +6,8 @@ export async function waitForCompletion<R>(
   tab: Tab,
   callback: () => Promise<R>
 ): Promise<R> {
+  const settleTimeout =
+    tab.context.config.timeouts?.settle ?? TIMEOUTS.WAIT_FOR_COMPLETION;
   const requests = new Set<playwright.Request>();
   let frameNavigated = false;
   let navigationCompleted = false;
@@ -85,7 +85,7 @@ export async function waitForCompletion<R>(
     await waitBarrier;
     // Additional stability wait with context verification
     if (frameNavigated) {
-      await tab.waitForTimeout(getNavigationConfig().stabilityWait);
+      await tab.waitForTimeout(settleTimeout);
       // Verify page is still responsive
       try {
         await tab.page.evaluate(() => document.readyState);
@@ -97,7 +97,7 @@ export async function waitForCompletion<R>(
         );
       }
     } else {
-      await tab.waitForTimeout(getNavigationConfig().defaultWait);
+      await tab.waitForTimeout(settleTimeout);
     }
     return result;
   } finally {
@@ -108,12 +108,8 @@ export async function generateLocator(
   locator: playwright.Locator
 ): Promise<string> {
   try {
-    const { resolvedSelector } = await (
-      locator as unknown as {
-        _resolveSelector: () => Promise<{ resolvedSelector: string }>;
-      }
-    )._resolveSelector();
-    return asLocator('javascript', resolvedSelector);
+    const normalized = await locator.normalize();
+    return normalized.toString();
   } catch (error) {
     toolsUtilsDebug('Locator generation failed:', error);
     throw new Error(
@@ -121,27 +117,9 @@ export async function generateLocator(
     );
   }
 }
-export async function callOnPageNoTrace<T>(
-  page: playwright.Page,
-  callback: (p: playwright.Page) => Promise<T>
-): Promise<T> {
-  return await (
-    page as unknown as {
-      _wrapApiCall: <U>(
-        fn: () => Promise<U>,
-        opts: { internal: boolean }
-      ) => Promise<U>;
-    }
-  )._wrapApiCall(() => callback(page), {
-    internal: true,
-  });
-}
-
 function getNavigationConfig() {
   return {
     networkIdleTimeout: TIMEOUTS.NETWORK_IDLE_TIMEOUT,
     completionTimeout: 15_000,
-    stabilityWait: TIMEOUTS.STABILITY_WAIT,
-    defaultWait: TIMEOUTS.WAIT_FOR_COMPLETION,
   };
 }

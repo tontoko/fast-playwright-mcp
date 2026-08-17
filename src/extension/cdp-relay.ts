@@ -1,5 +1,5 @@
 /**
- * WebSocket server that bridges Playwright MCP and Chrome Extension
+ * WebSocket server that bridges Playwright MCP and Chrome Extension.
  *
  * Endpoints:
  * - /cdp/guid - Full CDP interface for Playwright MCP
@@ -7,32 +7,85 @@
  */
 import { spawn } from 'node:child_process';
 import type http from 'node:http';
+import { platform } from 'node:os';
+import { isAbsolute } from 'node:path';
+// @ts-expect-error - playwright-core does not publish types for its exported coreBundle entry.
+import coreBundle from 'playwright-core/lib/coreBundle';
 import type websocket from 'ws';
 import { WebSocket, WebSocketServer } from 'ws';
 import type { ClientInfo } from '../browser-context-factory.js';
-import { httpAddressToString } from '../http-server.js';
+import { httpAddressToString, isHostAllowed } from '../http-server.js';
 import { ManualPromise } from '../manual-promise.js';
 import { cdpRelayDebug, logUnhandledError } from '../utils/log.js';
+import {
+  buildExtensionConnectUrl,
+  DEFAULT_EXTENSION_ID,
+} from './connect-url.js';
+import { findExtensionProfile } from './profile.js';
 
-//
-// @ts-expect-error - playwright internal module
-const { registry } = await import('playwright-core/lib/server/registry/index');
+const { registry } = coreBundle.registry;
 
-// Regex constants for performance
 const HTTP_TO_WS_REGEX = /^http/;
-// Regex for Chrome extension ID validation
-const EXTENSION_ID_REGEX = /^[a-p]{32}$/;
-// Regex patterns for path validation to prevent injection attacks
-const DANGEROUS_PATH_PATTERNS = [
-  /[;&|`$()]/, // Shell injection characters
-  /\.\./, // Path traversal
-  /^https?:/, // URLs
-  /^\w+:/, // Other protocols
-];
-// Properties that should be removed for security
-const DANGEROUS_PROPS = ['__proto__', 'constructor', 'prototype'];
-// CDP parameter types - using unknown for better type safety
-type CDPParams = Record<string, unknown> | undefined;
+const MAX_MESSAGE_SIZE = 1024 * 1024;
+const DANGEROUS_PROPS = new Set(['__proto__', 'constructor', 'prototype']);
+
+function isAllowedRelayOrigin(
+  origin: string | undefined,
+  boundHost: string
+): boolean {
+  if (!origin) {
+    return true;
+  }
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return true;
+    }
+    return isHostAllowed(url.host, boundHost, undefined);
+  } catch {
+    return false;
+  }
+}
+
+export function isRelayUpgradeAllowed(
+  hostHeader: string | undefined,
+  origin: string | undefined,
+  boundHost: string
+): boolean {
+  return (
+    isHostAllowed(hostHeader, boundHost, undefined) &&
+    isAllowedRelayOrigin(origin, boundHost)
+  );
+}
+
+export function launchBrowserProcess(
+  executablePath: string,
+  args: readonly string[]
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let spawned = false;
+    const child = spawn(executablePath, [...args], {
+      windowsHide: true,
+      detached: true,
+      shell: false,
+      stdio: 'ignore',
+    });
+    child.once('spawn', () => {
+      spawned = true;
+      child.unref();
+      resolve();
+    });
+    child.on('error', (error) => {
+      if (!spawned) {
+        reject(error);
+        return;
+      }
+      cdpRelayDebug('Detached browser process error:', error);
+    });
+  });
+}
+
+type CDPParams = Record<string, unknown>;
 
 type CDPCommand = {
   id: number;
@@ -49,9 +102,13 @@ type CDPResponse = {
   result?: unknown;
   error?: { code?: number; message: string };
 };
+
 export class CDPRelayServer {
+  private readonly _httpServer: http.Server;
   private readonly _wsHost: string;
   private readonly _browserChannel: string;
+  private readonly _userDataDir: string | undefined;
+  private readonly _executablePath: string | undefined;
   private readonly _cdpPath: string;
   private readonly _extensionPath: string;
   private readonly _wss: WebSocketServer;
@@ -61,30 +118,54 @@ export class CDPRelayServer {
   private _connectedTabInfo:
     | {
         targetInfo: Record<string, unknown>;
-        // Page sessionId that should be used by this connection.
         sessionId: string;
       }
     | undefined;
   private _extensionConnectionPromise!: ManualPromise<void>;
-  constructor(server: http.Server, browserChannel: string) {
-    this._wsHost = httpAddressToString(server.address()).replace(
-      HTTP_TO_WS_REGEX,
-      'ws'
-    );
+
+  constructor(
+    server: http.Server,
+    browserChannel: string,
+    userDataDir?: string,
+    executablePath?: string
+  ) {
+    this._httpServer = server;
+    const httpAddress = httpAddressToString(server.address());
+    this._wsHost = httpAddress.replace(HTTP_TO_WS_REGEX, 'ws');
+    const boundHost = new URL(httpAddress).hostname;
     this._browserChannel = browserChannel;
+    this._userDataDir = userDataDir;
+    this._executablePath = executablePath;
     const uuid = crypto.randomUUID();
     this._cdpPath = `/cdp/${uuid}`;
     this._extensionPath = `/extension/${uuid}`;
     this._resetExtensionConnection();
-    this._wss = new WebSocketServer({ server });
+    this._wss = new WebSocketServer({
+      server,
+      verifyClient: (info, done) => {
+        const allowed = isRelayUpgradeAllowed(
+          info.req.headers.host,
+          info.origin,
+          boundHost
+        );
+        if (allowed) {
+          done(true);
+        } else {
+          done(false, 403, 'Forbidden');
+        }
+      },
+    });
     this._wss.on('connection', this._onConnection.bind(this));
   }
+
   cdpEndpoint() {
     return `${this._wsHost}${this._cdpPath}`;
   }
+
   extensionEndpoint() {
     return `${this._wsHost}${this._extensionPath}`;
   }
+
   async ensureExtensionConnectionForMCPContext(
     clientInfo: ClientInfo,
     abortSignal: AbortSignal
@@ -93,119 +174,112 @@ export class CDPRelayServer {
     if (this._extensionConnection) {
       return;
     }
-    this._connectBrowser(clientInfo);
+
+    await this._connectBrowser(clientInfo);
     cdpRelayDebug('Waiting for incoming extension connection');
-    await Promise.race([
-      this._extensionConnectionPromise,
-      new Promise((_, reject) => abortSignal.addEventListener('abort', reject)),
-    ]);
+
+    let removeAbortListener: (() => void) | undefined;
+    const aborted = new Promise<never>((_, reject) => {
+      const onAbort = () =>
+        reject(
+          abortSignal.reason instanceof Error
+            ? abortSignal.reason
+            : new Error('Extension connection aborted')
+        );
+      if (abortSignal.aborted) {
+        onAbort();
+        return;
+      }
+      abortSignal.addEventListener('abort', onAbort, { once: true });
+      removeAbortListener = () =>
+        abortSignal.removeEventListener('abort', onAbort);
+    });
+
+    try {
+      await Promise.race([this._extensionConnectionPromise, aborted]);
+    } finally {
+      removeAbortListener?.();
+    }
     cdpRelayDebug('Extension connection established');
   }
-  private _connectBrowser(clientInfo: ClientInfo) {
-    const mcpRelayEndpoint = `${this._wsHost}${this._extensionPath}`;
 
-    // Use environment variable for extension ID to avoid hardcoding
-    const extensionId =
-      process.env.PLAYWRIGHT_MCP_EXTENSION_ID ??
-      'jakfalbnbhgkpmoaakfflhflbfpkailf';
-
-    // Validate extension ID format (Chrome extension IDs are 32 lowercase letters)
-    if (!EXTENSION_ID_REGEX.test(extensionId)) {
-      throw new Error('Invalid Chrome extension ID format');
-    }
-
-    const url = new URL(
-      `chrome-extension://${extensionId}/lib/ui/connect.html`
-    );
-    url.searchParams.set('mcpRelayUrl', mcpRelayEndpoint);
-
-    // Sanitize client info before serialization
+  private async _connectBrowser(clientInfo: ClientInfo) {
     const sanitizedClientInfo = this._sanitizeClientInfo(clientInfo);
-    url.searchParams.set('client', JSON.stringify(sanitizedClientInfo));
-
-    const href = url.toString();
-    const executableInfo = registry.findExecutable(this._browserChannel);
-    if (!executableInfo) {
-      throw new Error(`Unsupported channel: "${this._browserChannel}"`);
-    }
-    const executablePath = executableInfo.executablePath();
-    if (!executablePath) {
-      throw new Error(
-        `"${this._browserChannel}" executable not found. Make sure it is installed at a standard location.`
-      );
-    }
-
-    // Enhanced security for spawn: validate executable path and arguments
-    if (!this._isValidExecutablePath(executablePath)) {
-      throw new Error('Invalid executable path detected');
-    }
-
-    spawn(executablePath, [href], {
-      windowsHide: true,
-      detached: true,
-      shell: false, // Keep shell disabled for security
-      stdio: 'ignore',
+    const extensionId =
+      process.env.PLAYWRIGHT_MCP_EXTENSION_ID ?? DEFAULT_EXTENSION_ID;
+    const url = buildExtensionConnectUrl({
+      relayEndpoint: this.extensionEndpoint(),
+      clientInfo: sanitizedClientInfo,
+      extensionId,
+      token: process.env.PLAYWRIGHT_MCP_EXTENSION_TOKEN,
     });
+
+    const executablePath = this._resolveBrowserExecutablePath();
+    const args: string[] = [];
+    if (this._userDataDir) {
+      args.push(`--user-data-dir=${this._userDataDir}`);
+      const profile = await findExtensionProfile(
+        this._userDataDir,
+        extensionId
+      );
+      if (profile) {
+        args.push(`--profile-directory=${profile}`);
+      }
+    }
+    if (platform() === 'linux' && this._browserChannel === 'chromium') {
+      args.push('--no-sandbox');
+    }
+    args.push(url.toString());
+
+    await launchBrowserProcess(executablePath, args);
   }
 
-  private _sanitizeClientInfo(clientInfo: ClientInfo): ClientInfo {
-    // Remove any potentially dangerous properties and sanitize values
-    const sanitized: ClientInfo = {
-      name:
-        typeof clientInfo.name === 'string'
-          ? clientInfo.name.slice(0, 100)
-          : 'unknown',
-      version:
-        typeof clientInfo.version === 'string'
-          ? clientInfo.version.slice(0, 20)
-          : '1.0.0',
-    };
-
-    // Ensure no script injection in client info
-    for (const key of Object.keys(sanitized)) {
-      const value = sanitized[key as keyof ClientInfo];
-      if (typeof value === 'string') {
-        sanitized[key as keyof ClientInfo] = value.replace(
-          /<script[^>]*>.*?<\/script>/gi,
-          ''
+  private _resolveBrowserExecutablePath(): string {
+    let executablePath = this._executablePath;
+    if (!executablePath) {
+      const executableInfo = registry.findExecutable(this._browserChannel);
+      if (!executableInfo) {
+        throw new Error(`Unsupported channel: "${this._browserChannel}"`);
+      }
+      executablePath = executableInfo.executablePath();
+      if (!executablePath) {
+        throw new Error(
+          `"${this._browserChannel}" executable not found. Make sure it is installed at a standard location.`
         );
       }
     }
 
-    return sanitized;
+    // spawn() is invoked with shell:false, so shell metacharacters in legitimate
+    // paths (for example "Program Files (x86)" on Windows) are safe. Requiring
+    // an absolute path prevents accidental PATH lookup without rejecting valid
+    // platform paths.
+    if (!isAbsolute(executablePath)) {
+      throw new Error('Browser executable path must be absolute');
+    }
+    return executablePath;
   }
 
-  private _isValidExecutablePath(path: string): boolean {
-    // Basic validation to ensure the path looks like a legitimate executable
-    if (!path || typeof path !== 'string') {
-      return false;
-    }
+  private _sanitizeClientInfo(clientInfo: ClientInfo): {
+    name: string;
+    version: string;
+  } {
+    const sanitize = (value: unknown, fallback: string, maxLength: number) => {
+      const text = typeof value === 'string' ? value : fallback;
+      return text
+        .slice(0, maxLength)
+        .replace(/<script[^>]*>.*?<\/script>/giu, '');
+    };
 
-    return !DANGEROUS_PATH_PATTERNS.some((pattern) => pattern.test(path));
+    return {
+      name: sanitize(clientInfo.name, 'unknown', 100),
+      version: sanitize(clientInfo.version, '1.0.0', 20),
+    };
   }
 
   private _safeJsonParse<T = unknown>(jsonString: string): T | null {
     try {
-      // Additional validation: check for suspicious patterns
-      if (
-        jsonString.includes('__proto__') ||
-        jsonString.includes('constructor') ||
-        jsonString.includes('prototype')
-      ) {
-        cdpRelayDebug('Potential prototype pollution attempt detected');
-        return null;
-      }
-
-      const result = JSON.parse(jsonString);
-
-      // Basic type validation
-      if (result === null || typeof result !== 'object') {
-        return result as T;
-      }
-
-      // Remove dangerous properties that could lead to prototype pollution
-      this._sanitizeObject(result);
-
+      const result: unknown = JSON.parse(jsonString);
+      this._sanitizeJsonValue(result);
       return result as T;
     } catch (error) {
       cdpRelayDebug('JSON parsing failed:', error);
@@ -213,27 +287,24 @@ export class CDPRelayServer {
     }
   }
 
-  private _sanitizeObject(obj: Record<string, unknown>): void {
-    if (!obj || typeof obj !== 'object') {
+  private _sanitizeJsonValue(value: unknown): void {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        this._sanitizeJsonValue(item);
+      }
+      return;
+    }
+    if (!value || typeof value !== 'object') {
       return;
     }
 
-    // Remove dangerous properties
-    for (const prop of DANGEROUS_PROPS) {
-      if (prop in obj) {
-        delete obj[prop];
+    const object = value as Record<string, unknown>;
+    for (const key of Object.keys(object)) {
+      if (DANGEROUS_PROPS.has(key)) {
+        delete object[key];
+        continue;
       }
-    }
-
-    // Recursively sanitize nested objects
-    for (const value of Object.values(obj)) {
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        this._sanitizeObject(value as Record<string, unknown>);
-      }
+      this._sanitizeJsonValue(object[key]);
     }
   }
 
@@ -242,24 +313,30 @@ export class CDPRelayServer {
       return false;
     }
 
-    const cmd = message as Record<string, unknown>;
+    const command = message as Record<string, unknown>;
     return (
-      typeof cmd.id === 'number' &&
-      typeof cmd.method === 'string' &&
-      (cmd.sessionId === undefined || typeof cmd.sessionId === 'string') &&
-      (cmd.params === undefined ||
-        (typeof cmd.params === 'object' && cmd.params !== null))
+      typeof command.id === 'number' &&
+      typeof command.method === 'string' &&
+      (command.sessionId === undefined ||
+        typeof command.sessionId === 'string') &&
+      (command.params === undefined ||
+        (typeof command.params === 'object' && command.params !== null))
     );
   }
 
   stop(): void {
-    this.closeConnections('Server stopped');
+    this._closeConnections('Server stopped');
     this._wss.close();
+    if (this._httpServer.listening) {
+      this._httpServer.close();
+    }
   }
-  closeConnections(reason: string) {
+
+  private _closeConnections(reason: string) {
     this._closePlaywrightConnection(reason);
     this._closeExtensionConnection(reason);
   }
+
   private _onConnection(ws: WebSocket, request: http.IncomingMessage): void {
     const url = new URL(`http://localhost${request.url}`);
     cdpRelayDebug(`New connection to ${url.pathname}`);
@@ -268,25 +345,28 @@ export class CDPRelayServer {
     } else if (url.pathname === this._extensionPath) {
       this._handleExtensionConnection(ws);
     } else {
-      cdpRelayDebug(`Invalid path: ${url.pathname}`);
       ws.close(4004, 'Invalid path');
     }
   }
+
   private _handlePlaywrightConnection(ws: WebSocket): void {
+    if (!this._extensionConnection) {
+      ws.close(1000, 'Extension not connected');
+      return;
+    }
     if (this._playwrightConnection) {
       cdpRelayDebug('Rejecting second Playwright connection');
       ws.close(1000, 'Another CDP client already connected');
       return;
     }
+
     this._playwrightConnection = ws;
     ws.on('message', async (data) => {
       try {
         const messageString = data.toString();
-
-        // Validate message size to prevent DoS attacks
-        if (messageString.length > 1024 * 1024) {
-          // 1MB limit
+        if (messageString.length > MAX_MESSAGE_SIZE) {
           cdpRelayDebug('Message too large, rejecting');
+          ws.close(1009, 'Message too large');
           return;
         }
 
@@ -295,7 +375,6 @@ export class CDPRelayServer {
           cdpRelayDebug('Invalid JSON message received from Playwright');
           return;
         }
-
         await this._handlePlaywrightMessage(message);
       } catch (error: unknown) {
         const truncatedData = String(data).slice(0, 500);
@@ -318,45 +397,57 @@ export class CDPRelayServer {
     });
     cdpRelayDebug('Playwright MCP connected');
   }
+
   private _closeExtensionConnection(reason: string) {
-    this._extensionConnection?.close(reason);
-    this._extensionConnectionPromise.reject(new Error(reason));
+    const connection = this._extensionConnection;
+    this._extensionConnection = null;
+    connection?.close(reason);
+    if (!this._extensionConnectionPromise.isDone()) {
+      this._extensionConnectionPromise.reject(new Error(reason));
+    }
     this._resetExtensionConnection();
   }
+
   private _resetExtensionConnection() {
     this._connectedTabInfo = undefined;
-    this._extensionConnection = null;
     this._extensionConnectionPromise = new ManualPromise();
     this._extensionConnectionPromise.catch(logUnhandledError);
   }
+
   private _closePlaywrightConnection(reason: string) {
     if (this._playwrightConnection?.readyState === WebSocket.OPEN) {
       this._playwrightConnection.close(1000, reason);
     }
     this._playwrightConnection = null;
   }
+
   private _handleExtensionConnection(ws: WebSocket): void {
     if (this._extensionConnection) {
       ws.close(1000, 'Another extension connection already established');
       return;
     }
-    this._extensionConnection = new ExtensionConnection(ws);
-    this._extensionConnection.onclose = (c, reason) => {
+
+    const connection = new ExtensionConnection(ws);
+    this._extensionConnection = connection;
+    connection.onclose = (closedConnection, reason) => {
       cdpRelayDebug(
         'Extension WebSocket closed:',
         reason,
-        c === this._extensionConnection
+        closedConnection === this._extensionConnection
       );
-      if (this._extensionConnection !== c) {
+      if (this._extensionConnection !== closedConnection) {
         return;
       }
+      this._extensionConnection = null;
       this._resetExtensionConnection();
       this._closePlaywrightConnection(`Extension disconnected: ${reason}`);
     };
-    this._extensionConnection.onmessage =
-      this._handleExtensionMessage.bind(this);
-    this._extensionConnectionPromise.resolve();
+    connection.onmessage = this._handleExtensionMessage.bind(this);
+    if (!this._extensionConnectionPromise.isDone()) {
+      this._extensionConnectionPromise.resolve();
+    }
   }
+
   private _handleExtensionMessage(
     method: string,
     params: Record<string, unknown>
@@ -369,7 +460,7 @@ export class CDPRelayServer {
         this._sendToPlaywright({
           sessionId,
           method: params.method as string | undefined,
-          params: params.params as CDPParams,
+          params: params.params as CDPParams | undefined,
         });
         break;
       }
@@ -382,8 +473,8 @@ export class CDPRelayServer {
         break;
     }
   }
+
   private async _handlePlaywrightMessage(message: unknown): Promise<void> {
-    // Type guard to ensure message is a valid CDPCommand
     if (!this._isValidCDPCommand(message)) {
       cdpRelayDebug('Invalid CDP command received from Playwright');
       return;
@@ -394,95 +485,96 @@ export class CDPRelayServer {
     try {
       const result = await this._handleCDPCommand(method, params, sessionId);
       this._sendToPlaywright({ id, sessionId, result });
-    } catch (e) {
-      cdpRelayDebug('Error in the extension:', e);
+    } catch (error) {
+      cdpRelayDebug('Error in the extension:', error);
       this._sendToPlaywright({
         id,
         sessionId,
-        error: { message: (e as Error).message },
+        error: {
+          message: error instanceof Error ? error.message : String(error),
+        },
       });
     }
   }
+
   private async _handleCDPCommand(
     method: string,
-    params: CDPParams,
+    params: CDPParams | undefined,
     sessionId: string | undefined
   ): Promise<unknown> {
     switch (method) {
-      case 'Browser.getVersion': {
+      case 'Browser.getVersion':
         return {
           protocolVersion: '1.3',
           product: 'Chrome/Extension-Bridge',
           userAgent: 'CDP-Bridge-Server/1.0.0',
         };
-      }
-      case 'Browser.setDownloadBehavior': {
+      case 'Browser.setDownloadBehavior':
         return {};
-      }
       case 'Target.setAutoAttach': {
-        // Forward child session handling.
         if (sessionId) {
           break;
         }
-        // Simulate auto-attach behavior with real target info
-        {
-          const result = (await this._extensionConnection?.send(
-            'attachToTab'
-          )) as { targetInfo: Record<string, unknown> };
-          const targetInfo = result.targetInfo;
-          this._connectedTabInfo = {
-            targetInfo,
-            sessionId: `pw-tab-${this._nextSessionId++}`,
-          };
-          cdpRelayDebug('Simulating auto-attach');
-          this._sendToPlaywright({
-            method: 'Target.attachedToTarget',
-            params: {
-              sessionId: this._connectedTabInfo.sessionId,
-              targetInfo: {
-                ...this._connectedTabInfo.targetInfo,
-                attached: true,
-              },
-              waitingForDebugger: false,
-            },
-          });
+        const result = (await this._extensionConnection?.send(
+          'attachToTab'
+        )) as { targetInfo: Record<string, unknown> };
+        if (!result?.targetInfo) {
+          throw new Error('Extension did not return target information');
         }
+        this._connectedTabInfo = {
+          targetInfo: result.targetInfo,
+          sessionId: `pw-tab-${this._nextSessionId++}`,
+        };
+        this._sendToPlaywright({
+          method: 'Target.attachedToTarget',
+          params: {
+            sessionId: this._connectedTabInfo.sessionId,
+            targetInfo: {
+              ...this._connectedTabInfo.targetInfo,
+              attached: true,
+            },
+            waitingForDebugger: false,
+          },
+        });
         return {};
       }
-      case 'Target.getTargetInfo': {
+      case 'Target.getTargetInfo':
         return this._connectedTabInfo?.targetInfo;
-      }
       default:
-        // Fall through to forward to extension
         break;
     }
-    return await this._forwardToExtension(method, params, sessionId);
+    return this._forwardToExtension(method, params, sessionId);
   }
-  private async _forwardToExtension(
+
+  private _forwardToExtension(
     method: string,
-    params: CDPParams,
+    params: CDPParams | undefined,
     sessionId: string | undefined
   ): Promise<unknown> {
     if (!this._extensionConnection) {
       throw new Error('Extension not connected');
     }
-    // Top level sessionId is only passed between the relay and the client.
+
     let effectiveSessionId = sessionId;
     if (this._connectedTabInfo?.sessionId === sessionId) {
       effectiveSessionId = undefined;
     }
-    return await this._extensionConnection.send('forwardCDPCommand', {
+    return this._extensionConnection.send('forwardCDPCommand', {
       sessionId: effectiveSessionId,
       method,
       params,
     });
   }
+
   private _sendToPlaywright(message: CDPResponse): void {
-    const messageDesc = message.method ?? `response(id=${message.id})`;
-    cdpRelayDebug('→ Playwright:', messageDesc);
-    this._playwrightConnection?.send(JSON.stringify(message));
+    const messageDescription = message.method ?? `response(id=${message.id})`;
+    cdpRelayDebug('→ Playwright:', messageDescription);
+    if (this._playwrightConnection?.readyState === WebSocket.OPEN) {
+      this._playwrightConnection.send(JSON.stringify(message));
+    }
   }
 }
+
 type ExtensionResponse = {
   id?: number;
   method?: string;
@@ -490,160 +582,112 @@ type ExtensionResponse = {
   result?: unknown;
   error?: string;
 };
+
 class ExtensionConnection {
   private readonly _ws: WebSocket;
   private readonly _callbacks = new Map<
     number,
-    { resolve: (o: unknown) => void; reject: (e: Error) => void; error: Error }
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+      error: Error;
+    }
   >();
   private _lastId = 0;
+  private _closed = false;
+
   onmessage?: (method: string, params: Record<string, unknown>) => void;
   onclose?: (self: ExtensionConnection, reason: string) => void;
+
   constructor(ws: WebSocket) {
     this._ws = ws;
     this._ws.on('message', this._onMessage.bind(this));
     this._ws.on('close', this._onClose.bind(this));
     this._ws.on('error', this._onError.bind(this));
   }
-  send(
-    method: string,
-    params?: CDPParams,
-    sessionId?: string
-  ): Promise<unknown> {
+
+  send(method: string, params?: CDPParams): Promise<unknown> {
     if (this._ws.readyState !== WebSocket.OPEN) {
       throw new Error(`Unexpected WebSocket state: ${this._ws.readyState}`);
     }
+
     const id = ++this._lastId;
-    this._ws.send(JSON.stringify({ id, method, params, sessionId }));
+    this._ws.send(JSON.stringify({ id, method, params }));
     const error = new Error(`Protocol error: ${method}`);
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, { resolve, reject, error });
     });
   }
+
   close(message: string) {
-    cdpRelayDebug('closing extension connection:', message);
+    cdpRelayDebug('Closing extension connection:', message);
     if (this._ws.readyState === WebSocket.OPEN) {
       this._ws.close(1000, message);
     }
+    this._dispose();
   }
 
-  private _parseJsonSafely<T = unknown>(jsonString: string): T | null {
-    try {
-      // Additional validation: check for suspicious patterns
-      if (
-        jsonString.includes('__proto__') ||
-        jsonString.includes('constructor') ||
-        jsonString.includes('prototype')
-      ) {
-        cdpRelayDebug('Potential prototype pollution attempt detected');
-        return null;
-      }
-
-      const result = JSON.parse(jsonString);
-
-      // Basic type validation
-      if (result === null || typeof result !== 'object') {
-        return result as T;
-      }
-
-      // Remove dangerous properties that could lead to prototype pollution
-      this._sanitizeJsonObject(result);
-
-      return result as T;
-    } catch (error) {
-      cdpRelayDebug('JSON parsing failed:', error);
-      return null;
-    }
-  }
-
-  private _sanitizeJsonObject(obj: Record<string, unknown>): void {
-    if (!obj || typeof obj !== 'object') {
-      return;
-    }
-
-    // Remove dangerous properties
-    for (const prop of DANGEROUS_PROPS) {
-      if (prop in obj) {
-        delete obj[prop];
-      }
-    }
-
-    // Recursively sanitize nested objects
-    for (const value of Object.values(obj)) {
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        this._sanitizeJsonObject(value as Record<string, unknown>);
-      }
-    }
-  }
   private _onMessage(event: websocket.RawData) {
     const eventData = event.toString();
-
-    // Validate message size to prevent DoS attacks
-    if (eventData.length > 1024 * 1024) {
-      // 1MB limit
-      cdpRelayDebug('<closing ws> Message too large, closing websocket');
-      this._ws.close();
+    if (eventData.length > MAX_MESSAGE_SIZE) {
+      this._ws.close(1009, 'Message too large');
       return;
     }
 
-    const parsedJson = this._parseJsonSafely<ExtensionResponse>(eventData);
-    if (parsedJson === null) {
-      cdpRelayDebug(
-        `<closing ws> Closing websocket due to malformed JSON. eventData=${eventData.slice(
-          0,
-          200
-        )}...`
-      );
-      this._ws.close();
-      return;
-    }
+    let message: ExtensionResponse;
     try {
-      this._handleParsedMessage(parsedJson);
-    } catch (e: unknown) {
-      const errorMessage = (e as Error)?.message;
-      cdpRelayDebug(
-        `<closing ws> Closing websocket due to failed onmessage callback. eventData=${eventData} e=${errorMessage}`
-      );
-      this._ws.close();
+      message = JSON.parse(eventData) as ExtensionResponse;
+    } catch (error) {
+      cdpRelayDebug('Closing websocket due to malformed JSON:', error);
+      this._ws.close(1007, 'Malformed JSON');
+      return;
+    }
+
+    try {
+      this._handleParsedMessage(message);
+    } catch (error) {
+      cdpRelayDebug('Closing websocket after message handling failed:', error);
+      this._ws.close(1011, 'Message handling failed');
     }
   }
-  private _handleParsedMessage(object: ExtensionResponse) {
-    if (object.id && this._callbacks.has(object.id)) {
-      const callback = this._callbacks.get(object.id);
+
+  private _handleParsedMessage(message: ExtensionResponse) {
+    if (message.id !== undefined) {
+      const callback = this._callbacks.get(message.id);
       if (!callback) {
+        cdpRelayDebug('← Extension: unexpected response', message);
         return;
       }
-      this._callbacks.delete(object.id);
-      if (object.error) {
-        const error = callback.error;
-        error.message = object.error;
-        callback.reject(error);
+      this._callbacks.delete(message.id);
+      if (message.error) {
+        callback.error.message = message.error;
+        callback.reject(callback.error);
       } else {
-        callback.resolve(object.result);
+        callback.resolve(message.result);
       }
-    } else if (object.id) {
-      cdpRelayDebug('← Extension: unexpected response', object);
-    } else if (object.method) {
-      this.onmessage?.(object.method, object.params ?? {});
+      return;
+    }
+
+    if (message.method) {
+      this.onmessage?.(message.method, message.params ?? {});
     }
   }
+
   private _onClose(event: websocket.CloseEvent) {
+    if (this._closed) {
+      return;
+    }
+    this._closed = true;
     cdpRelayDebug(`<ws closed> code=${event.code} reason=${event.reason}`);
     this._dispose();
     this.onclose?.(this, event.reason);
   }
+
   private _onError(event: websocket.ErrorEvent) {
-    cdpRelayDebug(
-      `<ws error> message=${event.message} type=${event.type} target=${String(
-        event.target
-      )}`
-    );
+    cdpRelayDebug(`<ws error> message=${event.message} type=${event.type}`);
     this._dispose();
   }
+
   private _dispose() {
     for (const callback of this._callbacks.values()) {
       callback.reject(new Error('WebSocket closed'));

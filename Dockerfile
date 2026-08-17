@@ -5,7 +5,7 @@ ARG PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 # ------------------------------
 # Base stage: Contains only the minimal dependencies required for runtime
 # (node_modules and Playwright system dependencies)
-FROM oven/bun:1.2.20-slim AS base
+FROM oven/bun:1.3.5-slim AS base
 
 ARG PLAYWRIGHT_BROWSERS_PATH
 ENV PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH}
@@ -41,6 +41,7 @@ RUN --mount=type=cache,target=/root/.bun/install/cache,sharing=locked,id=bun-cac
 # Copy the rest of the app
 COPY --chmod=644 *.json *.js *.ts .
 COPY --chmod=644 src src/
+COPY --chmod=644 scripts scripts/
 
 # Build the app
 RUN bun run build
@@ -61,7 +62,8 @@ RUN npx -y playwright-core install --no-shell chromium
 FROM base
 
 ARG PLAYWRIGHT_BROWSERS_PATH
-ARG USERNAME=node
+# The official oven/bun image provides the non-root "bun" user.
+ARG USERNAME=bun
 ENV NODE_ENV=production
 
 # Set read-only permissions for node_modules to prevent unnecessary write access
@@ -73,7 +75,9 @@ USER ${USERNAME}
 
 COPY --from=browser --chown=${USERNAME}:${USERNAME} --chmod=755 ${PLAYWRIGHT_BROWSERS_PATH} ${PLAYWRIGHT_BROWSERS_PATH}
 COPY --chown=${USERNAME}:${USERNAME} --chmod=444 cli.js package.json ./
-COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=444 /app/lib /app/lib
+# COPY --chmod applies recursively, so use 0555 to keep directories traversable
+# while leaving the compiled output read-only for the non-root runtime user.
+COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=555 /app/lib /app/lib
 
 # Run in headless and only with chromium (other browsers need more dependencies not included in this image)
 ENTRYPOINT ["bun", "cli.js", "--headless", "--browser", "chromium", "--no-sandbox"]

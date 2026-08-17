@@ -1,17 +1,36 @@
 import { promises as fsPromises } from 'node:fs';
+import { validateHeaderName, validateHeaderValue } from 'node:http';
 import { platform, tmpdir } from 'node:os';
 import { join as pathJoin } from 'node:path';
+import { parse as parseDotenv } from 'dotenv';
 import type { BrowserContextOptions, LaunchOptions } from 'playwright';
 import { devices } from 'playwright';
-import type { Config, ToolCapability } from '../config.js';
+import type { Config, ToolCapability, ToolProfile } from '../config.js';
 import { sanitizeForFilePath } from './utils/guid.js';
+
+const MAX_CONFIG_FILE_SIZE = 1024 * 1024;
+const DEFAULT_ACTION_TIMEOUT = 5000;
+const DEFAULT_NAVIGATION_TIMEOUT = 60_000;
+const DEFAULT_EXPECT_TIMEOUT = 5000;
+const DEFAULT_CDP_TIMEOUT = 30_000;
+const DEFAULT_SETTLE_TIMEOUT = 500;
+const AUTOMATION_CONTROLLED_ARG =
+  '--disable-blink-features=AutomationControlled';
+
 export type CLIOptions = {
+  allowedHosts?: string[];
   allowedOrigins?: string[];
   blockedOrigins?: string[];
   blockServiceWorkers?: boolean;
   browser?: string;
   caps?: string[];
   cdpEndpoint?: string;
+  /** Commander attribute for --cdp-header. */
+  cdpHeader?: Record<string, string>;
+  /** Programmatic and environment representation of CDP headers. */
+  cdpHeaders?: Record<string, string>;
+  cdpTimeout?: number;
+  codegen?: 'typescript' | 'none';
   config?: string;
   device?: string;
   executablePath?: string;
@@ -20,19 +39,32 @@ export type CLIOptions = {
   ignoreHttpsErrors?: boolean;
   isolated?: boolean;
   imageResponses?: 'allow' | 'omit';
-  sandbox?: boolean;
   outputDir?: string;
+  outputMaxSize?: number;
   port?: number;
   proxyBypass?: string;
   proxyServer?: string;
+  sandbox?: boolean;
   saveSession?: boolean;
   saveTrace?: boolean;
+  /** Commander attribute for --secrets. */
+  secrets?: string;
+  /** Programmatic and environment path to a secrets file. */
+  secretsFile?: string;
   storageState?: string;
+  testIdAttribute?: string;
+  timeoutAction?: number;
+  timeoutExpect?: number;
+  timeoutNavigation?: number;
+  timeoutSettle?: number;
+  toolProfile?: ToolProfile;
   userAgent?: string;
   userDataDir?: string;
   viewportSize?: string;
 };
+
 const defaultConfig: FullConfig = {
+  toolProfile: 'adaptive',
   browser: {
     browserName: 'chromium',
     launchOptions: {
@@ -43,6 +75,7 @@ const defaultConfig: FullConfig = {
     contextOptions: {
       viewport: null,
     },
+    cdpTimeout: DEFAULT_CDP_TIMEOUT,
   },
   network: {
     allowedOrigins: undefined,
@@ -50,33 +83,67 @@ const defaultConfig: FullConfig = {
   },
   server: {},
   saveTrace: false,
+  outputMaxSize: 0,
+  testIdAttribute: 'data-testid',
+  timeouts: {
+    action: DEFAULT_ACTION_TIMEOUT,
+    navigation: DEFAULT_NAVIGATION_TIMEOUT,
+    expect: DEFAULT_EXPECT_TIMEOUT,
+    settle: DEFAULT_SETTLE_TIMEOUT,
+  },
+  codegen: 'typescript',
 };
+
 type BrowserUserConfig = NonNullable<Config['browser']>;
+
 export type FullConfig = Config & {
+  toolProfile: ToolProfile;
   browser: Omit<BrowserUserConfig, 'browserName'> & {
     browserName: 'chromium' | 'firefox' | 'webkit';
     launchOptions: NonNullable<BrowserUserConfig['launchOptions']>;
     contextOptions: NonNullable<BrowserUserConfig['contextOptions']>;
+    cdpTimeout: number;
   };
   network: NonNullable<Config['network']>;
   saveTrace: boolean;
   server: NonNullable<Config['server']>;
+  outputMaxSize: number;
+  testIdAttribute: string;
+  timeouts: {
+    action: number;
+    navigation: number;
+    expect: number;
+    settle: number;
+  };
+  codegen: 'typescript' | 'none';
 };
+
 export function resolveConfig(config: Config): FullConfig {
   return mergeConfig(defaultConfig, config);
 }
+
 export async function resolveCLIConfig(
-  cliOptions: CLIOptions
+  cliOptions: CLIOptions,
+  env: NodeJS.ProcessEnv = process.env
 ): Promise<FullConfig> {
-  const configInFile = await loadConfig(cliOptions.config);
-  const envOverrides = configFromEnv();
+  const envOptions = buildEnvOptions(env);
+  const configInFile = await loadConfig(cliOptions.config ?? envOptions.config);
+  const envOverrides = configFromCLIOptions(envOptions);
+  const envSecretOverrides = await loadSecretOverrides(envOptions.secretsFile);
   const cliOverrides = configFromCLIOptions(cliOptions);
+  const cliSecretOverrides = await loadSecretOverrides(
+    cliOptions.secrets ?? cliOptions.secretsFile
+  );
+
   let result = defaultConfig;
   result = mergeConfig(result, configInFile);
   result = mergeConfig(result, envOverrides);
+  result = mergeConfig(result, envSecretOverrides);
   result = mergeConfig(result, cliOverrides);
+  result = mergeConfig(result, cliSecretOverrides);
   return result;
 }
+
 type BrowserParseResult = {
   browserName: 'chromium' | 'firefox' | 'webkit' | undefined;
   channel: string | undefined;
@@ -86,20 +153,17 @@ function parseBrowserType(browser: string): BrowserParseResult {
   if (isChromiumVariant(browser)) {
     return { browserName: 'chromium', channel: browser };
   }
-
   if (browser === 'firefox') {
     return { browserName: 'firefox', channel: undefined };
   }
-
   if (browser === 'webkit') {
     return { browserName: 'webkit', channel: undefined };
   }
-
   return { browserName: undefined, channel: undefined };
 }
 
 export function isChromiumVariant(browser: string): boolean {
-  const chromiumVariants = [
+  return [
     'chrome',
     'chrome-beta',
     'chrome-canary',
@@ -109,9 +173,7 @@ export function isChromiumVariant(browser: string): boolean {
     'msedge-beta',
     'msedge-canary',
     'msedge-dev',
-  ];
-
-  return chromiumVariants.includes(browser);
+  ].includes(browser);
 }
 
 function createLaunchOptions(
@@ -123,99 +185,55 @@ function createLaunchOptions(
     executablePath: cliOptions.executablePath,
     headless: cliOptions.headless,
   };
-
-  applySandboxSettings(launchOptions, cliOptions);
-  applyProxySettings(launchOptions, cliOptions);
-
-  return launchOptions;
-}
-
-function applySandboxSettings(
-  launchOptions: LaunchOptions,
-  cliOptions: CLIOptions
-): void {
   if (cliOptions.sandbox === false) {
     launchOptions.chromiumSandbox = false;
   }
-}
-
-function applyProxySettings(
-  launchOptions: LaunchOptions,
-  cliOptions: CLIOptions
-): void {
-  if (!cliOptions.proxyServer) {
-    return;
+  if (cliOptions.proxyServer) {
+    launchOptions.proxy = {
+      server: cliOptions.proxyServer,
+      ...(cliOptions.proxyBypass && { bypass: cliOptions.proxyBypass }),
+    };
   }
-
-  launchOptions.proxy = {
-    server: cliOptions.proxyServer,
-    ...(cliOptions.proxyBypass && { bypass: cliOptions.proxyBypass }),
-  };
+  return launchOptions;
 }
 
 function createContextOptions(cliOptions: CLIOptions): BrowserContextOptions {
   const contextOptions: BrowserContextOptions = cliOptions.device
     ? devices[cliOptions.device] || {}
     : {};
-
-  applyStorageOptions(contextOptions, cliOptions);
-  applyViewportOptions(contextOptions, cliOptions);
-  applySecurityOptions(contextOptions, cliOptions);
-
-  return contextOptions;
-}
-
-function applyStorageOptions(
-  contextOptions: BrowserContextOptions,
-  cliOptions: CLIOptions
-): void {
   if (cliOptions.storageState) {
     contextOptions.storageState = cliOptions.storageState;
   }
-}
-
-function applyViewportOptions(
-  contextOptions: BrowserContextOptions,
-  cliOptions: CLIOptions
-): void {
   if (cliOptions.userAgent) {
     contextOptions.userAgent = cliOptions.userAgent;
   }
-
   if (cliOptions.viewportSize) {
     contextOptions.viewport = parseViewportSize(cliOptions.viewportSize);
   }
-}
-
-function applySecurityOptions(
-  contextOptions: BrowserContextOptions,
-  cliOptions: CLIOptions
-): void {
   if (cliOptions.ignoreHttpsErrors) {
     contextOptions.ignoreHTTPSErrors = true;
   }
-
   if (cliOptions.blockServiceWorkers) {
     contextOptions.serviceWorkers = 'block';
   }
+  return contextOptions;
 }
 
 function parseViewportSize(viewportSize: string): {
   width: number;
   height: number;
 } {
-  try {
-    const [width, height] = viewportSize.split(',').map((n) => +n);
-    if (Number.isNaN(width) || Number.isNaN(height)) {
-      throw new Error('bad values');
-    }
-    return { width, height };
-  } catch {
-    // Parse error - invalid format provided
+  const [width, height] = viewportSize.split(',').map((value) => +value);
+  if (
+    !(Number.isFinite(width) && Number.isFinite(height)) ||
+    width <= 0 ||
+    height <= 0
+  ) {
     throw new Error(
       'Invalid viewport size format: use "width,height", for example --viewport-size="800,600"'
     );
   }
+  return { width, height };
 }
 
 function validateDeviceAndCDPOptions(cliOptions: CLIOptions): void {
@@ -224,221 +242,168 @@ function validateDeviceAndCDPOptions(cliOptions: CLIOptions): void {
   }
 }
 
+function validateHeader(name: string, value: unknown): asserts value is string {
+  if (typeof value !== 'string' || !value) {
+    throw new Error(`Invalid header: ${name}`);
+  }
+  try {
+    validateHeaderName(name);
+    validateHeaderValue(name, value);
+  } catch {
+    throw new Error(`Invalid header: ${name}`);
+  }
+}
+
+function validateHeaders(
+  headers: Record<string, string> | undefined
+): Record<string, string> | undefined {
+  if (!headers || Object.keys(headers).length === 0) {
+    return;
+  }
+  for (const [name, value] of Object.entries(headers)) {
+    validateHeader(name, value);
+  }
+  return { ...headers };
+}
+
+function resolveCdpHeaders(
+  cliOptions: CLIOptions
+): Record<string, string> | undefined {
+  return validateHeaders({
+    ...cliOptions.cdpHeaders,
+    ...cliOptions.cdpHeader,
+  });
+}
+
 export function configFromCLIOptions(cliOptions: CLIOptions): Config {
-  const browserInfo = getBrowserInfo(cliOptions);
-  validateDeviceAndCDPOptions(cliOptions);
-
-  return buildFinalConfig(cliOptions, browserInfo);
-}
-
-function buildFinalConfig(
-  cliOptions: CLIOptions,
-  browserInfo: BrowserParseResult
-): Config {
-  return assembleConfigFromParts(cliOptions, browserInfo);
-}
-
-function assembleConfigFromParts(
-  cliOptions: CLIOptions,
-  browserInfo: BrowserParseResult
-): Config {
-  const configParts = createAllConfigParts(cliOptions, browserInfo);
-  return mergeAllConfigParts(configParts);
-}
-
-function createAllConfigParts(
-  cliOptions: CLIOptions,
-  browserInfo: BrowserParseResult
-) {
-  return {
-    browserConfig: createBrowserConfig(
-      cliOptions,
-      browserInfo.browserName,
-      browserInfo.channel
-    ),
-    serverConfig: createServerConfig(cliOptions),
-    networkConfig: createNetworkConfig(cliOptions),
-    miscConfig: createMiscellaneousConfig(cliOptions),
-  };
-}
-
-function mergeAllConfigParts(configParts: {
-  browserConfig: Pick<Config, 'browser'>;
-  serverConfig: Pick<Config, 'server'>;
-  networkConfig: Pick<Config, 'network'>;
-  miscConfig: Pick<
-    Config,
-    | 'capabilities'
-    | 'saveSession'
-    | 'saveTrace'
-    | 'outputDir'
-    | 'imageResponses'
-  >;
-}): Config {
-  return {
-    ...configParts.browserConfig,
-    ...configParts.serverConfig,
-    ...configParts.networkConfig,
-    ...configParts.miscConfig,
-  };
-}
-
-function getBrowserInfo(cliOptions: CLIOptions): BrowserParseResult {
-  return cliOptions.browser
+  const browserInfo = cliOptions.browser
     ? parseBrowserType(cliOptions.browser)
     : { browserName: undefined, channel: undefined };
-}
+  validateDeviceAndCDPOptions(cliOptions);
 
-function createMiscellaneousConfig(
-  cliOptions: CLIOptions
-): Pick<
-  Config,
-  'capabilities' | 'saveSession' | 'saveTrace' | 'outputDir' | 'imageResponses'
-> {
-  return {
-    capabilities: cliOptions.caps as ToolCapability[],
-    saveSession: cliOptions.saveSession,
-    saveTrace: cliOptions.saveTrace,
-    outputDir: cliOptions.outputDir,
-    imageResponses: cliOptions.imageResponses,
-  };
-}
-
-function createBrowserConfig(
-  cliOptions: CLIOptions,
-  browserName: 'chromium' | 'firefox' | 'webkit' | undefined,
-  channel?: string
-): Pick<Config, 'browser'> {
   const browser: Config['browser'] = {
     isolated: cliOptions.isolated,
     userDataDir: cliOptions.userDataDir,
-    launchOptions: createLaunchOptions(cliOptions, channel),
+    launchOptions: createLaunchOptions(cliOptions, browserInfo.channel),
     contextOptions: createContextOptions(cliOptions),
     cdpEndpoint: cliOptions.cdpEndpoint,
+    cdpHeaders: resolveCdpHeaders(cliOptions),
+    cdpTimeout: cliOptions.cdpTimeout,
   };
-
-  // Only include browserName if explicitly provided
-  if (browserName !== undefined) {
-    browser.browserName = browserName;
+  if (browserInfo.browserName !== undefined) {
+    browser.browserName = browserInfo.browserName;
   }
 
-  return { browser };
-}
-
-function createServerConfig(cliOptions: CLIOptions): Pick<Config, 'server'> {
   return {
+    toolProfile: cliOptions.toolProfile,
+    browser,
     server: {
       port: cliOptions.port,
       host: cliOptions.host,
+      allowedHosts: cliOptions.allowedHosts,
     },
-  };
-}
-
-function createNetworkConfig(cliOptions: CLIOptions): Pick<Config, 'network'> {
-  return {
     network: {
       allowedOrigins: cliOptions.allowedOrigins,
       blockedOrigins: cliOptions.blockedOrigins,
     },
+    capabilities: cliOptions.caps as ToolCapability[],
+    saveSession: cliOptions.saveSession,
+    saveTrace: cliOptions.saveTrace,
+    outputDir: cliOptions.outputDir,
+    outputMaxSize: cliOptions.outputMaxSize,
+    imageResponses: cliOptions.imageResponses,
+    testIdAttribute: cliOptions.testIdAttribute,
+    timeouts: {
+      action: cliOptions.timeoutAction,
+      navigation: cliOptions.timeoutNavigation,
+      expect: cliOptions.timeoutExpect,
+      settle: cliOptions.timeoutSettle,
+    },
+    codegen: cliOptions.codegen,
   };
 }
-function configFromEnv(): Config {
-  const options = buildEnvOptions();
-  return configFromCLIOptions(options);
+
+function buildEnvOptions(env: NodeJS.ProcessEnv): CLIOptions {
+  return {
+    allowedHosts: commaSeparatedList(env.PLAYWRIGHT_MCP_ALLOWED_HOSTS),
+    allowedOrigins: semicolonSeparatedList(env.PLAYWRIGHT_MCP_ALLOWED_ORIGINS),
+    blockedOrigins: semicolonSeparatedList(env.PLAYWRIGHT_MCP_BLOCKED_ORIGINS),
+    ignoreHttpsErrors: envToBoolean(env.PLAYWRIGHT_MCP_IGNORE_HTTPS_ERRORS),
+    host: envToString(env.PLAYWRIGHT_MCP_HOST),
+    port: envToNumber(env.PLAYWRIGHT_MCP_PORT),
+    browser: envToString(env.PLAYWRIGHT_MCP_BROWSER),
+    executablePath: envToString(env.PLAYWRIGHT_MCP_EXECUTABLE_PATH),
+    headless: envToBoolean(env.PLAYWRIGHT_MCP_HEADLESS),
+    sandbox: envToBoolean(env.PLAYWRIGHT_MCP_SANDBOX),
+    isolated: envToBoolean(env.PLAYWRIGHT_MCP_ISOLATED),
+    blockServiceWorkers: envToBoolean(env.PLAYWRIGHT_MCP_BLOCK_SERVICE_WORKERS),
+    device: envToString(env.PLAYWRIGHT_MCP_DEVICE),
+    viewportSize: envToString(env.PLAYWRIGHT_MCP_VIEWPORT_SIZE),
+    userAgent: envToString(env.PLAYWRIGHT_MCP_USER_AGENT),
+    userDataDir: envToString(env.PLAYWRIGHT_MCP_USER_DATA_DIR),
+    storageState: envToString(env.PLAYWRIGHT_MCP_STORAGE_STATE),
+    proxyServer: envToString(env.PLAYWRIGHT_MCP_PROXY_SERVER),
+    proxyBypass: envToString(env.PLAYWRIGHT_MCP_PROXY_BYPASS),
+    outputDir: envToString(env.PLAYWRIGHT_MCP_OUTPUT_DIR),
+    outputMaxSize: envToNumber(env.PLAYWRIGHT_MCP_OUTPUT_MAX_SIZE),
+    saveTrace: envToBoolean(env.PLAYWRIGHT_MCP_SAVE_TRACE),
+    imageResponses:
+      env.PLAYWRIGHT_MCP_IMAGE_RESPONSES === 'omit' ? 'omit' : undefined,
+    caps: commaSeparatedList(env.PLAYWRIGHT_MCP_CAPS),
+    cdpEndpoint: envToString(env.PLAYWRIGHT_MCP_CDP_ENDPOINT),
+    cdpHeaders: headerList(env.PLAYWRIGHT_MCP_CDP_HEADERS),
+    cdpTimeout: envToNumber(env.PLAYWRIGHT_MCP_CDP_TIMEOUT),
+    codegen: parseOptionalCodegen(env.PLAYWRIGHT_MCP_CODEGEN),
+    config: envToString(env.PLAYWRIGHT_MCP_CONFIG),
+    secretsFile: envToString(env.PLAYWRIGHT_MCP_SECRETS),
+    testIdAttribute: envToString(env.PLAYWRIGHT_MCP_TEST_ID_ATTRIBUTE),
+    timeoutAction: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_ACTION),
+    timeoutNavigation: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_NAVIGATION),
+    timeoutExpect: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_EXPECT),
+    timeoutSettle: envToNumber(env.PLAYWRIGHT_MCP_TIMEOUT_SETTLE),
+    toolProfile: env.FAST_PLAYWRIGHT_TOOL_PROFILE
+      ? parseToolProfile(env.FAST_PLAYWRIGHT_TOOL_PROFILE)
+      : undefined,
+  };
 }
 
-function buildEnvOptions(): CLIOptions {
-  const options: CLIOptions = {};
-  populateAllOptions(options);
-  return options;
-}
-
-function populateAllOptions(options: CLIOptions): void {
-  populateNetworkOptions(options);
-  populateBrowserOptions(options);
-  populateDeviceOptions(options);
-  populateProxyOptions(options);
-  populateOutputOptions(options);
-  populateMiscellaneousOptions(options);
-}
-
-function populateNetworkOptions(options: CLIOptions): void {
-  options.allowedOrigins = semicolonSeparatedList(
-    process.env.PLAYWRIGHT_MCP_ALLOWED_ORIGINS
-  );
-  options.blockedOrigins = semicolonSeparatedList(
-    process.env.PLAYWRIGHT_MCP_BLOCKED_ORIGINS
-  );
-  options.ignoreHttpsErrors = envToBoolean(
-    process.env.PLAYWRIGHT_MCP_IGNORE_HTTPS_ERRORS
-  );
-  options.host = envToString(process.env.PLAYWRIGHT_MCP_HOST);
-  options.port = envToNumber(process.env.PLAYWRIGHT_MCP_PORT);
-}
-
-function populateBrowserOptions(options: CLIOptions): void {
-  options.browser = envToString(process.env.PLAYWRIGHT_MCP_BROWSER);
-  options.executablePath = envToString(
-    process.env.PLAYWRIGHT_MCP_EXECUTABLE_PATH
-  );
-  options.headless = envToBoolean(process.env.PLAYWRIGHT_MCP_HEADLESS);
-  options.sandbox = envToBoolean(process.env.PLAYWRIGHT_MCP_SANDBOX);
-  options.isolated = envToBoolean(process.env.PLAYWRIGHT_MCP_ISOLATED);
-  options.blockServiceWorkers = envToBoolean(
-    process.env.PLAYWRIGHT_MCP_BLOCK_SERVICE_WORKERS
-  );
-}
-
-function populateDeviceOptions(options: CLIOptions): void {
-  options.device = envToString(process.env.PLAYWRIGHT_MCP_DEVICE);
-  options.viewportSize = envToString(process.env.PLAYWRIGHT_MCP_VIEWPORT_SIZE);
-  options.userAgent = envToString(process.env.PLAYWRIGHT_MCP_USER_AGENT);
-  options.userDataDir = envToString(process.env.PLAYWRIGHT_MCP_USER_DATA_DIR);
-  options.storageState = envToString(process.env.PLAYWRIGHT_MCP_STORAGE_STATE);
-}
-
-function populateProxyOptions(options: CLIOptions): void {
-  options.proxyServer = envToString(process.env.PLAYWRIGHT_MCP_PROXY_SERVER);
-  options.proxyBypass = envToString(process.env.PLAYWRIGHT_MCP_PROXY_BYPASS);
-}
-
-function populateOutputOptions(options: CLIOptions): void {
-  options.outputDir = envToString(process.env.PLAYWRIGHT_MCP_OUTPUT_DIR);
-  options.saveTrace = envToBoolean(process.env.PLAYWRIGHT_MCP_SAVE_TRACE);
-  if (process.env.PLAYWRIGHT_MCP_IMAGE_RESPONSES === 'omit') {
-    options.imageResponses = 'omit';
-  }
-}
-
-function populateMiscellaneousOptions(options: CLIOptions): void {
-  options.caps = commaSeparatedList(process.env.PLAYWRIGHT_MCP_CAPS);
-  options.cdpEndpoint = envToString(process.env.PLAYWRIGHT_MCP_CDP_ENDPOINT);
-  options.config = envToString(process.env.PLAYWRIGHT_MCP_CONFIG);
-}
 async function loadConfig(configFile: string | undefined): Promise<Config> {
   if (!configFile) {
     return {};
   }
-
   try {
     const configContent = await fsPromises.readFile(configFile, 'utf8');
     validateConfigContent(configContent);
-    const config = JSON.parse(configContent);
+    const config: unknown = JSON.parse(configContent);
     sanitizeConfigIfNeeded(config);
-    return config;
+    return config as Config;
   } catch (error) {
     throw new Error(`Failed to load config file: ${configFile}, ${error}`);
   }
 }
 
+async function loadSecretOverrides(path: string | undefined): Promise<Config> {
+  return path ? { secrets: await loadSecretsFile(path) } : {};
+}
+
+async function loadSecretsFile(path: string): Promise<Record<string, string>> {
+  const content = await fsPromises.readFile(path, 'utf8');
+  if (content.length > MAX_CONFIG_FILE_SIZE) {
+    throw new Error('Secrets file too large');
+  }
+  const secrets = parseDotenv(content);
+  for (const [name, value] of Object.entries(secrets)) {
+    if (!value) {
+      throw new Error(`Secret value must not be empty: ${name}`);
+    }
+  }
+  return secrets;
+}
+
 function validateConfigContent(configContent: string): void {
-  // Validate config file size to prevent DoS
-  if (configContent.length > 1024 * 1024) {
-    // 1MB limit
+  if (configContent.length > MAX_CONFIG_FILE_SIZE) {
     throw new Error('Configuration file too large');
   }
-
-  // Check for dangerous patterns in config content
   if (
     configContent.includes('__proto__') ||
     configContent.includes('constructor')
@@ -450,32 +415,39 @@ function validateConfigContent(configContent: string): void {
 }
 
 function sanitizeConfigIfNeeded(config: unknown): void {
-  // Sanitize config object to prevent prototype pollution
   if (config && typeof config === 'object') {
     sanitizeConfigObject(config as Record<string, unknown>);
   }
 }
 
 function sanitizeConfigObject(obj: Record<string, unknown>): void {
-  if (!obj || typeof obj !== 'object') {
-    return;
-  }
-
-  // Remove dangerous properties
-  const dangerousProps = ['__proto__', 'constructor', 'prototype'];
-  for (const prop of dangerousProps) {
-    if (prop in obj) {
+  for (const prop of ['__proto__', 'constructor', 'prototype']) {
+    if (Object.hasOwn(obj, prop)) {
       delete obj[prop];
     }
   }
-
-  // Recursively sanitize nested objects
   for (const value of Object.values(obj)) {
     if (typeof value === 'object' && value !== null) {
       sanitizeConfigObject(value as Record<string, unknown>);
     }
   }
 }
+
+// Without outputDir or a rootPath, all artifacts of a process share one
+// timestamped directory so a finite outputMaxSize bounds the default output
+// tree as a whole; a per-call timestamp would give every artifact its own
+// directory and the quota would never apply across them.
+let defaultOutputDirectoryName: string | undefined;
+
+function defaultOutputDirectory(): string {
+  defaultOutputDirectoryName ??= sanitizeForFilePath(new Date().toISOString());
+  return pathJoin(
+    tmpdir(),
+    'playwright-mcp-output',
+    defaultOutputDirectoryName
+  );
+}
+
 export async function outputFile(
   config: FullConfig,
   rootPath: string | undefined,
@@ -484,26 +456,22 @@ export async function outputFile(
   const outputDir =
     config.outputDir ??
     (rootPath ? pathJoin(rootPath, '.playwright-mcp') : undefined) ??
-    pathJoin(
-      tmpdir(),
-      'playwright-mcp-output',
-      sanitizeForFilePath(new Date().toISOString())
-    );
+    defaultOutputDirectory();
   await fsPromises.mkdir(outputDir, { recursive: true });
-  const fileName = sanitizeForFilePath(name);
-  return pathJoin(outputDir, fileName);
+  return pathJoin(outputDir, sanitizeForFilePath(name));
 }
+
 function pickDefined<T extends object>(obj: T | undefined): Partial<T> {
   return Object.fromEntries(
-    Object.entries(obj ?? {}).filter(([_, v]) => v !== undefined)
+    Object.entries(obj ?? {}).filter(([, value]) => value !== undefined)
   ) as Partial<T>;
 }
+
 function mergeConfig(base: FullConfig, overrides: Config): FullConfig {
-  const browser = createMergedBrowserConfig(base, overrides);
   return {
     ...pickDefined(base),
     ...pickDefined(overrides),
-    browser,
+    browser: createMergedBrowserConfig(base, overrides),
     network: {
       ...pickDefined(base.network),
       ...pickDefined(overrides.network),
@@ -511,6 +479,14 @@ function mergeConfig(base: FullConfig, overrides: Config): FullConfig {
     server: {
       ...pickDefined(base.server),
       ...pickDefined(overrides.server),
+    },
+    timeouts: {
+      ...pickDefined(base.timeouts),
+      ...pickDefined(overrides.timeouts),
+    },
+    secrets: {
+      ...pickDefined(base.secrets),
+      ...pickDefined(overrides.secrets),
     },
   } as FullConfig;
 }
@@ -523,50 +499,124 @@ function createMergedBrowserConfig(
     ...pickDefined(base.browser),
     ...pickDefined(overrides.browser),
     browserName:
-      overrides.browser?.browserName ?? base.browser?.browserName ?? 'chromium',
-    isolated: overrides.browser?.isolated ?? base.browser?.isolated ?? false,
+      overrides.browser?.browserName ?? base.browser.browserName ?? 'chromium',
+    isolated: overrides.browser?.isolated ?? base.browser.isolated ?? false,
     launchOptions: {
-      ...pickDefined(base.browser?.launchOptions),
+      ...pickDefined(base.browser.launchOptions),
       ...pickDefined(overrides.browser?.launchOptions),
-      ...{ assistantMode: true },
-    },
+    } as FullConfig['browser']['launchOptions'],
     contextOptions: {
-      ...pickDefined(base.browser?.contextOptions),
+      ...pickDefined(base.browser.contextOptions),
       ...pickDefined(overrides.browser?.contextOptions),
     },
+    cdpHeaders: validateHeaders({
+      ...base.browser.cdpHeaders,
+      ...overrides.browser?.cdpHeaders,
+    }),
+    cdpTimeout:
+      overrides.browser?.cdpTimeout ??
+      base.browser.cdpTimeout ??
+      DEFAULT_CDP_TIMEOUT,
   };
-
-  handleNonChromiumChannel(browser);
+  const args = (browser.launchOptions.args ?? []).filter(
+    (arg) => arg !== AUTOMATION_CONTROLLED_ARG
+  );
+  if (browser.browserName !== 'chromium') {
+    browser.launchOptions.channel = undefined;
+  } else {
+    args.push(AUTOMATION_CONTROLLED_ARG);
+  }
+  browser.launchOptions.args = args.length ? args : undefined;
   return browser;
 }
 
-function handleNonChromiumChannel(browser: FullConfig['browser']): void {
-  if (browser.browserName !== 'chromium' && browser.launchOptions) {
-    browser.launchOptions.channel = undefined;
+export function parseToolProfile(value: string): ToolProfile {
+  if (value === 'adaptive' || value === 'full' || value === 'minimal') {
+    return value;
   }
+  throw new Error(`Invalid tool profile: ${value}`);
 }
+
+export function parseCodegen(value: string): 'typescript' | 'none' {
+  if (value === 'typescript' || value === 'none') {
+    return value;
+  }
+  throw new Error(`Invalid codegen mode: ${value}`);
+}
+
+function parseOptionalCodegen(
+  value: string | undefined
+): 'typescript' | 'none' | undefined {
+  return value ? parseCodegen(value) : undefined;
+}
+
+export function positiveNumber(value: string): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(`Expected a non-negative number, received: ${value}`);
+  }
+  return parsed;
+}
+
+export function headerParser(
+  value: string,
+  previous: Record<string, string> = {}
+): Record<string, string> {
+  const separator = value.indexOf(':');
+  if (separator <= 0) {
+    throw new Error(`Invalid header: ${value}`);
+  }
+  const name = value.slice(0, separator).trim();
+  const headerValue = value.slice(separator + 1).trim();
+  if (!(name && headerValue)) {
+    throw new Error(`Invalid header: ${value}`);
+  }
+  validateHeader(name, headerValue);
+  return { ...previous, [name]: headerValue };
+}
+
+function headerList(
+  value: string | undefined
+): Record<string, string> | undefined {
+  if (!value) {
+    return;
+  }
+  return value
+    .split(';')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>(
+      (headers, entry) => headerParser(entry, headers),
+      {}
+    );
+}
+
 export function semicolonSeparatedList(
   value: string | undefined
 ): string[] | undefined {
-  if (!value) {
-    return;
-  }
-  return value.split(';').map((v) => v.trim());
+  return value
+    ? value
+        .split(';')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : undefined;
 }
+
 export function commaSeparatedList(
   value: string | undefined
 ): string[] | undefined {
-  if (!value) {
-    return;
-  }
-  return value.split(',').map((v) => v.trim());
+  return value
+    ? value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : undefined;
 }
+
 function envToNumber(value: string | undefined): number | undefined {
-  if (!value) {
-    return;
-  }
-  return +value;
+  return value ? positiveNumber(value) : undefined;
 }
+
 function envToBoolean(value: string | undefined): boolean | undefined {
   if (value === 'true' || value === '1') {
     return true;
@@ -575,6 +625,7 @@ function envToBoolean(value: string | undefined): boolean | undefined {
     return false;
   }
 }
+
 function envToString(value: string | undefined): string | undefined {
   return value ? value.trim() : undefined;
 }

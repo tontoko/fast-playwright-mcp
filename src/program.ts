@@ -1,8 +1,5 @@
 import { Option, program } from 'commander';
 
-// @ts-expect-error - playwright-core internal module without proper types
-import { startTraceViewerServer } from 'playwright-core/lib/server';
-
 import { contextFactory } from './browser-context-factory.js';
 import {
   BrowserServerBackend,
@@ -10,6 +7,10 @@ import {
 } from './browser-server-backend.js';
 import {
   commaSeparatedList,
+  headerParser,
+  parseCodegen,
+  parseToolProfile,
+  positiveNumber,
   resolveCLIConfig,
   semicolonSeparatedList,
 } from './config.js';
@@ -21,7 +22,6 @@ import {
 import { runLoopTools } from './loopTools/main.js';
 import type { ServerBackendFactory } from './mcp/server.js';
 import { start } from './mcp/transport.js';
-import { programDebug } from './utils/log.js';
 import { packageJSON } from './utils/package.js';
 import { logServerStart } from './utils/request-logger.js';
 
@@ -29,101 +29,142 @@ program
   .version(`Version ${packageJSON.version}`)
   .name(packageJSON.name)
   .option(
+    '--allowed-hosts <hosts>',
+    'comma-separated list of allowed HTTP Host header values',
+    commaSeparatedList
+  )
+  .option(
     '--allowed-origins <origins>',
     'semicolon-separated list of origins to allow the browser to request. Default is to allow all.',
     semicolonSeparatedList
   )
   .option(
     '--blocked-origins <origins>',
-    'semicolon-separated list of origins to block the browser from requesting. Blocklist is evaluated before allowlist. If used without the allowlist, requests not matching the blocklist are still allowed.',
+    'semicolon-separated list of origins to block the browser from requesting. Blocklist is evaluated before allowlist.',
     semicolonSeparatedList
   )
   .option('--block-service-workers', 'block service workers')
   .option(
     '--browser <browser>',
-    'browser or chrome channel to use, possible values: chrome, firefox, webkit, msedge.'
+    'browser or chrome channel to use: chrome, firefox, webkit, or msedge'
   )
   .option(
     '--caps <caps>',
-    'comma-separated list of additional capabilities to enable, possible values: vision, pdf.',
+    'comma-separated optional capabilities: vision, pdf, apps',
     commaSeparatedList
   )
-  .option('--cdp-endpoint <endpoint>', 'CDP endpoint to connect to.')
-  .option('--config <path>', 'path to the configuration file.')
+  .option('--cdp-endpoint <endpoint>', 'CDP endpoint to connect to')
+  .option(
+    '--cdp-header <header...>',
+    'CDP request header in Name: Value form; may be repeated',
+    headerParser
+  )
+  .option(
+    '--cdp-timeout <timeout>',
+    'CDP connection timeout in milliseconds',
+    positiveNumber
+  )
+  .option(
+    '--codegen <mode>',
+    'generated code mode: typescript or none',
+    parseCodegen
+  )
+  .option('--config <path>', 'path to the configuration file')
   .option('--device <device>', 'device to emulate, for example: "iPhone 15"')
-  .option('--executable-path <path>', 'path to the browser executable.')
+  .option('--executable-path <path>', 'path to the browser executable')
   .option('--headless', 'run browser in headless mode, headed by default')
   .option(
     '--host <host>',
-    'host to bind server to. Default is localhost. Use 0.0.0.0 to bind to all interfaces.'
+    'host to bind server to. Default is localhost. Use 0.0.0.0 to bind all interfaces.'
   )
-  .option('--ignore-https-errors', 'ignore https errors')
-  .option(
-    '--isolated',
-    'keep the browser profile in memory, do not save it to disk.'
-  )
+  .option('--ignore-https-errors', 'ignore HTTPS errors')
+  .option('--isolated', 'use an in-memory isolated browser profile')
   .option(
     '--image-responses <mode>',
-    'whether to send image responses to the client. Can be "allow" or "omit", Defaults to "allow".'
+    'whether image responses are allow or omit'
   )
   .option(
     '--no-sandbox',
-    'disable the sandbox for all process types that are normally sandboxed.'
+    'disable the Chromium sandbox for process types that normally use it'
   )
-  .option('--output-dir <path>', 'path to the directory for output files.')
-  .option('--port <port>', 'port to listen on for SSE transport.')
+  .option('--output-dir <path>', 'directory for output files')
+  .option(
+    '--output-max-size <bytes>',
+    'maximum output directory size in bytes; zero disables eviction',
+    positiveNumber
+  )
+  .option(
+    '--port <port>',
+    'port to listen on for HTTP transport',
+    positiveNumber
+  )
   .option(
     '--proxy-bypass <bypass>',
-    'comma-separated domains to bypass proxy, for example ".com,chromium.org,.domain.com"'
+    'comma-separated domains to bypass the proxy'
   )
-  .option(
-    '--proxy-server <proxy>',
-    'specify proxy server, for example "http://myproxy:3128" or "socks5://myproxy:8080"'
-  )
-  .option(
-    '--save-session',
-    'Whether to save the Playwright MCP session into the output directory.'
-  )
-  .option(
-    '--save-trace',
-    'Whether to save the Playwright Trace of the session into the output directory.'
-  )
+  .option('--proxy-server <proxy>', 'proxy server URL')
+  .option('--save-session', 'save the Playwright MCP session')
+  .option('--save-trace', 'save the Playwright trace')
+  .option('--secrets <path>', 'dotenv file containing values to redact')
   .option(
     '--storage-state <path>',
-    'path to the storage state file for isolated sessions.'
+    'path to storage state for isolated sessions'
   )
-  .option('--user-agent <ua string>', 'specify user agent string')
   .option(
-    '--user-data-dir <path>',
-    'path to the user data directory. If not specified, a temporary directory will be created.'
+    '--test-id-attribute <attribute>',
+    'attribute used by test-id selectors'
   )
+  .option(
+    '--timeout-action <timeout>',
+    'default action timeout in milliseconds',
+    positiveNumber
+  )
+  .option(
+    '--timeout-expect <timeout>',
+    'default expectation timeout in milliseconds',
+    positiveNumber
+  )
+  .option(
+    '--timeout-navigation <timeout>',
+    'default navigation timeout in milliseconds',
+    positiveNumber
+  )
+  .option(
+    '--timeout-settle <timeout>',
+    'delay after browser actions before capturing the response, in milliseconds',
+    positiveNumber
+  )
+  .option(
+    '--tool-profile <profile>',
+    'tool catalog profile: adaptive, full, or minimal',
+    parseToolProfile
+  )
+  .option('--user-agent <ua string>', 'browser user-agent string')
+  .option('--user-data-dir <path>', 'browser user data directory')
   .option(
     '--viewport-size <size>',
-    'specify browser viewport size in pixels, for example "1280, 720"'
+    'viewport size as width,height, for example 1280,720'
   )
   .addOption(
     new Option(
       '--extension',
-      'Connect to a running browser instance (Edge/Chrome only). Requires the "Playwright MCP Bridge" browser extension to be installed.'
+      'Connect to a running Edge/Chrome browser using the Playwright MCP Bridge extension.'
     ).hideHelp()
   )
   .addOption(
     new Option(
       '--connect-tool',
-      'Allow to switch between different browser connection methods.'
+      'Allow switching between browser connection methods.'
     ).hideHelp()
   )
   .addOption(new Option('--loop-tools', 'Run loop tools').hideHelp())
   .addOption(
-    new Option(
-      '--vision',
-      'Legacy option, use --caps=vision instead'
-    ).hideHelp()
+    new Option('--vision', 'Legacy option, use --caps=vision').hideHelp()
   )
   .action(async (options) => {
     setupExitWatchdog();
     if (options.vision) {
-      options.caps = 'vision';
+      options.caps = ['vision'];
     }
     try {
       const config = await resolveCLIConfig(options);
@@ -135,11 +176,10 @@ program
         await runLoopTools(config);
         return;
       }
+
       const browserContextFactory = contextFactory(config);
       let serverBackendFactory: ServerBackendFactory;
-
       if (options.connectTool) {
-        // Use our FactoryList approach for multi-factory support
         const factories: FactoryList = [
           browserContextFactory,
           createExtensionContextFactory(config),
@@ -147,7 +187,6 @@ program
         serverBackendFactory = () =>
           new BrowserServerBackend(config, factories);
       } else {
-        // Single factory for regular usage
         const factories: FactoryList = [browserContextFactory];
         serverBackendFactory = () =>
           new BrowserServerBackend(config, factories);
@@ -155,24 +194,14 @@ program
 
       logServerStart();
       await start(serverBackendFactory, config.server);
-      if (config.saveTrace) {
-        const server = await startTraceViewerServer();
-        const urlPrefix = server.urlPrefix('human-readable');
-        const url =
-          urlPrefix +
-          '/trace/index.html?trace=' +
-          config.browser.launchOptions.tracesDir +
-          '/trace.json';
-        programDebug(`Trace viewer available at: ${url}`);
-      }
     } catch (error) {
-      // CLI action failed - output error to stderr and exit with error code
       process.stderr.write(
         `${error instanceof Error ? error.message : String(error)}\n`
       );
       process.exit(1);
     }
   });
+
 function setupExitWatchdog() {
   let isExiting = false;
   const handleExit = async () => {
@@ -188,7 +217,7 @@ function setupExitWatchdog() {
   process.on('SIGINT', handleExit);
   process.on('SIGTERM', handleExit);
 }
+
 program.parseAsync(process.argv).catch(() => {
-  // Program execution failed - exit with error code
   process.exit(1);
 });

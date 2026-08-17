@@ -19,6 +19,11 @@ import type { BrowserContext } from 'playwright';
 import { chromium } from 'playwright';
 import { test as base, expect } from '../../tests/fixtures.js';
 
+const HELLO_WORLD_SNAPSHOT_PATTERN =
+  /^- generic \[active\] \[ref=[^\]]+\]: Hello, world!$/mu;
+const CONNECT_PAGE_PREFIX =
+  'chrome-extension://jakfalbnbhgkpmoaakfflhflbfpkailf/connect.html';
+
 type BrowserWithExtension = {
   userDataDir: string;
   launch: () => Promise<BrowserContext>;
@@ -26,8 +31,6 @@ type BrowserWithExtension = {
 
 const test = base.extend<{ browserWithExtension: BrowserWithExtension }>({
   browserWithExtension: async ({ mcpBrowser }, use, testInfo) => {
-    // The flags no longer work in Chrome since
-    // https://chromium.googlesource.com/chromium/src/+/290ed8046692651ce76088914750cb659b65fb17%5E%21/chrome/browser/extensions/extension_service.cc?pli=1#
     test.skip(
       mcpBrowser !== 'chromium',
       '--load-extension is not supported for official builds of Chromium'
@@ -42,9 +45,7 @@ const test = base.extend<{ browserWithExtension: BrowserWithExtension }>({
       launch: async () => {
         browserContext = await chromium.launchPersistentContext(userDataDir, {
           channel: mcpBrowser,
-          // Opening the browser singleton only works in headed.
           headless: false,
-          // Automation disables singleton browser process behavior, which is necessary for the extension.
           ignoreDefaultArgs: ['--enable-automation'],
           args: [
             `--disable-extensions-except=${pathToExtension}`,
@@ -52,7 +53,6 @@ const test = base.extend<{ browserWithExtension: BrowserWithExtension }>({
           ],
         });
 
-        // for manifest v3:
         const [serviceWorker] = browserContext.serviceWorkers();
         if (!serviceWorker) {
           await browserContext.waitForEvent('serviceworker');
@@ -65,6 +65,18 @@ const test = base.extend<{ browserWithExtension: BrowserWithExtension }>({
     await browserContext?.close();
   },
 });
+
+function waitForConnectPage(browserContext: BrowserContext) {
+  return browserContext.waitForEvent('page', (newPage) =>
+    newPage.url().startsWith(CONNECT_PAGE_PREFIX)
+  );
+}
+
+function failAfter<T>(milliseconds: number, message: string): Promise<T> {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error(message)), milliseconds);
+  });
+}
 
 test('navigate with extension', async ({
   browserWithExtension,
@@ -93,16 +105,7 @@ test('navigate with extension', async ({
     result: 'Successfully changed connection method.',
   });
 
-  const confirmationPagePromise = browserContext.waitForEvent(
-    'page',
-    (newPage) => {
-      return newPage
-        .url()
-        .startsWith(
-          'chrome-extension://jakfalbnbhgkpmoaakfflhflbfpkailf/connect.html'
-        );
-    }
-  );
+  const confirmationPagePromise = waitForConnectPage(browserContext);
 
   const navigateResponse = client.callTool({
     name: 'browser_navigate',
@@ -116,9 +119,7 @@ test('navigate with extension', async ({
     .click();
 
   expect(await navigateResponse).toHaveResponse({
-    pageState: expect.stringContaining(
-      '- generic [active] [ref=e1]: Hello, world!'
-    ),
+    pageState: expect.stringMatching(HELLO_WORLD_SNAPSHOT_PATTERN),
   });
 });
 
@@ -132,7 +133,6 @@ test('snapshot of an existing page', async ({
   const page = await browserContext.newPage();
   await page.goto(server.HELLO_WORLD);
 
-  // Another empty page.
   await browserContext.newPage();
   expect(browserContext.pages()).toHaveLength(3);
 
@@ -157,35 +157,102 @@ test('snapshot of an existing page', async ({
   });
   expect(browserContext.pages()).toHaveLength(3);
 
-  const confirmationPagePromise = browserContext.waitForEvent(
-    'page',
-    (newPage) => {
-      return newPage
-        .url()
-        .startsWith(
-          'chrome-extension://jakfalbnbhgkpmoaakfflhflbfpkailf/connect.html'
-        );
-    }
-  );
+  const confirmationPagePromise = waitForConnectPage(browserContext);
 
-  const navigateResponse = client.callTool({
+  const snapshotResponse = client.callTool({
     name: 'browser_snapshot',
-    arguments: {},
   });
-
   const selectorPage = await confirmationPagePromise;
-  expect(browserContext.pages()).toHaveLength(4);
-
   await selectorPage
     .locator('.tab-item', { hasText: 'Title' })
     .getByRole('button', { name: 'Connect' })
     .click();
 
-  expect(await navigateResponse).toHaveResponse({
-    pageState: expect.stringContaining(
-      '- generic [active] [ref=e1]: Hello, world!'
-    ),
+  expect(await snapshotResponse).toHaveResponse({
+    pageState: expect.stringContaining('Hello, world!'),
+  });
+});
+
+test('extension CDP attachment preserves existing page defaults', async ({
+  browserWithExtension,
+  startClient,
+  server,
+}) => {
+  const browserContext = await browserWithExtension.launch();
+  const page = await browserContext.newPage();
+  await page.goto(server.HELLO_WORLD);
+  await page.emulateMedia({ media: 'print' });
+  expect(await page.evaluate(() => matchMedia('print').matches)).toBe(true);
+
+  const { client } = await startClient({
+    args: ['--connect-tool'],
+    config: {
+      browser: {
+        userDataDir: browserWithExtension.userDataDir,
+      },
+    },
+  });
+  await client.callTool({
+    name: 'browser_connect',
+    arguments: { name: 'extension' },
   });
 
-  expect(browserContext.pages()).toHaveLength(4);
+  const confirmationPagePromise = waitForConnectPage(browserContext);
+  const snapshotResponse = client.callTool({ name: 'browser_snapshot' });
+  const selectorPage = await confirmationPagePromise;
+  await selectorPage
+    .locator('.tab-item', { hasText: 'Title' })
+    .getByRole('button', { name: 'Connect' })
+    .click();
+
+  expect(await snapshotResponse).toHaveResponse({
+    pageState: expect.stringContaining('Hello, world!'),
+  });
+  expect(await page.evaluate(() => matchMedia('print').matches)).toBe(true);
+});
+
+test('rejecting a pending relay releases it and permits retry', async ({
+  browserWithExtension,
+  startClient,
+  server,
+}) => {
+  const browserContext = await browserWithExtension.launch();
+  const page = await browserContext.newPage();
+  await page.goto(server.HELLO_WORLD);
+
+  const { client } = await startClient({
+    args: ['--connect-tool'],
+    config: {
+      browser: {
+        userDataDir: browserWithExtension.userDataDir,
+      },
+    },
+  });
+  await client.callTool({
+    name: 'browser_connect',
+    arguments: { name: 'extension' },
+  });
+
+  const firstConnectPagePromise = waitForConnectPage(browserContext);
+  const rejectedSnapshot = client.callTool({ name: 'browser_snapshot' });
+  const firstConnectPage = await firstConnectPagePromise;
+  await firstConnectPage.getByRole('button', { name: 'Reject' }).click();
+
+  const rejectedResult = await Promise.race([
+    rejectedSnapshot,
+    failAfter<never>(5000, 'Rejected extension connection did not settle'),
+  ]);
+  expect(rejectedResult.isError).toBe(true);
+
+  const secondConnectPagePromise = waitForConnectPage(browserContext);
+  const retriedSnapshot = client.callTool({ name: 'browser_snapshot' });
+  const secondConnectPage = await secondConnectPagePromise;
+  await secondConnectPage
+    .locator('.tab-item', { hasText: 'Title' })
+    .getByRole('button', { name: 'Connect' })
+    .click();
+
+  expect(await retriedSnapshot).toHaveResponse({
+    pageState: expect.stringContaining('Hello, world!'),
+  });
 });

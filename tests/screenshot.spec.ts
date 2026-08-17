@@ -318,3 +318,26 @@ test('browser_take_screenshot (viewport without snapshot)', async ({
     attachments: [expectImageAttachment()],
   });
 });
+
+test('successive artifacts work without an outputDir or client root', async ({
+  startClient,
+  server,
+}) => {
+  // With no outputDir and no client roots, outputFile() derives a fresh
+  // timestamped directory per artifact; every artifact must still finalize
+  // instead of only the first one resolving the context's manager.
+  const { client } = await startClient();
+  expect(await navigateToUrl(client, server.HELLO_WORLD)).toHaveResponse({
+    code: expect.stringContaining(`page.goto('http://localhost`),
+  });
+  for (const filename of ['first.jpeg', 'second.jpeg']) {
+    // biome-ignore lint/nursery/noAwaitInLoop: sequential calls force distinct timestamped output directories.
+    const result = await callTool(client, 'browser_take_screenshot', {
+      type: 'jpeg',
+      filename,
+    });
+    expect(result).toHaveResponse({
+      result: expect.stringContaining(filename),
+    });
+  }
+});

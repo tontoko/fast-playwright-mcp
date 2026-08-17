@@ -7,15 +7,37 @@ import { startHttpServer } from '../http-server.js';
 import { extensionContextFactoryDebug } from '../utils/log.js';
 import { CDPRelayServer } from './cdp-relay.js';
 
+type ExtensionConnectOptions = {
+  noDefaults: boolean;
+  timeout: number;
+};
+
+type ExtensionChromium = {
+  connectOverCDP(
+    endpoint: string,
+    options: ExtensionConnectOptions
+  ): Promise<Browser>;
+};
+
 export class ExtensionContextFactory implements BrowserContextFactory {
   name = 'extension';
   description = 'Connect to a browser using the Playwright MCP extension';
   private readonly _browserChannel: string;
+  private readonly _userDataDir: string | undefined;
+  private readonly _executablePath: string | undefined;
   private _relayPromise: Promise<CDPRelayServer> | undefined;
   private _browserPromise: Promise<Browser> | undefined;
-  constructor(browserChannel: string, _userDataDir?: string) {
+
+  constructor(
+    browserChannel: string,
+    userDataDir?: string,
+    executablePath?: string
+  ) {
     this._browserChannel = browserChannel;
+    this._userDataDir = userDataDir;
+    this._executablePath = executablePath;
   }
+
   async createContext(
     clientInfo: ClientInfo,
     abortSignal: AbortSignal
@@ -23,9 +45,17 @@ export class ExtensionContextFactory implements BrowserContextFactory {
     browserContext: BrowserContext;
     close: () => Promise<void>;
   }> {
-    // First call will establish the connection to the extension.
     this._browserPromise ??= this._obtainBrowser(clientInfo, abortSignal);
-    const browser = await this._browserPromise;
+    const browserPromise = this._browserPromise;
+    let browser: Browser;
+    try {
+      browser = await browserPromise;
+    } catch (error) {
+      if (this._browserPromise === browserPromise) {
+        this._browserPromise = undefined;
+      }
+      throw error;
+    }
     return {
       browserContext: browser.contexts()[0],
       close: async () => {
@@ -35,31 +65,65 @@ export class ExtensionContextFactory implements BrowserContextFactory {
       },
     };
   }
+
   private async _obtainBrowser(
     clientInfo: ClientInfo,
     abortSignal: AbortSignal
   ): Promise<Browser> {
     this._relayPromise ??= this._startRelay(abortSignal);
-    const relay = await this._relayPromise;
+    const relayPromise = this._relayPromise;
+    let relay: CDPRelayServer;
+    try {
+      relay = await relayPromise;
+    } catch (error) {
+      if (this._relayPromise === relayPromise) {
+        this._relayPromise = undefined;
+      }
+      throw error;
+    }
     abortSignal.throwIfAborted();
     await relay.ensureExtensionConnectionForMCPContext(clientInfo, abortSignal);
-    const browser = await chromium.connectOverCDP(relay.cdpEndpoint());
+    const extensionChromium = chromium as unknown as ExtensionChromium;
+    const browser = await extensionChromium.connectOverCDP(
+      relay.cdpEndpoint(),
+      { noDefaults: true, timeout: 0 }
+    );
     browser.on('disconnected', () => {
       this._browserPromise = undefined;
+      if (this._relayPromise === relayPromise) {
+        this._relayPromise = undefined;
+      }
+      relay.stop();
       extensionContextFactoryDebug('Browser disconnected');
     });
     return browser;
   }
+
   private async _startRelay(abortSignal: AbortSignal) {
-    const httpServer = await startHttpServer({});
-    const cdpRelayServer = new CDPRelayServer(httpServer, this._browserChannel);
+    const httpServer = await startHttpServer({ host: '127.0.0.1' });
+    extensionContextFactoryDebug(
+      'Starting CDP relay',
+      JSON.stringify({
+        browserChannel: this._browserChannel,
+        executablePath: this._executablePath,
+        userDataDir: this._userDataDir,
+      })
+    );
+    const cdpRelayServer = new CDPRelayServer(
+      httpServer,
+      this._browserChannel,
+      this._userDataDir,
+      this._executablePath
+    );
     extensionContextFactoryDebug(
       `CDP relay server started, extension endpoint: ${cdpRelayServer.extensionEndpoint()}.`
     );
     if (abortSignal.aborted) {
       cdpRelayServer.stop();
     } else {
-      abortSignal.addEventListener('abort', () => cdpRelayServer.stop());
+      abortSignal.addEventListener('abort', () => cdpRelayServer.stop(), {
+        once: true,
+      });
     }
     return cdpRelayServer;
   }

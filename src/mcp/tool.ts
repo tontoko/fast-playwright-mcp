@@ -17,27 +17,124 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import type { ToolSchema } from './types.js';
 
-export type ToolSchema<Input extends z.Schema> = {
-  name: string;
-  title: string;
-  description: string;
-  inputSchema: Input;
-  type: 'readOnly' | 'destructive';
-};
+export type { ToolEffect, ToolSchema } from './types.js';
+
+const OMITTED_SCHEMA_KEYS = new Set(['description', '$schema']);
+const SCHEMA_MAP_KEYS = new Set([
+  '$defs',
+  'definitions',
+  'dependentSchemas',
+  'patternProperties',
+  'properties',
+]);
+const SCHEMA_ARRAY_KEYS = new Set(['allOf', 'anyOf', 'oneOf', 'prefixItems']);
+const SCHEMA_VALUE_KEYS = new Set([
+  'additionalItems',
+  'additionalProperties',
+  'contains',
+  'contentSchema',
+  'else',
+  'if',
+  'items',
+  'not',
+  'propertyNames',
+  'then',
+  'unevaluatedItems',
+  'unevaluatedProperties',
+]);
+const mcpToolCache = new WeakMap<object, Tool>();
+
+function compactSchemaMap(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, schema]) => [
+      key,
+      compactJsonSchema(schema),
+    ])
+  );
+}
+
+function compactDependencies(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, dependency]) => [
+      key,
+      Array.isArray(dependency) ? dependency : compactJsonSchema(dependency),
+    ])
+  );
+}
+
+function compactSchemaValue(value: unknown): unknown {
+  return Array.isArray(value)
+    ? value.map(compactJsonSchema)
+    : compactJsonSchema(value);
+}
+
+export function compactJsonSchema(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(compactJsonSchema);
+  }
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  const compacted: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (OMITTED_SCHEMA_KEYS.has(key) && typeof child === 'string') {
+      continue;
+    }
+    if (SCHEMA_MAP_KEYS.has(key)) {
+      compacted[key] = compactSchemaMap(child);
+    } else if (SCHEMA_ARRAY_KEYS.has(key) || SCHEMA_VALUE_KEYS.has(key)) {
+      compacted[key] = compactSchemaValue(child);
+    } else if (key === 'dependencies') {
+      compacted[key] = compactDependencies(child);
+    } else {
+      compacted[key] = child;
+    }
+  }
+  return compacted;
+}
 
 export function toMcpTool<T extends z.Schema>(tool: ToolSchema<T>): Tool {
-  return {
+  const cached = mcpToolCache.get(tool);
+  if (cached) {
+    return cached;
+  }
+
+  const jsonSchema = zodToJsonSchema(tool.inputSchema, {
+    strictUnions: true,
+  });
+  const compactInputSchema = compactJsonSchema(jsonSchema) as Record<
+    string,
+    unknown
+  >;
+  // The MCP protocol requires tool input schemas to declare an object root.
+  // Zod unions of object schemas serialize as a root `anyOf` without `type`,
+  // even though every accepted value is still an object. Preserve the union
+  // while making that contract explicit for strict MCP clients.
+  const inputSchema = Object.freeze({
+    ...compactInputSchema,
+    type: 'object' as const,
+  });
+  const result = Object.freeze({
     name: tool.name,
     description: tool.description,
-    inputSchema: zodToJsonSchema(tool.inputSchema, {
-      strictUnions: true,
-    }) as Tool['inputSchema'],
+    inputSchema: inputSchema as Tool['inputSchema'],
+    ...(tool._meta ? { _meta: tool._meta } : {}),
     annotations: {
       title: tool.title,
       readOnlyHint: tool.type === 'readOnly',
       destructiveHint: tool.type === 'destructive',
       openWorldHint: true,
     },
-  };
+  }) as Tool;
+  mcpToolCache.set(tool, result);
+  return result;
 }

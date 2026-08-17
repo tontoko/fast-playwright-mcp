@@ -2,135 +2,266 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
+  quality:
+    name: Quality, contracts, and package smoke
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v2
-      with:
-        bun-version: 1.3.5
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - name: Install dependencies
-      run: bun install
-    - name: Run ESLint
-      run: bun run lint
-    - name: Ensure no changes
-      run: git diff --exit-code
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify source encoding
+        run: bun run check:encoding
+      - name: Verify dashboard generation is deterministic
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp src/apps/generated/dashboard.ts /tmp/dashboard-before.ts
+          bun run build:dashboard
+          cmp /tmp/dashboard-before.ts src/apps/generated/dashboard.ts
+          git diff --exit-code -- src/apps/generated/dashboard.ts
+      - name: Typecheck
+        run: bun run typecheck
+      - name: Build package
+        run: bun run build:publish
+      - name: Lint
+        shell: bash
+        run: |
+          set -o pipefail
+          bun run lint 2>&1 | tee quality-lint.log
+      - name: Check MCP tool context budget
+        run: bun run benchmark:tools -- --check
+      - name: Verify upstream report determinism
+        shell: bash
+        run: |
+          set -euo pipefail
+          bun run upstream:check:fixture > /tmp/upstream-a.md
+          bun run upstream:check:fixture > /tmp/upstream-b.md
+          diff -u /tmp/upstream-a.md /tmp/upstream-b.md
+      - name: Install Chromium for contract tests
+        run: bunx playwright install --with-deps chromium
+      - name: Run focused protocol, security, and dashboard tests
+        shell: bash
+        run: |
+          set -o pipefail
+          bunx playwright test \
+            tests/adaptive-config.spec.ts \
+            tests/mcp-tool-schema.spec.ts \
+            tests/mcp-server-initialize.spec.ts \
+            tests/tool-registry.spec.ts \
+            tests/tool-visibility.spec.ts \
+            tests/tool-search.spec.ts \
+            tests/tool-gateways.spec.ts \
+            tests/tool-context-budget.spec.ts \
+            tests/browser-find.spec.ts \
+            tests/http-allowed-hosts.spec.ts \
+            tests/network-origin-filter.spec.ts \
+            tests/output-manager.spec.ts \
+            tests/partial-snapshot-css.spec.ts \
+            tests/secret-redaction.spec.ts \
+            tests/session-log-redaction.spec.ts \
+            tests/mcp-resources.spec.ts \
+            tests/dashboard-build.spec.ts \
+            tests/dashboard-render.spec.ts \
+            tests/dashboard-e2e.spec.ts \
+            tests/readme-contract.spec.ts \
+            tests/upstream-check.spec.ts \
+            tests/upstream-config.spec.ts \
+            tests/upstream-runtime.spec.ts \
+            tests/review-threads.spec.ts \
+            --project=chromium 2>&1 | tee focused-tests.log
+      - name: Test packed npm artifact
+        shell: bash
+        run: |
+          set -o pipefail
+          bun run test:package 2>&1 | tee package-smoke.log
+      - name: Ensure generated and formatted files are committed
+        run: git diff --exit-code
+      - name: Upload quality failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
+        with:
+          name: quality-failure-diagnostics
+          path: |
+            quality-lint.log
+            focused-tests.log
+            package-smoke.log
+            test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 7
 
-  ctest:
+  browser-tests:
+    name: Browser tests (${{ matrix.project }})
     runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chrome, chromium, msedge, firefox, webkit]
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v2
-      with:
-        bun-version: 1.3.5
-    - name: Use Node.js 18
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-    - name: Install dependencies
-      run: bun install
-    - name: Install Playwright browsers
-      run: bunx playwright install --with-deps
-    - name: Build
-      run: bun run build:publish
-    - name: Run ctest
-      run: bun run ctest
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Install test browsers and system dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ matrix.project }}" == "chromium" ]]; then
+            bunx playwright install --with-deps chromium
+          else
+            bunx playwright install --with-deps chromium "${{ matrix.project }}"
+          fi
+      - name: Build package
+        run: bun run build:publish
+      - name: Run ${{ matrix.project }} tests
+        shell: bash
+        run: |
+          set -o pipefail
+          bunx playwright test --project=${{ matrix.project }} 2>&1 | tee browser-${{ matrix.project }}.log
+      - name: Upload ${{ matrix.project }} failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
+        with:
+          name: browser-${{ matrix.project }}-failure-diagnostics
+          path: |
+            browser-${{ matrix.project }}.log
+            test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 7
 
-  # test:
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os: [ubuntu-latest, macos-latest, windows-latest]
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Setup Bun
-  #     uses: oven-sh/setup-bun@v2
-  #     with:
-  #       bun-version: latest
-  #   - name: Use Node.js 18
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       # https://github.com/microsoft/playwright-mcp/issues/344
-  #       node-version: '18.19'
-  #   - name: Install dependencies
-  #     run: bun install
-  #   - name: Playwright install
-  #     run: bunx playwright install --with-deps
-  #   - name: Install MS Edge
-  #     # MS Edge is not preinstalled on macOS runners.
-  #     if: ${{ matrix.os == 'macos-latest' }}
-  #     run: bunx playwright install msedge
-  #   - name: Run tests
-  #     run: bun run test
+  extension:
+    name: Browser extension build and E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Use Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+      - name: Install package dependencies
+        run: bun install --frozen-lockfile
+      - name: Build package
+        run: bun run build:publish
+      - name: Install extension dependencies
+        run: npm ci --prefix extension
+      - name: Build extension
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build --prefix extension 2>&1 | tee extension-build.log
+      - name: Install Chromium and system dependencies
+        run: bunx playwright install --with-deps chromium
+      - name: Run extension E2E tests
+        env:
+          DEBUG: 'pw:mcp:*'
+          PWMCP_DEBUG: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          xvfb-run --auto-servernum bunx playwright test --config=extension/playwright.config.ts 2>&1 | tee extension-e2e.log
+      - name: Upload extension failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
+        with:
+          name: extension-failure-diagnostics
+          path: |
+            extension-build.log
+            extension-e2e.log
+            test-results/**/error-context.md
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Upload extension artifact
+        if: success()
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
+        with:
+          name: playwright-mcp-extension
+          path: extension/dist
+          if-no-files-found: error
+          retention-days: 7
 
-  # test_docker:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Setup Bun
-  #     uses: oven-sh/setup-bun@v2
-  #     with:
-  #       bun-version: latest
-  #   - name: Use Node.js 18
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: '18'
-  #   - name: Install dependencies
-  #     run: bun install
-  #   - name: Playwright install
-  #     run: bunx playwright install --with-deps chromium
-  #   - name: Set up Docker Buildx
-  #     uses: docker/setup-buildx-action@v3
-  #   - name: Build and push
-  #     uses: docker/build-push-action@v6
-  #     with:
-  #       tags: playwright-mcp-dev:latest
-  #       cache-from: type=gha
-  #       cache-to: type=gha,mode=max
-  #       load: true
-  #   - name: Run tests
-  #     shell: bash
-  #     run: |
-  #       # Used for the Docker tests to share the test-results folder with the container.
-  #       umask 0000
-  #       bun run test -- --project=chromium-docker
-  #     env:
-  #       MCP_IN_DOCKER: 1
+  docker:
+    name: Docker build and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+      - name: Build image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: .
+          tags: fast-playwright-mcp-ci:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+      - name: Run CLI smoke test
+        shell: bash
+        run: |
+          set -o pipefail
+          docker run --rm fast-playwright-mcp-ci:latest --version 2>&1 | tee docker-smoke.log
+      - name: Upload Docker smoke-test failure log
+        if: failure()
+        uses: actions/upload-artifact@615b319bd27bb32c3d64dca6b6ed6974d5fbe653 # v6
+        with:
+          name: docker-smoke-failure-log
+          path: docker-smoke.log
+          if-no-files-found: error
+          retention-days: 7
 
-  # build_extension:
-  #   strategy:
-  #     fail-fast: false
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./extension
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Use Node.js 18
-  #     uses: actions/setup-node@v4
-  #     with:
-  #       node-version: '18'
-  #       cache: 'npm'
-  #       cache-dependency-path: extension/package-lock.json
-  #   - name: Install dependencies
-  #     run: npm ci
-  #   - name: Build extension
-  #     run: npm run build
-  #   - name: Upload artifact
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: extension
-  #       path: ./extension/dist
-  #       retention-days: 7
+  review-threads:
+    name: Review threads
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.5
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Check review threads
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          bun run check:review-threads --
+          --repository "${{ github.repository }}"
+          --pr "${{ github.event.pull_request.number }}"

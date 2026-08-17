@@ -6,8 +6,7 @@ import { TIMEOUTS } from './config/constants.js';
 import type { Context } from './context.js';
 import type { ExpectationOptions } from './schemas/expectation.js';
 import { mergeExpectations } from './schemas/expectation.js';
-import type { Tab, TabSnapshot } from './tab.js';
-import { renderModalStates } from './tab.js';
+import { renderModalStates, type Tab, type TabSnapshot } from './tab.js';
 import type { DiffResult } from './types/diff.js';
 import { filterConsoleMessages } from './utils/console-filter.js';
 import { processImage } from './utils/image-processor.js';
@@ -176,7 +175,10 @@ export class Response {
         });
       }
     }
-    return { content, isError: this._isError };
+    const result = { content, isError: this._isError };
+    return typeof this._context.redactToolResponse === 'function'
+      ? this._context.redactToolResponse(result)
+      : result;
   }
   private renderFilteredTabSnapshot(tabSnapshot: TabSnapshot): string {
     const sections = [
@@ -285,7 +287,11 @@ export class Response {
   }
 
   private _addCodeSectionToResponse(response: string[]): void {
-    if (this._code.length && this._expectation.includeCode) {
+    if (
+      this._context.config.codegen !== 'none' &&
+      this._code.length &&
+      this._expectation.includeCode
+    ) {
       response.push(
         `### Ran Playwright code\n\`\`\`js\n${this._code.join('\n')}\n\`\`\``,
         ''
@@ -293,7 +299,10 @@ export class Response {
     }
   }
 
-  private _getInclusionFlags() {
+  private _getInclusionFlags(): {
+    shouldIncludeTabs: boolean;
+    shouldIncludeSnapshot: boolean;
+  } {
     return {
       shouldIncludeTabs: this._expectation.includeTabs || this._includeTabs,
       shouldIncludeSnapshot:
@@ -305,47 +314,49 @@ export class Response {
     response: string[],
     shouldIncludeSnapshot: boolean
   ): void {
-    if (!(shouldIncludeSnapshot && this._tabSnapshot)) {
+    if (!this._tabSnapshot) {
       return;
     }
-
-    if (this._tabSnapshot.modalStates.length) {
+    if (this._tabSnapshot.modalStates.length > 0) {
       response.push(
         ...renderModalStates(this._context, this._tabSnapshot.modalStates),
         ''
       );
-    } else {
-      response.push(this.renderFilteredTabSnapshot(this._tabSnapshot), '');
+      return;
+    }
+    const filteredSnapshot = this.renderFilteredTabSnapshot(this._tabSnapshot);
+    if (
+      shouldIncludeSnapshot ||
+      filteredSnapshot !== this._tabSnapshot.ariaSnapshot
+    ) {
+      response.push(filteredSnapshot, '');
     }
   }
-  /**
-   * Build content string for diff detection
-   * Includes all relevant response information to detect meaningful changes
-   */
+
   private buildContentForDiff(): string {
-    const sections = [
+    const sections: (string | null)[] = [
       this.buildResultDiffSection(),
       this.buildCodeDiffSection(),
-      this.buildSnapshotDiffSection(),
+      this.buildPageStateDiffSection(),
       this.buildConsoleMessagesDiffSection(),
-    ].filter(Boolean);
+    ];
 
-    return sections.join('\n');
+    return sections.filter(Boolean).join('\n\n');
   }
 
   private buildResultDiffSection(): string | null {
     return this._result.length
-      ? ['### Result', this._result.join('\n')].join('\n')
+      ? `### Result\n${this._result.join('\n')}`
       : null;
   }
 
   private buildCodeDiffSection(): string | null {
-    return this._code.length
-      ? ['### Code', this._code.join('\n')].join('\n')
+    return this._context.config.codegen !== 'none' && this._code.length
+      ? `### Code\n${this._code.join('\n')}`
       : null;
   }
 
-  private buildSnapshotDiffSection(): string | null {
+  private buildPageStateDiffSection(): string | null {
     if (!(this._tabSnapshot && this._expectation.includeSnapshot)) {
       return null;
     }

@@ -18,13 +18,13 @@ const mouseMove = defineTabTool({
     name: 'browser_mouse_move_xy',
     title: 'Move mouse',
     description:
-      'Move mouse to specific coordinates.Requires --caps=vision.x,y:coordinates.expectation:{includeSnapshot:false} for simple move,true to see hover effects.PREFER element-based interactions over coordinates when possible.',
+      'Move the mouse to coordinates. Requires the vision capability; prefer element-based interactions when possible.',
     inputSchema: elementSchema.extend({
       x: z.number().describe('X coordinate'),
       y: z.number().describe('Y coordinate'),
       expectation: expectationSchema,
     }),
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (tab, params, response) => {
     response.addCode(`// Move mouse to (${params.x}, ${params.y})`);

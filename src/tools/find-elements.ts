@@ -102,7 +102,6 @@ export const browserFindElements = defineTabTool({
   },
   handle: async (tab, params, response) => {
     const context = new FindElementsContext(params);
-    contextInstance = context;
 
     try {
       const alternatives = await findElements(tab, context);
@@ -147,7 +146,7 @@ export const browserFindElements = defineTabTool({
     } catch (error) {
       response.addError(`Error finding elements: ${getErrorMessage(error)}`);
     } finally {
-      await cleanupResources();
+      await cleanupResources(context);
     }
   },
 });
@@ -225,7 +224,9 @@ async function findElementsWithUnifiedSystem(
     throw new Error(buildErrorMessage(operationResult.error));
   }
 
-  return (operationResult.data as ElementAlternative[]) ?? [];
+  const alternatives =
+    (operationResult.data as ElementAlternative[] | undefined) ?? [];
+  return alternatives.slice(0, context.maxResults);
 }
 
 async function findElementsWithLegacySystem(
@@ -522,11 +523,8 @@ function addPerformanceInfoIfAvailable(
   resultsText.push('', ...builder.getSections());
 }
 
-let contextInstance: FindElementsContext | null = null;
-
-async function cleanupResources(): Promise<void> {
-  if (contextInstance?.elementDiscovery) {
-    await contextInstance.elementDiscovery.dispose();
+async function cleanupResources(context: FindElementsContext): Promise<void> {
+  if (context.elementDiscovery) {
+    await context.elementDiscovery.dispose();
   }
-  contextInstance = null;
 }

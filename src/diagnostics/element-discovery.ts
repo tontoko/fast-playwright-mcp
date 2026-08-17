@@ -317,58 +317,51 @@ export class ElementDiscovery extends DiagnosticBase {
     const alternatives: AlternativeElement[] = [];
 
     try {
-      const elements = await page.$$(`[role="${role}"]`);
-
-      // Use reduce for sequential processing
-      const totalFound = await elements.reduce(
-        async (previousPromise, element) => {
-          const currentFound = await previousPromise;
-
-          if (currentFound >= maxResults) {
-            await this.safeDispose(
-              element,
-              `findByRole-excess-${currentFound}`
-            );
-            return currentFound;
-          }
-
-          try {
-            const confidence = 0.7; // Base confidence for role match
-
-            // Wrap element in smart handle
-            const smartElement = this.smartHandleBatch.add(element);
-
-            alternatives.push({
-              selector: await this.generateSelector(element),
-              confidence,
-              reason: `role match: "${role}"`,
-              element: smartElement,
-              elementId: `role_${currentFound}`,
-            });
-            return currentFound + 1;
-          } catch (elementError) {
-            elementDiscoveryDebug(
-              'Element role processing failed:',
-              elementError
-            );
-            await this.safeDispose(
-              element,
-              `findByRole-element-${currentFound}`
-            );
-            return currentFound;
-          }
-        },
-        Promise.resolve(0)
+      // Use Playwright's getByRole which resolves both explicit role="..."
+      // attributes and implicit ARIA roles per the WAI-ARIA spec (e.g. <h1> →
+      // heading, <button> → button, <a href> → link). Replaces a previous
+      // `[role="${role}"]` attribute lookup plus a hardcoded 5-role fallback
+      // mapping which silently missed most implicit roles (heading, paragraph,
+      // separator, generic, img, list, navigation, etc.).
+      const locator = page.getByRole(
+        role as Parameters<typeof page.getByRole>[0]
       );
+      const elements = await locator.elementHandles();
 
-      // Also find elements with implicit roles
-      if (totalFound < maxResults) {
-        const implicitRoleElements = await this.findImplicitRoleElements(
-          role,
-          maxResults - totalFound
-        );
-        alternatives.push(...implicitRoleElements);
-      }
+      const excessElements: playwright.ElementHandle[] = [];
+      await elements.reduce(async (previousPromise, element) => {
+        const currentFound = await previousPromise;
+
+        if (currentFound >= maxResults) {
+          excessElements.push(element);
+          return currentFound;
+        }
+
+        try {
+          const smartElement = this.smartHandleBatch.add(element);
+          alternatives.push({
+            selector: await this.generateSelector(element),
+            confidence: 0.7,
+            reason: `role match: "${role}"`,
+            element: smartElement,
+            elementId: `role_${currentFound}`,
+          });
+          return currentFound + 1;
+        } catch (elementError) {
+          elementDiscoveryDebug(
+            'Element role processing failed:',
+            elementError
+          );
+          await this.safeDispose(element, `findByRole-element-${currentFound}`);
+          return currentFound;
+        }
+      }, Promise.resolve(0));
+
+      await Promise.all(
+        excessElements.map((element, index) =>
+          this.safeDispose(element, `findByRole-excess-${maxResults + index}`)
+        )
+      );
     } catch {
       // Role search failed - continue with next search strategy
     }
@@ -567,155 +560,6 @@ export class ElementDiscovery extends DiagnosticBase {
       await this.safeDispose(
         element,
         `findByAttributes-element-${currentFound}`
-      );
-      return false;
-    }
-  }
-
-  private async findImplicitRoleElements(
-    role: string,
-    maxResults: number
-  ): Promise<AlternativeElement[]> {
-    const roleTagMapping: Record<string, string[]> = {
-      button: ['button', 'input[type="button"]', 'input[type="submit"]'],
-      textbox: ['input[type="text"]', 'input[type="email"]', 'textarea'],
-      link: ['a[href]'],
-      checkbox: ['input[type="checkbox"]'],
-      radio: ['input[type="radio"]'],
-    };
-
-    const tags = roleTagMapping[role] ?? [];
-    const alternatives: AlternativeElement[] = [];
-
-    await this.processImplicitRoleTags(tags, role, alternatives, maxResults);
-    return alternatives;
-  }
-
-  private async processImplicitRoleTags(
-    tags: string[],
-    role: string,
-    alternatives: AlternativeElement[],
-    maxResults: number
-  ): Promise<void> {
-    let totalFound = 0;
-
-    const processTagsSequentially = async (index: number): Promise<void> => {
-      if (index >= tags.length || totalFound >= maxResults) {
-        return;
-      }
-
-      const tagSelector = tags[index];
-      totalFound = await this.processImplicitRoleTag(
-        tagSelector,
-        role,
-        alternatives,
-        totalFound,
-        maxResults
-      );
-
-      await processTagsSequentially(index + 1);
-    };
-
-    await processTagsSequentially(0);
-  }
-
-  private async processImplicitRoleTag(
-    tagSelector: string,
-    role: string,
-    alternatives: AlternativeElement[],
-    totalFound: number,
-    maxResults: number
-  ): Promise<number> {
-    const page = this.getPage();
-
-    try {
-      const elements = await page.$$(tagSelector);
-      return await this.processImplicitRoleElements(
-        elements,
-        tagSelector,
-        role,
-        alternatives,
-        totalFound,
-        maxResults
-      );
-    } catch {
-      // Implicit role search failed - continue processing
-      return totalFound;
-    }
-  }
-
-  private async processImplicitRoleElements(
-    elements: playwright.ElementHandle[],
-    tagSelector: string,
-    role: string,
-    alternatives: AlternativeElement[],
-    totalFound: number,
-    maxResults: number
-  ): Promise<number> {
-    let currentFound = totalFound;
-
-    const processElementsSequentially = async (
-      index: number
-    ): Promise<void> => {
-      if (index >= elements.length) {
-        return;
-      }
-
-      const element = elements[index];
-      if (currentFound >= maxResults) {
-        await this.safeDispose(
-          element,
-          `findImplicitRole-excess-${currentFound}`
-        );
-        return processElementsSequentially(index + 1);
-      }
-
-      const processResult = await this.processImplicitRoleElement(
-        element,
-        tagSelector,
-        role,
-        alternatives,
-        currentFound
-      );
-
-      if (processResult) {
-        currentFound++;
-      }
-
-      await processElementsSequentially(index + 1);
-    };
-
-    await processElementsSequentially(0);
-    return currentFound;
-  }
-
-  private async processImplicitRoleElement(
-    element: playwright.ElementHandle,
-    tagSelector: string,
-    role: string,
-    alternatives: AlternativeElement[],
-    currentFound: number
-  ): Promise<boolean> {
-    try {
-      const smartElement = this.smartHandleBatch.add(element);
-
-      alternatives.push({
-        selector: await this.generateSelector(element),
-        confidence: 0.6,
-        reason: `implicit role match: "${role}" via ${tagSelector}`,
-        element: smartElement,
-        elementId: `implicit_${currentFound}`,
-      });
-
-      return true;
-    } catch (elementError) {
-      elementDiscoveryDebug(
-        'Implicit role element processing failed:',
-        elementError
-      );
-      await this.safeDispose(
-        element,
-        `findImplicitRole-element-${currentFound}`
       );
       return false;
     }

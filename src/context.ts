@@ -1,4 +1,5 @@
-import type * as playwright from 'playwright';
+import { dirname } from 'node:path';
+import { type BrowserContext, type Page, selectors } from 'playwright';
 import type * as actions from './actions.js';
 import { BatchExecutor } from './batch/batch-executor.js';
 import type {
@@ -7,11 +8,15 @@ import type {
 } from './browser-context-factory.js';
 import type { FullConfig } from './config.js';
 import { outputFile } from './config.js';
+import type { ToolResponse } from './mcp/types.js';
+import { originRoutePattern } from './network-origin.js';
+import { OutputManager } from './output-manager.js';
 import type { SessionLog } from './session-log.js';
 import { Tab } from './tab.js';
 import type { Tool } from './tools/tool.js';
 import type { BatchContext } from './types/batch.js';
 import { contextDebug, logUnhandledError, testDebug } from './utils/log.js';
+import { SecretRedactor } from './utils/secret-redactor.js';
 
 type ContextOptions = {
   tools: Tool[];
@@ -20,15 +25,18 @@ type ContextOptions = {
   sessionLog: SessionLog | undefined;
   clientInfo: ClientInfo;
 };
+
 export class Context {
   readonly tools: Tool[];
   readonly config: FullConfig;
   readonly sessionLog: SessionLog | undefined;
   readonly options: ContextOptions;
+  readonly secretRedactor: SecretRedactor;
   private _browserContextPromise:
     | Promise<{
-        browserContext: playwright.BrowserContext;
+        browserContext: BrowserContext;
         close: () => Promise<void>;
+        traceDir?: string;
       }>
     | undefined;
   private readonly _browserContextFactory: BrowserContextFactory;
@@ -36,32 +44,42 @@ export class Context {
   private _currentTab: Tab | undefined;
   private readonly _clientInfo: ClientInfo;
   private _batchExecutor: BatchExecutor | undefined;
-  private static readonly _allContexts: Set<Context> = new Set();
+  private static readonly _allContexts = new Set<Context>();
+  private static _testIdAttribute: string | undefined;
+  private static _testIdAttributeUsers = 0;
   private _closeBrowserContextPromise: Promise<void> | undefined;
   private _isRunningTool = false;
+  private _disposed = false;
   private readonly _abortController = new AbortController();
   batchContext?: BatchContext;
+
   constructor(options: ContextOptions) {
     this.tools = options.tools;
     this.config = options.config;
     this.sessionLog = options.sessionLog;
     this.options = options;
+    this.secretRedactor = new SecretRedactor(options.config.secrets);
     this._browserContextFactory = options.browserContextFactory;
     this._clientInfo = options.clientInfo;
+    this._acquireTestIdAttribute(options.config.testIdAttribute);
     testDebug('create context');
     Context._allContexts.add(this);
   }
+
   static async disposeAll() {
     await Promise.all(
       [...Context._allContexts].map((context) => context.dispose())
     );
   }
+
   tabs(): Tab[] {
     return this._tabs;
   }
+
   currentTab(): Tab | undefined {
     return this._currentTab;
   }
+
   currentTabOrDie(): Tab {
     if (!this._currentTab) {
       throw new Error(
@@ -70,18 +88,19 @@ export class Context {
     }
     return this._currentTab;
   }
+
   async newTab(): Promise<Tab> {
     contextDebug('Creating new tab');
     const { browserContext } = await this._ensureBrowserContext();
     const page = await browserContext.newPage();
-    const tab = this._tabs.find((t) => t.page === page);
+    const tab = this._tabs.find((candidate) => candidate.page === page);
     if (!tab) {
       throw new Error('Failed to create tab: tab not found after creation');
     }
     this._currentTab = tab;
-    contextDebug('New tab created successfully');
-    return this._currentTab;
+    return tab;
   }
+
   async selectTab(index: number) {
     const tab = this._tabs[index];
     if (!tab) {
@@ -91,18 +110,18 @@ export class Context {
     this._currentTab = tab;
     return tab;
   }
+
   async ensureTab(): Promise<Tab> {
     const { browserContext } = await this._ensureBrowserContext();
     if (!this._currentTab) {
       await browserContext.newPage();
     }
     if (!this._currentTab) {
-      throw new Error(
-        'Failed to ensure tab: current tab is null after creating page'
-      );
+      throw new Error('Failed to ensure a current browser tab.');
     }
     return this._currentTab;
   }
+
   async closeTab(index: number | undefined): Promise<string> {
     const tab = index === undefined ? this._currentTab : this._tabs[index];
     if (!tab) {
@@ -112,16 +131,85 @@ export class Context {
     await tab.page.close();
     return url;
   }
-  outputFile(name: string): Promise<string> {
-    return outputFile(this.config, this._clientInfo.rootPath, name);
+
+  async outputFile(name: string): Promise<string> {
+    const path = await outputFile(this.config, this._clientInfo.rootPath, name);
+    const manager = await this._getOutputManager(path);
+    // Artifact activity keeps the trace directory's eviction reservation
+    // alive while tracing is in progress.
+    this._refreshTraceReservation();
+    return manager.reserveFile(path);
   }
-  private _onPageCreated(page: playwright.Page) {
+
+  async finalizeOutputFile(path: string): Promise<void> {
+    const manager = await this._getOutputManager(path);
+    await manager.finalizeFile(path);
+  }
+
+  async finalizeOutputDirectory(path: string): Promise<void> {
+    const manager = await this._getOutputManager(path);
+    await manager.finalizeDirectory(path);
+  }
+
+  redactToolResponse(response: ToolResponse): ToolResponse {
+    if (!this.secretRedactor.enabled) {
+      return response;
+    }
+    return {
+      ...response,
+      content: response.content.map((part) =>
+        part.type === 'text'
+          ? { ...part, text: this.secretRedactor.redact(part.text) }
+          : part
+      ),
+    };
+  }
+
+  private readonly _outputManagers = new Map<string, Promise<OutputManager>>();
+  private _traceDir: string | undefined;
+
+  private _refreshTraceReservation(): void {
+    if (!this._traceDir) {
+      return;
+    }
+    this._getOutputManager(this._traceDir)
+      .then((manager) => manager.refreshReservation(this._traceDir as string))
+      .catch((error) => {
+        contextDebug('Failed to refresh trace reservation:', error);
+      });
+  }
+
+  private _getOutputManager(path: string): Promise<OutputManager> {
+    // outputFile() derives a fresh timestamped directory per call when no
+    // outputDir/rootPath is configured, so look up the manager per actual
+    // directory; forDirectory keeps eviction shared across them.
+    const directory = dirname(path);
+    let manager = this._outputManagers.get(directory);
+    if (!manager) {
+      manager = OutputManager.forDirectory(
+        directory,
+        this.config.outputMaxSize
+      );
+      // A transient mkdir/realpath failure must not poison the directory
+      // for the rest of this context's lifetime.
+      manager.catch(() => {
+        if (this._outputManagers.get(directory) === manager) {
+          this._outputManagers.delete(directory);
+        }
+      });
+      this._outputManagers.set(directory, manager);
+    }
+    return manager;
+  }
+
+  private _onPageCreated(page: Page) {
     const newTab = new Tab(this, page, (closedTab) =>
       this._onPageClosed(closedTab)
     );
     this._tabs.push(newTab);
     this._currentTab ??= newTab;
   }
+
   private _onPageClosed(tab: Tab) {
     const index = this._tabs.indexOf(tab);
     if (index === -1) {
@@ -132,13 +220,12 @@ export class Context {
       this._currentTab = this._tabs[Math.min(index, this._tabs.length - 1)];
     }
     if (!this._tabs.length) {
-      contextDebug('No tabs remaining, closing browser context');
       this.closeBrowserContext().catch((error) => {
-        // Error is handled by logUnhandledError in closeBrowserContext
         contextDebug('Error closing browser context:', error);
       });
     }
   }
+
   async closeBrowserContext() {
     contextDebug('Closing browser context');
     this._closeBrowserContextPromise ??= this._closeBrowserContextImpl().catch(
@@ -149,21 +236,19 @@ export class Context {
     );
     await this._closeBrowserContextPromise;
     this._closeBrowserContextPromise = undefined;
-    contextDebug('Browser context closed');
   }
+
   isRunningTool() {
     return this._isRunningTool;
   }
+
   setRunningTool(isRunningTool: boolean) {
     this._isRunningTool = isRunningTool;
   }
-  /**
-   * Gets or creates the batch executor for this context
-   */
+
   getBatchExecutor(): BatchExecutor {
     this._batchExecutor ??= (() => {
-      // Create tool registry from available tools
-      const toolRegistry = new Map();
+      const toolRegistry = new Map<string, Tool>();
       for (const tool of this.tools) {
         toolRegistry.set(tool.schema.name, tool);
       }
@@ -171,6 +256,7 @@ export class Context {
     })();
     return this._batchExecutor;
   }
+
   private async _closeBrowserContextImpl() {
     if (!this._browserContextPromise) {
       return;
@@ -178,37 +264,63 @@ export class Context {
     testDebug('close context');
     const promise = this._browserContextPromise;
     this._browserContextPromise = undefined;
-    await promise.then(async ({ browserContext, close }) => {
+    await promise.then(async ({ browserContext, close, traceDir }) => {
       if (this.config.saveTrace) {
         await browserContext.tracing.stop();
+        if (traceDir) {
+          await this.finalizeOutputDirectory(traceDir);
+        }
       }
       await close();
     });
+    this._traceDir = undefined;
   }
+
   async dispose() {
+    if (this._disposed) {
+      return;
+    }
+    this._disposed = true;
     this._abortController.abort('MCP context disposed');
     await this.closeBrowserContext();
     Context._allContexts.delete(this);
+    Context._testIdAttributeUsers--;
+    if (Context._testIdAttributeUsers === 0) {
+      Context._testIdAttribute = undefined;
+    }
   }
-  private async _setupRequestInterception(context: playwright.BrowserContext) {
-    if (this.config.network?.allowedOrigins?.length) {
+
+  private _acquireTestIdAttribute(attribute: string): void {
+    if (Context._testIdAttribute && Context._testIdAttribute !== attribute) {
+      throw new Error(
+        `Conflicting test-id attributes: ${Context._testIdAttribute} and ${attribute}`
+      );
+    }
+    Context._testIdAttribute = attribute;
+    Context._testIdAttributeUsers++;
+    selectors.setTestIdAttribute(attribute);
+  }
+
+  private async _setupRequestInterception(context: BrowserContext) {
+    if (this.config.network.allowedOrigins?.length) {
       await context.route('**', (route) => route.abort('blockedbyclient'));
       await Promise.all(
         this.config.network.allowedOrigins.map((origin) =>
-          context.route(`*://${origin}/**`, (route) => route.continue())
+          context.route(originRoutePattern(origin), (route) => route.continue())
         )
       );
     }
-    if (this.config.network?.blockedOrigins?.length) {
+    if (this.config.network.blockedOrigins?.length) {
       await Promise.all(
         this.config.network.blockedOrigins.map((origin) =>
-          context.route(`*://${origin}/**`, (route) =>
+          context.route(originRoutePattern(origin), (route) =>
             route.abort('blockedbyclient')
           )
         )
       );
     }
   }
+
   private _ensureBrowserContext() {
     this._browserContextPromise ??= (() => {
       contextDebug('Ensuring browser context exists');
@@ -221,113 +333,132 @@ export class Context {
     })();
     return this._browserContextPromise;
   }
+
   private async _setupBrowserContext(): Promise<{
-    browserContext: playwright.BrowserContext;
+    browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }> {
     if (this._closeBrowserContextPromise) {
       throw new Error('Another browser context is being closed.');
     }
-    contextDebug('Setting up new browser context');
     const result = await this._browserContextFactory.createContext(
       this._clientInfo,
       this._abortController.signal
     );
-    const { browserContext } = result;
-    await this._setupRequestInterception(browserContext);
-    if (this.sessionLog) {
-      await InputRecorder.create(this, browserContext);
-    }
-    for (const page of browserContext.pages()) {
-      this._onPageCreated(page);
-    }
-    browserContext.on('page', (page) => this._onPageCreated(page));
-    if (this.config.saveTrace) {
-      await browserContext.tracing.start({
-        name: 'trace',
-        screenshots: false,
-        snapshots: true,
-        sources: false,
+    try {
+      const { browserContext } = result;
+      await this._setupRequestInterception(browserContext);
+      if (this.sessionLog) {
+        await InputRecorder.create(this, browserContext);
+      }
+      if (result.traceDir) {
+        // Reserve the trace directory so quota eviction from other
+        // artifacts cannot delete in-progress trace files mid-session.
+        this._traceDir = result.traceDir;
+        await this._getOutputManager(result.traceDir).then((manager) =>
+          manager.reserveDirectory(result.traceDir as string)
+        );
+      }
+      for (const page of browserContext.pages()) {
+        this._onPageCreated(page);
+      }
+      browserContext.on('page', (page) => this._onPageCreated(page));
+      if (this.config.saveTrace) {
+        await browserContext.tracing.start({
+          name: 'trace',
+          screenshots: false,
+          snapshots: true,
+          sources: false,
+        });
+      }
+    } catch (error) {
+      // Release the user-data-dir lock and stop the launched browser so a
+      // failed setup (e.g. an invalid network origin) stays recoverable.
+      await result.close().catch((closeError) => {
+        contextDebug('Error closing failed browser context:', closeError);
       });
+      throw error;
     }
     return result;
   }
 }
-export class InputRecorder {
-  private readonly _context: Context;
-  private readonly _browserContext: playwright.BrowserContext;
-  private constructor(
-    context: Context,
-    browserContext: playwright.BrowserContext
-  ) {
-    this._context = context;
-    this._browserContext = browserContext;
+
+function resolveRecorderAction(
+  data: actions.ActionInContext | actions.Action | undefined
+): actions.Action | undefined {
+  if (!data) {
+    return;
   }
-  static async create(
-    context: Context,
-    browserContext: playwright.BrowserContext
-  ) {
+  return 'action' in data ? data.action : data;
+}
+
+export class InputRecorder {
+  private readonly context: Context;
+  private readonly browserContext: BrowserContext;
+
+  private constructor(context: Context, browserContext: BrowserContext) {
+    this.context = context;
+    this.browserContext = browserContext;
+  }
+
+  static async create(context: Context, browserContext: BrowserContext) {
     const recorder = new InputRecorder(context, browserContext);
-    await recorder._initialize();
+    await recorder.initialize();
     return recorder;
   }
-  private async _initialize() {
-    const sessionLog = this._context.sessionLog;
+
+  private async initialize() {
+    const sessionLog = this.context.sessionLog;
     if (!sessionLog) {
       throw new Error('Session log is required for recorder initialization');
     }
     await (
-      this._browserContext as unknown as {
+      this.browserContext as unknown as {
         _enableRecorder: (config: unknown, handlers: unknown) => Promise<void>;
       }
     )._enableRecorder(
-      {
-        mode: 'recording',
-        recorderMode: 'api',
-      },
+      { mode: 'recording', recorderMode: 'api' },
       {
         actionAdded: (
-          page: playwright.Page,
-          data: actions.ActionInContext,
+          page: Page,
+          data: actions.ActionInContext | actions.Action,
           code: string
         ) => {
-          if (this._context.isRunningTool()) {
+          if (this.context.isRunningTool()) {
             return;
           }
           const tab = Tab.forPage(page);
-          if (tab) {
-            sessionLog.logUserAction(data.action, tab, code, false);
+          const action = resolveRecorderAction(data);
+          if (tab && action) {
+            tab.context.sessionLog?.logUserAction(action, tab, code, false);
           }
         },
         actionUpdated: (
-          page: playwright.Page,
-          data: actions.ActionInContext,
+          page: Page,
+          data: actions.ActionInContext | actions.Action,
           code: string
         ) => {
-          if (this._context.isRunningTool()) {
+          if (this.context.isRunningTool()) {
             return;
           }
           const tab = Tab.forPage(page);
-          if (tab) {
-            sessionLog.logUserAction(data.action, tab, code, true);
+          const action = resolveRecorderAction(data);
+          if (tab && action) {
+            sessionLog.logUserAction(action, tab, code, true);
           }
         },
-        signalAdded: (page: playwright.Page, data: actions.SignalInContext) => {
-          if (this._context.isRunningTool()) {
-            return;
-          }
-          if (data.signal.name !== 'navigation') {
+        signalAdded: (page: Page, data: actions.SignalInContext) => {
+          if (
+            this.context.isRunningTool() ||
+            data.signal.name !== 'navigation'
+          ) {
             return;
           }
           const tab = Tab.forPage(page);
-          const navigateAction: actions.Action = {
-            name: 'navigate',
-            url: data.signal.url,
-            signals: [],
-          };
           if (tab) {
             sessionLog.logUserAction(
-              navigateAction,
+              { name: 'navigate', url: data.signal.url, signals: [] },
               tab,
               `await page.goto('${data.signal.url}');`,
               false

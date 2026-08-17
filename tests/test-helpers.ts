@@ -39,10 +39,14 @@ export type ConsoleMethod = 'log' | 'info' | 'warn' | 'error';
  * Console capture utility for testing
  */
 export class ConsoleCapture {
-  private originalMethods: Map<ConsoleMethod, (...args: unknown[]) => void> =
-    new Map();
-  private capturedMessages: Array<{ level: ConsoleMethod; args: unknown[] }> =
-    [];
+  private readonly originalMethods: Map<
+    ConsoleMethod,
+    (...args: unknown[]) => void
+  > = new Map();
+  private readonly capturedMessages: Array<{
+    level: ConsoleMethod;
+    args: unknown[];
+  }> = [];
 
   /**
    * Start capturing console output for specified methods
@@ -132,7 +136,7 @@ export class ConsoleCapture {
  * Test setup utilities for diagnostic components
  */
 export class DiagnosticTestSetup {
-  private consoleCapture: ConsoleCapture = new ConsoleCapture();
+  private readonly consoleCapture: ConsoleCapture = new ConsoleCapture();
 
   /**
    * Setup before each test - resets diagnostic components and starts console capture
@@ -782,6 +786,18 @@ export const FIND_ELEMENTS_HTML_TEMPLATES = {
       { length: count },
       (_, i) => `<button>Button ${i}</button>`
     ).join('')}</div>`,
+  IMPLICIT_ROLE_ELEMENTS: `
+    <main>
+      <h1>Main title</h1>
+      <h2>Subtitle</h2>
+      <p>First paragraph.</p>
+      <p>Second paragraph.</p>
+      <hr>
+      <button>Bare button</button>
+      <div role="button">Explicit role button</div>
+      <a href="/somewhere">A link</a>
+    </main>
+  `,
 } as const;
 
 /**
@@ -800,7 +816,7 @@ export interface BrowserLifecycleExpectations {
  * Common test setup utilities for standard tests (non-diagnostic)
  */
 export class StandardTestSetup {
-  private consoleCapture: ConsoleCapture = new ConsoleCapture();
+  private readonly consoleCapture: ConsoleCapture = new ConsoleCapture();
 
   /**
    * Setup for each standard test
@@ -864,8 +880,13 @@ export function expectBrowserLifecycle(
   const lines = stderr().split('\n');
 
   // Count occurrences of each pattern
-  const countMatches = (pattern: RegExp) =>
-    lines.filter((line) => line.match(pattern)).length;
+  const countMatches = (pattern: RegExp) => {
+    const statelessFlags = pattern.flags
+      .replaceAll('g', '')
+      .replaceAll('y', '');
+    const matcher = new RegExp(pattern.source, statelessFlags);
+    return lines.filter((line) => matcher.exec(line) !== null).length;
+  };
 
   // HTTP session assertions
   expect(countMatches(BROWSER_LIFECYCLE_PATTERNS.CREATE_HTTP_SESSION)).toBe(
@@ -1664,18 +1685,20 @@ export function createNavigationStep(
 /**
  * Helper function for partial snapshot tests
  */
-export function expectPartialSnapshotBehavior(
+export function expectPartialSnapshotForSelector(
   result: CallToolResponse,
-  selectorUsed: string,
-  shouldContainSelector = true
+  selectorUsed: string
 ): void {
-  if (shouldContainSelector) {
-    expect(result.content[0].text).toContain(
-      `Capturing partial snapshot for selector: ${selectorUsed}`
-    );
-  } else {
-    expect(result.content[0].text).toContain('Falling back to full snapshot');
-  }
+  expect(result.content[0].text).toContain(
+    `Capturing partial snapshot for selector: ${selectorUsed}`
+  );
+}
+
+/**
+ * Helper function for full snapshot fallback tests
+ */
+export function expectFullSnapshotFallback(result: CallToolResponse): void {
+  expect(result.content[0].text).toContain('Falling back to full snapshot');
 }
 
 /**

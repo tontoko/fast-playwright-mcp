@@ -151,7 +151,7 @@ const hover = defineTabTool({
         'Page state after hover. Use batch_execute for hover→click'
       ),
     }),
-    type: 'readOnly',
+    type: 'action',
   },
   handle: async (tab, params, response) => {
     const { locator } = await resolveFirstElement(tab, params.selectors);

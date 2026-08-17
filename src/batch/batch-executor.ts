@@ -14,14 +14,18 @@ import type {
 import { getErrorMessage } from '../utils/common-formatters.js';
 import { batchExecutorDebug } from '../utils/log.js';
 
-// Type for serialized response content
+const DISALLOWED_BATCH_TARGETS = new Set([
+  'browser_batch_execute',
+  'browser_tools',
+  'browser_query',
+  'browser_execute',
+]);
+
 export interface SerializedResponse {
   content: Array<{ type: string; [key: string]: unknown }>;
   isError?: boolean;
 }
-/**
- * Executes multiple browser tools in sequence with optimized response handling
- */
+
 export class BatchExecutor {
   private readonly toolRegistry: Map<string, Tool>;
   private readonly context: Context;
@@ -32,64 +36,49 @@ export class BatchExecutor {
     this.toolRegistry = toolRegistry;
   }
 
-  /**
-   * Generates a unique batch ID using crypto for security
-   * @returns Unique batch identifier
-   */
   private generateBatchId(): string {
-    const timestamp = Date.now();
-    // Use Node.js crypto for secure random generation
-    const random = randomBytes(4).toString('hex');
-    return `batch_${timestamp}_${random}`;
+    return `batch_${Date.now()}_${randomBytes(4).toString('hex')}`;
   }
-  /**
-   * Validates all steps in the batch before execution
-   * @param steps - Array of steps to validate
-   */
+
   validateAllSteps(steps: BatchStep[]): void {
     for (const [index, step] of steps.entries()) {
+      if (DISALLOWED_BATCH_TARGETS.has(step.tool)) {
+        throw new Error(
+          `Tool cannot be nested in batch execution: ${step.tool}`
+        );
+      }
       const tool = this.toolRegistry.get(step.tool);
       if (!tool) {
         const availableTools = Array.from(this.toolRegistry.keys())
           .filter(
             (name) =>
-              name.startsWith('browser_') && name !== 'browser_batch_execute'
+              name.startsWith('browser_') && !DISALLOWED_BATCH_TARGETS.has(name)
           )
-          .sort((a, b) => a.localeCompare(b))
+          .sort((left, right) => left.localeCompare(right))
           .join(',');
         throw new Error(
           `Unknown tool: "${step.tool}" at step ${index}. Available tools: ${availableTools}`
         );
       }
-      // Validate arguments using tool's schema
-      try {
-        const parseResult = tool.schema.inputSchema.safeParse({
-          ...step.arguments,
-          expectation: step.expectation,
-        });
-        if (!parseResult.success) {
-          throw new Error(`Invalid arguments: ${parseResult.error.message}`);
-        }
-      } catch (error) {
+      const parseResult = tool.schema.inputSchema.safeParse({
+        ...step.arguments,
+        expectation: step.expectation,
+      });
+      if (!parseResult.success) {
         throw new Error(
-          `Invalid arguments for ${
-            step.tool
-          } at step ${index}: ${getErrorMessage(error)}`
+          `Invalid arguments for ${step.tool} at step ${index}: ${parseResult.error.message}`
         );
       }
     }
   }
-  /**
-   * Executes a batch of steps in sequence
-   * @param options - Batch execution options
-   * @returns Batch execution result
-   */
-  async execute(options: BatchExecuteOptions): Promise<BatchResult> {
+
+  async execute(
+    options: BatchExecuteOptions,
+    signal?: AbortSignal
+  ): Promise<BatchResult> {
     const results: StepResult[] = [];
     const startTime = Date.now();
     let stopReason: BatchResult['stopReason'] = 'completed';
-
-    // Create batch context
     this.currentBatchContext = {
       batchId: this.generateBatchId(),
       startTime,
@@ -98,153 +87,122 @@ export class BatchExecutor {
     batchExecutorDebug(
       `Starting batch execution ${this.currentBatchContext.batchId} with ${options.steps.length} steps`
     );
-
-    // Pre-validation phase
     this.validateAllSteps(options.steps);
 
-    // Execution phase using recursive approach to avoid await in loop
     const executeSequentially = async (index: number): Promise<void> => {
-      if (index >= options.steps.length) {
+      if (index >= options.steps.length || stopReason === 'error') {
         return;
       }
-
+      signal?.throwIfAborted();
       const step = options.steps[index];
       const stepStartTime = Date.now();
-
       try {
-        // Update current step index in batch context
-        if (this.currentBatchContext) {
-          this.currentBatchContext.currentStepIndex = index;
+        const batchContext = this.currentBatchContext;
+        if (!batchContext) {
+          throw new Error('Batch context is not initialized');
         }
-
+        batchContext.currentStepIndex = index;
         const result = await this.executeStep(
           step,
           options.globalExpectation,
-          this.currentBatchContext
+          batchContext,
+          signal
         );
-        const stepEndTime = Date.now();
         results.push({
           stepIndex: index,
           toolName: step.tool,
           success: true,
           result,
-          executionTimeMs: stepEndTime - stepStartTime,
+          executionTimeMs: Date.now() - stepStartTime,
         });
-
-        // Continue with next step
-        await executeSequentially(index + 1);
       } catch (error) {
-        const stepEndTime = Date.now();
-        const errorMessage = getErrorMessage(error);
         results.push({
           stepIndex: index,
           toolName: step.tool,
           success: false,
-          error: errorMessage,
-          executionTimeMs: stepEndTime - stepStartTime,
+          error: getErrorMessage(error),
+          executionTimeMs: Date.now() - stepStartTime,
         });
-
-        // Determine if we should continue or stop
-        // Stop unless step explicitly allows continuation
-        // This gives step-level continueOnError precedence over global stopOnFirstError
         if (!step.continueOnError) {
           stopReason = 'error';
           return;
         }
-
-        // Continue with next step
-        await executeSequentially(index + 1);
       }
+      await executeSequentially(index + 1);
     };
-
     await executeSequentially(0);
 
-    const totalExecutionTime = Date.now() - startTime;
-    const successfulSteps = results.filter((r) => r.success).length;
-    const failedSteps = results.filter((r) => !r.success).length;
     return {
       steps: results,
       totalSteps: options.steps.length,
-      successfulSteps,
-      failedSteps,
-      totalExecutionTimeMs: totalExecutionTime,
+      successfulSteps: results.filter((result) => result.success).length,
+      failedSteps: results.filter((result) => !result.success).length,
+      totalExecutionTimeMs: Date.now() - startTime,
       stopReason,
     };
   }
-  /**
-   * Executes a single step with merged expectations
-   * @param step - Step to execute
-   * @param globalExpectation - Global expectation to merge with step expectation
-   * @param batchContext - Current batch execution context
-   * @returns Step execution result
-   */
+
   async executeStep(
     step: BatchStep,
     globalExpectation?: ExpectationOptions,
-    batchContext?: BatchContext
+    batchContext?: BatchContext,
+    signal?: AbortSignal
   ): Promise<unknown> {
+    signal?.throwIfAborted();
     const tool = this.toolRegistry.get(step.tool);
     if (!tool) {
       throw new Error(`Unknown tool: ${step.tool}`);
     }
-    // Merge expectations: step expectation takes precedence over global
+
     const mergedExpectation = this.mergeStepExpectations(
       step.tool,
       globalExpectation,
       step.expectation
     );
-    // Create arguments with merged expectation
     const argsWithExpectation = {
       ...step.arguments,
       expectation: mergedExpectation,
     };
-    // Temporarily set batch context on the main context
     const previousBatchContext = this.context.batchContext;
     this.context.batchContext = batchContext;
 
     try {
-      // Create response instance for this step
       const response = new Response(
         this.context,
         step.tool,
         argsWithExpectation,
         mergedExpectation
       );
-      // Execute the tool
       batchExecutorDebug(`Executing batch step: ${step.tool}`);
-      await tool.handle(this.context, argsWithExpectation, response);
-      // Finish the response (capture snapshots, etc.)
+      const rawResponse = await tool.handle(
+        this.context,
+        argsWithExpectation,
+        response,
+        signal
+      );
+      if (rawResponse) {
+        return rawResponse;
+      }
       await response.finish();
       batchExecutorDebug(`Batch step ${step.tool} completed`);
-      // Return serialized response
       return response.serialize();
     } finally {
-      // Restore previous batch context
       this.context.batchContext = previousBatchContext;
     }
   }
-  /**
-   * Merges global and step-level expectations
-   * @param toolName - Name of the tool being executed
-   * @param globalExpectation - Global expectation settings
-   * @param stepExpectation - Step-specific expectation settings
-   * @returns Merged expectation configuration
-   */
+
   private mergeStepExpectations(
     toolName: string,
     globalExpectation?: ExpectationOptions,
     stepExpectation?: ExpectationOptions
   ): ExpectationOptions {
-    // Start with tool defaults
     let merged = mergeExpectations(toolName);
-    // Apply global expectation if provided
     if (globalExpectation) {
       merged = mergeExpectations(toolName, {
         ...merged,
         ...globalExpectation,
       });
     }
-    // Apply step expectation if provided (highest priority)
     if (stepExpectation) {
       merged = mergeExpectations(toolName, {
         ...merged,

@@ -10,12 +10,35 @@ import {
   webkit,
 } from 'playwright';
 //
-// @ts-expect-error - Type definitions for playwright-core internal registry are not available
-import { registryDirectory } from 'playwright-core/lib/server/registry/index';
+// @ts-expect-error - playwright-core does not publish types for its exported coreBundle entry.
+import coreBundle from 'playwright-core/lib/coreBundle';
+
+const { registryDirectory } = coreBundle.registry;
+
 import type { FullConfig } from './config.js';
 import { outputFile } from './config.js';
 import { createHash } from './utils/guid.js';
 import { browserDebug, logUnhandledError, testDebug } from './utils/log.js';
+
+const MISSING_EXECUTABLE_PATTERN =
+  /Executable doesn't exist at (?<path>[^\r\n]+)/u;
+
+export function formatBrowserLaunchError(
+  error: unknown,
+  config: FullConfig
+): Error {
+  const normalized = error instanceof Error ? error : new Error(String(error));
+  const missing = MISSING_EXECUTABLE_PATTERN.exec(normalized.message);
+  if (!missing?.groups?.path) {
+    return normalized;
+  }
+  const browser =
+    config.browser.launchOptions.channel ?? config.browser.browserName;
+  return new Error(
+    `Browser "${browser}" is not installed. Expected executable at ${missing.groups.path}. ` +
+      'Install the pinned Playwright browser or configure --executable-path.'
+  );
+}
 
 function getBrowserType(browserName: string): BrowserType {
   switch (browserName) {
@@ -52,6 +75,7 @@ export interface BrowserContextFactory {
   ): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }>;
 }
 class BaseContextFactory implements BrowserContextFactory {
@@ -89,9 +113,14 @@ class BaseContextFactory implements BrowserContextFactory {
   async createContext(clientInfo: ClientInfo): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }> {
     if (this.config.saveTrace) {
-      this._tracesDir = await outputFile(
+      // The obtained browser is reused across contexts (HTTP sessions with
+      // --isolated share this factory), and Playwright fixes the traces
+      // directory at launch — keep the first directory for every context
+      // instead of overwriting it per createContext call.
+      this._tracesDir ??= await outputFile(
         this.config,
         clientInfo.rootPath,
         `traces-${Date.now()}`
@@ -103,6 +132,7 @@ class BaseContextFactory implements BrowserContextFactory {
     return {
       browserContext,
       close: () => this._closeBrowserContext(browserContext, browser),
+      traceDir: this._tracesDir,
     };
   }
   protected _doCreateContext(_browser: Browser): Promise<BrowserContext> {
@@ -137,13 +167,8 @@ class IsolatedContextFactory extends BaseContextFactory {
         handleSIGINT: false,
         handleSIGTERM: false,
       })
-      .catch((error) => {
-        if (error.message.includes("Executable doesn't exist")) {
-          throw new Error(
-            'Browser specified in your config is not installed. Either install it (likely) or change the config.'
-          );
-        }
-        throw error;
+      .catch((error: unknown) => {
+        throw formatBrowserLaunchError(error, this.config);
       });
   }
   protected override _doCreateContext(
@@ -157,7 +182,10 @@ class CdpContextFactory extends BaseContextFactory {
     super('cdp', 'Connect to a browser over CDP', config);
   }
   protected override _doObtainBrowser(): Promise<Browser> {
-    return chromium.connectOverCDP(this.config.browser.cdpEndpoint as string);
+    return chromium.connectOverCDP(this.config.browser.cdpEndpoint as string, {
+      headers: this.config.browser.cdpHeaders,
+      timeout: this.config.browser.cdpTimeout,
+    });
   }
   protected override async _doCreateContext(
     browser: Browser
@@ -193,18 +221,39 @@ class PersistentContextFactory implements BrowserContextFactory {
   readonly name = 'persistent';
   readonly description = 'Create a new persistent browser context';
   private readonly _userDataDirs = new Set<string>();
+  private readonly _closingUserDataDirs = new Map<string, Promise<void>>();
   constructor(config: FullConfig) {
     this.config = config;
   }
   async createContext(clientInfo: ClientInfo): Promise<{
     browserContext: BrowserContext;
     close: () => Promise<void>;
+    traceDir?: string;
   }> {
     await injectCdpPort(this.config.browser);
     testDebug('create browser context (persistent)');
     const userDataDir =
       this.config.browser.userDataDir ??
       (await this._createUserDataDir(clientInfo.rootPath));
+
+    // Transport close notifications are asynchronous. Give a just-closed
+    // session one event-loop turn to move its profile from active to closing,
+    // then await that concrete close operation. A genuinely concurrent client
+    // still receives the existing "use --isolated" error immediately after
+    // the turn, without launching a second browser process against the profile.
+    if (this._userDataDirs.has(userDataDir)) {
+      await new Promise<void>((resolve) => setImmediate(resolve));
+    }
+    const closingUserDataDir = this._closingUserDataDirs.get(userDataDir);
+    if (closingUserDataDir) {
+      await closingUserDataDir;
+    }
+    if (this._userDataDirs.has(userDataDir)) {
+      throw new Error(
+        `Browser is already in use for ${userDataDir}, use --isolated to run multiple instances of the same browser`
+      );
+    }
+
     let tracesDir: string | undefined;
     if (this.config.saveTrace) {
       tracesDir = await outputFile(
@@ -223,6 +272,7 @@ class PersistentContextFactory implements BrowserContextFactory {
     ): Promise<{
       browserContext: BrowserContext;
       close: () => Promise<void>;
+      traceDir?: string;
     }> => {
       if (attempt >= 5) {
         throw new Error(
@@ -243,15 +293,13 @@ class PersistentContextFactory implements BrowserContextFactory {
         );
         const close = () =>
           this._closeBrowserContext(browserContext, userDataDir);
-        return { browserContext, close };
+        return { browserContext, close, traceDir: tracesDir };
       } catch (error: unknown) {
         if (
           error instanceof Error &&
           error.message.includes("Executable doesn't exist")
         ) {
-          throw new Error(
-            'Browser specified in your config is not installed. Either install it (likely) or change the config.'
-          );
+          throw formatBrowserLaunchError(error, this.config);
         }
         if (
           error instanceof Error &&
@@ -266,18 +314,32 @@ class PersistentContextFactory implements BrowserContextFactory {
       }
     };
 
-    return launchWithRetry(0);
+    try {
+      return await launchWithRetry(0);
+    } catch (error) {
+      this._userDataDirs.delete(userDataDir);
+      testDebug('release user data dir after launch failure', userDataDir);
+      throw error;
+    }
   }
   private async _closeBrowserContext(
     browserContext: BrowserContext,
     userDataDir: string
   ) {
     testDebug('close browser context (persistent)');
-    testDebug('release user data dir', userDataDir);
-    await browserContext.close().catch((error) => {
+    const closePromise = browserContext.close().catch((error) => {
       browserDebug('Failed to close browser context:', error);
     });
     this._userDataDirs.delete(userDataDir);
+    this._closingUserDataDirs.set(userDataDir, closePromise);
+    testDebug('release user data dir', userDataDir);
+    try {
+      await closePromise;
+    } finally {
+      if (this._closingUserDataDirs.get(userDataDir) === closePromise) {
+        this._closingUserDataDirs.delete(userDataDir);
+      }
+    }
     testDebug('close browser context complete (persistent)');
   }
   private async _createUserDataDir(rootPath: string | undefined) {
