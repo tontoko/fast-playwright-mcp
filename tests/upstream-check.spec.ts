@@ -12,6 +12,7 @@ import {
   mergeCompareFiles,
   parseRepositorySlug,
   planCompareWindows,
+  retryDelayMilliseconds,
 } from '../scripts/upstream-check.js';
 
 test('loads the pinned upstream manifest', async () => {
@@ -211,4 +212,17 @@ test('report surfaces truncated comparisons and full commit totals', async () =>
   });
   expect(completeReport).toContain('Commits: 610');
   expect(completeReport).not.toContain('truncated by API limits');
+});
+
+test('retry delays honor Retry-After and fall back when it is absent', () => {
+  const withHeader = (value: string) =>
+    new Response(null, { headers: { 'retry-after': value } });
+  expect(retryDelayMilliseconds(withHeader('10'))).toBe(10_000);
+  expect(retryDelayMilliseconds(withHeader('999999'))).toBe(60_000);
+  expect(retryDelayMilliseconds(withHeader('0'))).toBe(0);
+  // A missing header must not collapse to an immediate zero-delay retry.
+  expect(retryDelayMilliseconds(new Response(null))).toBe(5000);
+  expect(
+    retryDelayMilliseconds(withHeader('Wed, 21 Oct 2015 07:28:00 GMT'))
+  ).toBe(5000);
 });

@@ -433,6 +433,21 @@ function sanitizeConfigObject(obj: Record<string, unknown>): void {
   }
 }
 
+// Without outputDir or a rootPath, all artifacts of a process share one
+// timestamped directory so a finite outputMaxSize bounds the default output
+// tree as a whole; a per-call timestamp would give every artifact its own
+// directory and the quota would never apply across them.
+let defaultOutputDirectoryName: string | undefined;
+
+function defaultOutputDirectory(): string {
+  defaultOutputDirectoryName ??= sanitizeForFilePath(new Date().toISOString());
+  return pathJoin(
+    tmpdir(),
+    'playwright-mcp-output',
+    defaultOutputDirectoryName
+  );
+}
+
 export async function outputFile(
   config: FullConfig,
   rootPath: string | undefined,
@@ -441,11 +456,7 @@ export async function outputFile(
   const outputDir =
     config.outputDir ??
     (rootPath ? pathJoin(rootPath, '.playwright-mcp') : undefined) ??
-    pathJoin(
-      tmpdir(),
-      'playwright-mcp-output',
-      sanitizeForFilePath(new Date().toISOString())
-    );
+    defaultOutputDirectory();
   await fsPromises.mkdir(outputDir, { recursive: true });
   return pathJoin(outputDir, sanitizeForFilePath(name));
 }

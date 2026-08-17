@@ -130,14 +130,27 @@ export class OutputManager {
 
   async finalizeFile(path: string): Promise<void> {
     const target = await this.resolveFinalizationTarget(path, 'file');
-    this.evictionQueue.reservedTargets.delete(target);
-    await this.enqueue(() => this.evict(target, false));
+    await this.enqueue(async () => {
+      try {
+        await this.evict(target, false);
+      } finally {
+        // Release inside the queued pass: releasing earlier would let a
+        // concurrently queued eviction delete this target while its own
+        // finalization is still in flight.
+        this.evictionQueue.reservedTargets.delete(target);
+      }
+    });
   }
 
   async finalizeDirectory(path: string): Promise<void> {
     const target = await this.resolveFinalizationTarget(path, 'directory');
-    this.evictionQueue.reservedTargets.delete(target);
-    await this.enqueue(() => this.evict(target, true));
+    await this.enqueue(async () => {
+      try {
+        await this.evict(target, true);
+      } finally {
+        this.evictionQueue.reservedTargets.delete(target);
+      }
+    });
   }
 
   private pruneExpiredReservations(): void {

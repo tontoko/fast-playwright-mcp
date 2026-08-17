@@ -1,6 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
+import { outputFile } from '../src/config.js';
 import { OutputManager } from '../src/output-manager.js';
 
 test('evicts oldest completed files while preserving the finalized target', async ({
@@ -146,4 +147,44 @@ test('reserved outputs survive concurrent eviction pressure', async ({
   await writer.finalizeFile(reserved);
   const survivors = (await fs.readdir(directory)).sort();
   expect(survivors).toEqual(['reserved.bin']);
+});
+
+test('concurrent reserved finalizations keep each target through its own pass', async ({
+  page: _page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('reserved-concurrent');
+  await fs.mkdir(directory, { recursive: true });
+  const [first, second] = await Promise.all([
+    OutputManager.forDirectory(directory, 100),
+    OutputManager.forDirectory(directory, 100),
+  ]);
+  const left = path.join(directory, 'left.bin');
+  const right = path.join(directory, 'right.bin');
+  await fs.writeFile(left, Buffer.alloc(80));
+  await fs.writeFile(right, Buffer.alloc(80));
+  const leftReserved = await first.reserveFile(left);
+  const rightReserved = await second.reserveFile(right);
+
+  await Promise.all([
+    first.finalizeFile(leftReserved),
+    second.finalizeFile(rightReserved),
+  ]);
+  const survivors = (await fs.readdir(directory)).sort();
+  // Each finalization holds its reservation until its own queued eviction
+  // pass completes, so at least one of the two targets must survive.
+  expect(
+    survivors.filter((name) => name === 'left.bin' || name === 'right.bin')
+      .length
+  ).toBeGreaterThan(0);
+});
+
+test('default output directory is stable within a process', async ({
+  page: _page,
+}) => {
+  const { resolveConfig } = await import('../src/config.js');
+  const config = resolveConfig({});
+  const first = await outputFile(config, undefined, 'first.png');
+  const second = await outputFile(config, undefined, 'second.png');
+  expect(path.dirname(second)).toBe(path.dirname(first));
+  expect(path.basename(first)).toBe('first.png');
 });

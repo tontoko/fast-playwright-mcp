@@ -318,10 +318,13 @@ export function buildUpstreamReport(
 
 const RETRY_AFTER_CAP_SECONDS = 60;
 
-function retryDelayMilliseconds(response: Response): number | undefined {
-  const retryAfter = Number(response.headers.get('retry-after'));
-  if (Number.isFinite(retryAfter) && retryAfter >= 0) {
-    return Math.min(retryAfter, RETRY_AFTER_CAP_SECONDS) * 1000;
+export function retryDelayMilliseconds(response: Response): number {
+  const header = response.headers.get('retry-after');
+  // A missing header must not read as an explicit zero-second delay
+  // (Number(null) is 0), or the retry fires immediately and fails again.
+  const seconds = header === null ? Number.NaN : Number(header);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.min(seconds, RETRY_AFTER_CAP_SECONDS) * 1000;
   }
   return 5000;
 }
