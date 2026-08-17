@@ -51,6 +51,32 @@ export class OutputManager {
     this.maxSize = maxSize;
   }
 
+  // Managers serialize eviction through an in-memory queue, so every context
+  // writing into the same output directory must share one instance;
+  // independent queues would let concurrent finalizations evict each other's
+  // files. The registry is keyed by canonical path, and the first
+  // registration's maxSize applies to the shared instance.
+  private static readonly sharedByCanonicalDirectory = new Map<
+    string,
+    OutputManager
+  >();
+
+  static async forDirectory(
+    outputDir: string,
+    maxSize: number
+  ): Promise<OutputManager> {
+    const lexical = resolve(outputDir);
+    await fs.mkdir(lexical, { recursive: true });
+    const canonical = await fs.realpath(lexical);
+    let shared = OutputManager.sharedByCanonicalDirectory.get(canonical);
+    if (!shared) {
+      shared = new OutputManager(lexical, maxSize);
+      shared.canonicalOutputDirPromise = Promise.resolve(canonical);
+      OutputManager.sharedByCanonicalDirectory.set(canonical, shared);
+    }
+    return shared;
+  }
+
   async reserveFile(path: string): Promise<string> {
     const absolute = this.assertLexicallyContained(path);
     if (absolute === this.lexicalOutputDir) {

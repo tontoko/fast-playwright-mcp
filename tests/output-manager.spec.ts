@@ -68,3 +68,38 @@ test('rejects finalization targets outside the output directory', async ({
     manager.finalizeDirectory(path.dirname(outside))
   ).rejects.toThrow('Output path must remain inside the output directory');
 });
+
+test('contexts sharing an output directory share one eviction queue', async ({
+  page: _page,
+}, testInfo) => {
+  const directory = testInfo.outputPath('shared-outputs');
+  const alias = path.join(testInfo.outputPath('shared-alias-parent'), 'link');
+  await fs.mkdir(path.dirname(alias), { recursive: true });
+  await fs.symlink(directory, alias, 'dir');
+
+  const [first, second, viaAlias] = await Promise.all([
+    OutputManager.forDirectory(directory, 100),
+    OutputManager.forDirectory(directory, 100),
+    OutputManager.forDirectory(alias, 100),
+  ]);
+  expect(second).toBe(first);
+  expect(viaAlias).toBe(first);
+
+  // Concurrent finalizations through the shared queue must not evict each
+  // other's protected targets: the older file is evicted, the newest file
+  // that finalized last survives.
+  const stale = path.join(directory, 'stale.bin');
+  const left = path.join(directory, 'left.bin');
+  const right = path.join(directory, 'right.bin');
+  await fs.writeFile(stale, Buffer.alloc(80));
+  await fs.utimes(stale, new Date(1), new Date(1));
+  await fs.writeFile(left, Buffer.alloc(80));
+  await fs.writeFile(right, Buffer.alloc(80));
+  await Promise.all([first.finalizeFile(left), second.finalizeFile(right)]);
+  await expect(fs.stat(stale)).rejects.toMatchObject({ code: 'ENOENT' });
+  const survivors = (await fs.readdir(directory))
+    .filter((name) => name.endsWith('.bin'))
+    .sort();
+  expect(survivors.length).toBeGreaterThan(0);
+  expect(survivors).not.toContain('stale.bin');
+});

@@ -164,8 +164,9 @@ export class Context {
   }
 
   private _getOutputManager(path: string): Promise<OutputManager> {
-    this._outputManagerPromise ??= Promise.resolve(
-      new OutputManager(dirname(path), this.config.outputMaxSize)
+    this._outputManagerPromise ??= OutputManager.forDirectory(
+      dirname(path),
+      this.config.outputMaxSize
     );
     return this._outputManagerPromise;
   }
