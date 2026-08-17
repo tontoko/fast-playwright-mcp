@@ -5,7 +5,7 @@ The reviewed upstream state is defined in `upstream.json`.
 - Standalone Microsoft Playwright MCP reviewed commit: `7e0457a7cbf88823bf0146d12c46ae12c6818247`
 - Microsoft Playwright reviewed commit: `8078b85865a9643b37b5564c188a252545253749`
 - Reviewed standalone release: `0.0.79`
-- Pinned Playwright canary: `1.63.0-alpha-2026-08-05`
+- Pinned Playwright canary: `1.63.0-alpha-2026-08-17`
 
 The scheduled audit compares both repositories independently. Behavior is ported only when it fits this repository's adaptive catalog, response expectations, selector model, and bundled extension protocol.
 
