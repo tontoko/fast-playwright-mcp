@@ -354,7 +354,17 @@ export class OutputManager {
           if (!child.isFile()) {
             return [];
           }
-          const stat = await fs.lstat(path);
+          const stat = await fs.lstat(path).catch((error: unknown) => {
+            // A file removed between readdir and lstat must not abort the
+            // whole eviction pass.
+            if (isErrnoException(error, 'ENOENT')) {
+              return;
+            }
+            throw error;
+          });
+          if (!stat) {
+            return [];
+          }
           return [{ path, size: stat.size, mtimeMs: stat.mtimeMs }];
         })
       );

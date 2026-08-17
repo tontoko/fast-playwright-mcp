@@ -64,6 +64,7 @@ export type ComparePayload = {
   files?: ChangedFile[];
   headSha?: string;
   ahead_by?: number;
+  behind_by?: number;
   total_commits?: number;
   truncated?: boolean;
 };
@@ -433,6 +434,11 @@ async function fetchWindowFiles(
   repository: string,
   window: CompareWindow
 ): Promise<{ files: ChangedFile[]; truncated: boolean }> {
+  // Window boundaries follow the compare listing's order, which matches the
+  // ancestry chain only for linear histories (both pinned upstream repos
+  // squash-merge). With merge commits a window may span extra commits and
+  // under-report files; a window that still saturates the 300-file cap
+  // raises the truncation flag rather than passing silently.
   const payload = await githubComparePage(
     repository,
     `${window.base}...${window.head}`,

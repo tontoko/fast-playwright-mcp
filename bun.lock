@@ -6,7 +6,6 @@
       "name": "@tontoko/fast-playwright-mcp",
       "dependencies": {
         "@modelcontextprotocol/sdk": "1.25.2",
-        "@types/sharp": "^0.31.1",
         "commander": "^13.1.0",
         "debug": "^4.4.1",
         "dotenv": "^17.2.0",
@@ -26,6 +25,7 @@
         "@playwright/test": "1.63.0-alpha-2026-08-17",
         "@types/debug": "^4.1.12",
         "@types/node": "^22.13.10",
+        "@types/sharp": "^0.31.1",
         "@types/ws": "^8.18.1",
         "@typescript/native-preview": "^7.0.0-dev.20250808.1",
         "esbuild": "^0.20.1",

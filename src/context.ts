@@ -135,6 +135,9 @@ export class Context {
   async outputFile(name: string): Promise<string> {
     const path = await outputFile(this.config, this._clientInfo.rootPath, name);
     const manager = await this._getOutputManager(path);
+    // Artifact activity keeps the trace directory's eviction reservation
+    // alive while tracing is in progress.
+    this._refreshTraceReservation();
     return manager.reserveFile(path);
   }
 
@@ -163,6 +166,18 @@ export class Context {
   }
 
   private readonly _outputManagers = new Map<string, Promise<OutputManager>>();
+  private _traceDir: string | undefined;
+
+  private _refreshTraceReservation(): void {
+    if (!this._traceDir) {
+      return;
+    }
+    this._getOutputManager(this._traceDir)
+      .then((manager) => manager.reserveDirectory(this._traceDir as string))
+      .catch((error) => {
+        contextDebug('Failed to refresh trace reservation:', error);
+      });
+  }
 
   private _getOutputManager(path: string): Promise<OutputManager> {
     // outputFile() derives a fresh timestamped directory per call when no
@@ -175,6 +190,13 @@ export class Context {
         directory,
         this.config.outputMaxSize
       );
+      // A transient mkdir/realpath failure must not poison the directory
+      // for the rest of this context's lifetime.
+      manager.catch(() => {
+        if (this._outputManagers.get(directory) === manager) {
+          this._outputManagers.delete(directory);
+        }
+      });
       this._outputManagers.set(directory, manager);
     }
     return manager;
@@ -251,6 +273,7 @@ export class Context {
       }
       await close();
     });
+    this._traceDir = undefined;
   }
 
   async dispose() {
@@ -328,6 +351,14 @@ export class Context {
       await this._setupRequestInterception(browserContext);
       if (this.sessionLog) {
         await InputRecorder.create(this, browserContext);
+      }
+      if (result.traceDir) {
+        // Reserve the trace directory so quota eviction from other
+        // artifacts cannot delete in-progress trace files mid-session.
+        this._traceDir = result.traceDir;
+        await this._getOutputManager(result.traceDir).then((manager) =>
+          manager.reserveDirectory(result.traceDir as string)
+        );
       }
       for (const page of browserContext.pages()) {
         this._onPageCreated(page);

@@ -22,12 +22,17 @@ type LogEntry = {
   tabSnapshot?: TabSnapshot;
 };
 
+// Refresh reservations well inside the output manager's ten-minute TTL so
+// idle-but-active sessions keep their eviction protection.
+const RESERVATION_REFRESH_INTERVAL_MS = 5 * 60_000;
+
 export class SessionLog {
   private readonly _folder: string;
   private readonly _file: string;
   private _pendingEntries: LogEntry[] = [];
   private _sessionFileQueue: Promise<void> = Promise.resolve();
   private _flushEntriesTimeout: NodeJS.Timeout | undefined;
+  private _reservationRefreshInterval: NodeJS.Timeout | undefined;
   private _ordinal = 0;
   private readonly _outputManager: OutputManager;
   private readonly _redactor: SecretRedactor;
@@ -58,15 +63,28 @@ export class SessionLog {
       config.outputMaxSize
     );
     // Register the session folder as reserved so quota eviction from other
-    // artifacts cannot delete the log while the session is active; each
-    // flush refreshes the reservation and dispose releases it.
+    // artifacts cannot delete the log while the session is active. A
+    // refresh interval keeps the reservation alive for idle sessions past
+    // the TTL, and dispose releases it.
     await outputManager.reserveDirectory(sessionFolder);
-
-    return new SessionLog(
+    const sessionLog = new SessionLog(
       sessionFolder,
       outputManager,
       new SecretRedactor(config.secrets)
     );
+    sessionLog._startReservationRefresh();
+    return sessionLog;
+  }
+
+  private _startReservationRefresh(): void {
+    // Refresh well inside the reservation TTL so an idle-but-active session
+    // keeps its protection; unref'd so the timer never holds the process.
+    this._reservationRefreshInterval = setInterval(() => {
+      this._outputManager
+        .reserveDirectory(this._folder)
+        .catch(logUnhandledError);
+    }, RESERVATION_REFRESH_INTERVAL_MS);
+    this._reservationRefreshInterval.unref?.();
   }
 
   logResponse(response: Response) {
@@ -180,7 +198,6 @@ export class SessionLog {
 
   private _executeFlushProcess(): void {
     this._clearFlushTimeout();
-    this._outputManager.reserveDirectory(this._folder).catch(logUnhandledError);
     const { entries, lines } = this._prepareFlushData();
     this._processEntries(entries, lines);
     this._writeToFile(lines);
@@ -221,6 +238,12 @@ export class SessionLog {
   }
 
   async dispose(): Promise<void> {
+    // Stop refreshing before finalizing so no stray reservation re-arms
+    // after finalizeDirectory releases this folder's protection.
+    if (this._reservationRefreshInterval) {
+      clearInterval(this._reservationRefreshInterval);
+      this._reservationRefreshInterval = undefined;
+    }
     if (this._flushEntriesTimeout) {
       this._flushEntries();
     }
