@@ -21,9 +21,9 @@ test('loads the pinned upstream manifest', async () => {
     '7e0457a7cbf88823bf0146d12c46ae12c6818247'
   );
   expect(manifest.playwrightReviewedCommit).toBe(
-    'd5a185a894ab3ab17ff77a44e116a1339c6bdaed'
+    'cfe490d941f992655948eee8fd4fd94e1c4234bf'
   );
-  expect(manifest.playwrightVersion).toBe('1.63.0-alpha-2026-08-17');
+  expect(manifest.playwrightVersion).toBe('1.64.1');
 });
 
 test('classifies upstream paths deterministically', () => {

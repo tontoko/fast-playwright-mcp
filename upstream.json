@@ -3,6 +3,7 @@
   "playwrightRepository": "microsoft/playwright",
   "reviewedCommit": "7e0457a7cbf88823bf0146d12c46ae12c6818247",
   "packageVersion": "0.0.79",
-  "playwrightVersion": "1.63.0-alpha-2026-08-17",
-  "playwrightReviewedCommit": "d5a185a894ab3ab17ff77a44e116a1339c6bdaed"
+  "playwrightVersion": "1.64.1",
+  "playwrightReviewedCommit": "cfe490d941f992655948eee8fd4fd94e1c4234bf",
+  "playwrightBranch": "release-1.64"
 }

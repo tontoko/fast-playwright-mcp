@@ -3,16 +3,16 @@
 The reviewed upstream state is defined in `upstream.json`.
 
 - Standalone Microsoft Playwright MCP reviewed commit: `7e0457a7cbf88823bf0146d12c46ae12c6818247`
-- Microsoft Playwright reviewed commit: `8078b85865a9643b37b5564c188a252545253749`
+- Microsoft Playwright reviewed commit: `cfe490d941f992655948eee8fd4fd94e1c4234bf`
 - Reviewed standalone release: `0.0.79`
-- Pinned Playwright canary: `1.63.0-alpha-2026-08-17`
+- Pinned Playwright release: `1.64.1` (audited against the `release-1.64` branch)
 
 The scheduled audit compares both repositories independently. Behavior is ported only when it fits this repository's adaptive catalog, response expectations, selector model, and bundled extension protocol.
 
 | Feature | Status | Local implementation | Reviewed upstream source | Notes |
 |---|---|---|---|---|
 | Playwright runtime version | Ported | `package.json`, `bun.lock` | `microsoft/playwright-mcp@4ed35bf8713337dfce02f073edd3bd0c7ebf310f` | Playwright packages are pinned together to the exact v0.0.79 runtime build; Node.js 20 is required. |
-| Dual upstream audit | Ported | `scripts/upstream-check.ts`, `upstream.json` | `microsoft/playwright-mcp@7e0457a7cbf88823bf0146d12c46ae12c6818247`, `microsoft/playwright@8078b85865a9643b37b5564c188a252545253749` | Reports the standalone MCP and Playwright runtime deltas separately and remains read-only. |
+| Dual upstream audit | Ported | `scripts/upstream-check.ts`, `upstream.json` | `microsoft/playwright-mcp@7e0457a7cbf88823bf0146d12c46ae12c6818247`, `microsoft/playwright@cfe490d941f992655948eee8fd4fd94e1c4234bf` | Reports the standalone MCP and Playwright runtime deltas separately and remains read-only. |
 | Accessibility snapshot search | Ported | `src/tools/find.ts` | Microsoft MCP backend | Adapted to local response expectations and result limits. |
 | Partial accessibility snapshots | Ported | `src/tab.ts` | Microsoft MCP snapshot handling | CSS selectors scope the locator snapshot; missing selectors fall back to the full snapshot. |
 | Dialog lifecycle cleanup | Ported | `src/tab.ts` | `microsoft/playwright@887b421089a18e60107397c8c037a4ea1f9d5925` | Side-channel dialog closure clears stale modal state. |
