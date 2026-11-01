@@ -2,7 +2,7 @@
  * Image processing utilities
  */
 
-import sharp from 'sharp';
+import sharp, { type Sharp } from 'sharp';
 
 export interface ImageOptions {
   quality?: number;
@@ -86,10 +86,10 @@ async function processImageWithoutOptions(
  * Apply format conversion to image
  */
 function applyFormatConversion(
-  image: sharp.Sharp,
+  image: Sharp,
   format: string,
   quality?: number
-): { image: sharp.Sharp; contentType: string } {
+): { image: Sharp; contentType: string } {
   const outputContentType = `image/${format}`;
   let processedImage = image;
 
@@ -115,10 +115,10 @@ function applyFormatConversion(
  * Apply quality settings to existing format
  */
 function applyQualityToExistingFormat(
-  image: sharp.Sharp,
+  image: Sharp,
   contentType: string,
   quality: number
-): sharp.Sharp {
+): Sharp {
   if (contentType.includes('jpeg')) {
     return image.jpeg({ quality });
   }
