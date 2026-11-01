@@ -6,6 +6,8 @@ import {
 } from './path-policy.js';
 
 const FULL_SHA = /^[0-9a-f]{40}$/u;
+const BRANCH_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]*$/u;
+const DEFAULT_BRANCH = 'main';
 const OWNER_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/u;
 const REPOSITORY_NAME_PATTERN = /^[A-Za-z0-9._-]{1,100}$/u;
 const RESERVED_REPOSITORY_NAMES = new Set(['.', '..']);
@@ -40,6 +42,8 @@ export type UpstreamManifest = {
   reviewedCommit: string;
   packageVersion: string;
   playwrightVersion: string;
+  /** Branch of the Playwright repository the audit compares against. */
+  playwrightBranch?: string;
 };
 
 type ChangedFile = {
@@ -113,6 +117,12 @@ function validateManifest(manifest: UpstreamManifest): void {
   }
   if (!FULL_SHA.test(manifest.playwrightReviewedCommit)) {
     throw new Error('playwrightReviewedCommit must be a full 40-character SHA');
+  }
+  if (
+    manifest.playwrightBranch !== undefined &&
+    !BRANCH_NAME.test(manifest.playwrightBranch)
+  ) {
+    throw new Error('playwrightBranch must be a plain branch name');
   }
   parseRepositorySlug(manifest.repository, 'repository');
   parseRepositorySlug(manifest.playwrightRepository, 'playwrightRepository');
@@ -450,12 +460,13 @@ async function fetchWindowFiles(
 
 async function loadNetworkComparison(
   repository: string,
-  reviewedCommit: string
+  reviewedCommit: string,
+  branch: string
 ): Promise<ComparePayload> {
   const latest = await githubJson<{ sha: string }>(
     repository,
     'commits',
-    'main'
+    branch
   );
   if (!FULL_SHA.test(latest.sha)) {
     throw new Error('GitHub returned an invalid latest commit SHA');
@@ -537,12 +548,13 @@ function loadComparison(
   repository: string,
   reviewedCommit: string,
   fixture: string | undefined,
-  fixtureLabel: string
+  fixtureLabel: string,
+  branch = DEFAULT_BRANCH
 ): Promise<ComparePayload> {
   if (fixture) {
     return readFixture(fixture, fixtureLabel);
   }
-  return loadNetworkComparison(repository, reviewedCommit);
+  return loadNetworkComparison(repository, reviewedCommit, branch);
 }
 
 if (import.meta.main) {
@@ -567,7 +579,8 @@ if (import.meta.main) {
       manifest.playwrightRepository,
       manifest.playwrightReviewedCommit,
       playwrightFixture,
-      '--playwright-fixture'
+      '--playwright-fixture',
+      manifest.playwrightBranch
     ),
   ]);
   const report = buildUpstreamReport(manifest, { mcp, playwright });

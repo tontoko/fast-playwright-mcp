@@ -415,10 +415,13 @@ export class InputRecorder {
     }
     await (
       this.browserContext as unknown as {
-        _enableRecorder: (config: unknown, handlers: unknown) => Promise<void>;
+        _startRecording: (
+          params: { language: string },
+          handlers: unknown
+        ) => Promise<void>;
       }
-    )._enableRecorder(
-      { mode: 'recording', recorderMode: 'api' },
+    )._startRecording(
+      { language: 'javascript' },
       {
         actionAdded: (
           page: Page,
